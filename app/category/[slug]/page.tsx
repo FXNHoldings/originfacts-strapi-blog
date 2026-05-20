@@ -3,13 +3,16 @@ import { getCategory, listArticles, listDestinationArticles } from '@/lib/strapi
 import { findSection } from '@/lib/sections';
 import CategoryHero from '@/components/CategoryHero';
 import CategoryArticleList from '@/components/CategoryArticleList';
+import CategoryDescription from '@/components/CategoryDescription';
 import type { Metadata } from 'next';
 
 export const revalidate = 60;
 
+const HERO_COUNT = 5;
+const LIST_PAGE_SIZE = 5;
+
 type Props = { params: Promise<{ slug: string }> };
 
-/** Look up category meta from Strapi first; fall back to the hardcoded home sections. */
 async function resolveCategory(slug: string) {
   const strapi = await getCategory(slug).catch(() => null);
   if (strapi) {
@@ -48,12 +51,23 @@ export default async function CategoryPage({ params }: Props) {
   const category = await resolveCategory(slug);
   if (!category) notFound();
 
-  const { data: articles } = await (slug === 'destinations'
-    ? listDestinationArticles({ pageSize: 24 })
-    : listArticles({ category: slug, pageSize: 24 })
+  const initialPageSize = HERO_COUNT + LIST_PAGE_SIZE;
+
+  const { data: articles, meta } = await (slug === 'destinations'
+    ? listDestinationArticles({ pageSize: initialPageSize })
+    : listArticles({ category: slug, pageSize: initialPageSize })
   ).catch(
-    () => ({ data: [], meta: { pagination: { page: 1, pageSize: 24, pageCount: 0, total: 0 } } }),
+    () => ({
+      data: [],
+      meta: { pagination: { page: 1, pageSize: initialPageSize, pageCount: 0, total: 0 } },
+    }),
   );
+
+  const heroArticles = articles.slice(0, HERO_COUNT);
+  const listArticlesInitial = articles.slice(HERO_COUNT);
+  const totalLoaded = articles.length;
+  const totalAvailable = meta?.pagination?.total ?? totalLoaded;
+  const hasMore = totalAvailable > totalLoaded;
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-16" data-testid={`category-page-${slug}`}>
@@ -63,7 +77,7 @@ export default async function CategoryPage({ params }: Props) {
           <p className="font-urbanist mt-4 text-sm uppercase tracking-wider text-forest-900/60">{category.tagline}</p>
         )}
         {category.description && (
-          <p className="mt-5 text-xl text-ink/70">{category.description}</p>
+          <CategoryDescription text={category.description} />
         )}
       </header>
 
@@ -73,15 +87,19 @@ export default async function CategoryPage({ params }: Props) {
         </p>
       ) : (
         <>
-          {/* Hero: 1 lead + up to 4 side tiles */}
           <div className="mt-10">
-            <CategoryHero articles={articles.slice(0, 5)} />
+            <CategoryHero articles={heroArticles} />
           </div>
 
-          {/* Remaining articles: row-list on the left, sidebar on the right */}
-          {articles.length > 5 && (
+          {(listArticlesInitial.length > 0 || hasMore) && (
             <div className="mt-16">
-              <CategoryArticleList articles={articles.slice(5)} categorySlug={slug} />
+              <CategoryArticleList
+                initialArticles={listArticlesInitial}
+                categorySlug={slug}
+                initialPage={2}
+                pageSize={LIST_PAGE_SIZE}
+                hasMore={hasMore}
+              />
             </div>
           )}
         </>

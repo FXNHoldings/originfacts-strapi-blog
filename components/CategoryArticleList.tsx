@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import { format } from 'date-fns';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { mediaUrl, type StrapiArticle } from '@/lib/strapi';
 
 function dateParts(iso?: string) {
@@ -25,7 +28,6 @@ function Row({ article }: { article: StrapiArticle }) {
       className="grid grid-cols-[80px_minmax(0,1fr)_140px] items-start gap-5 border-b border-forest-900/10 py-7 sm:grid-cols-[96px_minmax(0,1fr)_160px] sm:gap-6"
       data-testid={`category-row-${article.slug}`}
     >
-      {/* Date column */}
       <div className="border-l-2 border-primary-emphasis/40 pl-3 sm:pl-4">
         <div className="font-urbanist text-3xl font-bold leading-none text-primary-emphasis sm:text-4xl">
           {dp?.day ?? '--'}
@@ -35,7 +37,6 @@ function Row({ article }: { article: StrapiArticle }) {
         </div>
       </div>
 
-      {/* Content column */}
       <div className="min-w-0">
         {eyebrow && (
           <p className="text-[11px] font-semibold uppercase tracking-widest text-forest-900/55">
@@ -79,7 +80,6 @@ function Row({ article }: { article: StrapiArticle }) {
         </Link>
       </div>
 
-      {/* Thumbnail */}
       <Link
         href={`/articles/${article.slug}`}
         className="block overflow-hidden rounded bg-forest-900/5"
@@ -107,7 +107,6 @@ function Row({ article }: { article: StrapiArticle }) {
 function Sidebar({ categorySlug }: { categorySlug: string }) {
   return (
     <aside className="space-y-10 lg:sticky lg:top-24 lg:self-start" data-testid="category-sidebar">
-      {/* Popular / Recent toggle (visual only — both views are the same recent list for now) */}
       <div className="inline-flex rounded-full border border-forest-900/10 bg-white p-1 shadow-sm">
         <span className="rounded-full bg-forest-900 px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest text-white">
           Popular
@@ -117,7 +116,6 @@ function Sidebar({ categorySlug }: { categorySlug: string }) {
         </span>
       </div>
 
-      {/* JOIN US */}
       <div>
         <h3 className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-forest-900">
           Join Us
@@ -173,7 +171,6 @@ function Sidebar({ categorySlug }: { categorySlug: string }) {
         </ul>
       </div>
 
-      {/* DEAL OF THE MONTH — affiliate CTA to /flights */}
       <div>
         <h3 className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-forest-900">
           Deal of the Month
@@ -198,7 +195,6 @@ function Sidebar({ categorySlug }: { categorySlug: string }) {
         </Link>
       </div>
 
-      {/* Tiny back-to-category link — keeps slug visible in dev/test */}
       <Link
         href={`/category/${categorySlug}`}
         className="hidden text-[10px] font-semibold uppercase tracking-widest text-forest-900/30 hover:text-primary-emphasis"
@@ -211,20 +207,87 @@ function Sidebar({ categorySlug }: { categorySlug: string }) {
 }
 
 export default function CategoryArticleList({
-  articles,
+  initialArticles,
   categorySlug,
+  initialPage,
+  pageSize,
+  hasMore: initialHasMore,
 }: {
-  articles: StrapiArticle[];
+  initialArticles: StrapiArticle[];
   categorySlug: string;
+  initialPage: number;
+  pageSize: number;
+  hasMore: boolean;
 }) {
+  const [articles, setArticles] = useState<StrapiArticle[]>(initialArticles);
+  const [page, setPage] = useState<number>(initialPage);
+  const [hasMore, setHasMore] = useState<boolean>(initialHasMore);
+  const [loading, setLoading] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  const loadMore = useCallback(async () => {
+    if (loading || !hasMore) return;
+    setLoading(true);
+    try {
+      const next = page + 1;
+      const res = await fetch(
+        `/api/category-articles?slug=${encodeURIComponent(categorySlug)}&page=${next}&pageSize=${pageSize}`,
+      );
+      if (!res.ok) {
+        setHasMore(false);
+        return;
+      }
+      const json = (await res.json()) as {
+        data: StrapiArticle[];
+        pagination: { page: number; pageCount: number };
+      };
+      setArticles((prev) => {
+        const seen = new Set(prev.map((a) => a.id));
+        return [...prev, ...json.data.filter((a) => !seen.has(a.id))];
+      });
+      setPage(next);
+      setHasMore(json.pagination.page < json.pagination.pageCount);
+    } catch {
+      setHasMore(false);
+    } finally {
+      setLoading(false);
+    }
+  }, [categorySlug, hasMore, loading, page, pageSize]);
+
+  useEffect(() => {
+    if (!hasMore) return;
+    const node = sentinelRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) loadMore();
+      },
+      { rootMargin: '400px 0px' },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [hasMore, loadMore]);
+
   if (articles.length === 0) return null;
 
   return (
     <div className="grid gap-10 lg:grid-cols-[1fr_280px] lg:gap-14">
-      <div className="border-t border-forest-900/10">
-        {articles.map((a) => (
-          <Row key={a.id} article={a} />
-        ))}
+      <div>
+        <div className="border-t border-forest-900/10">
+          {articles.map((a) => (
+            <Row key={a.id} article={a} />
+          ))}
+        </div>
+        {hasMore && (
+          <div
+            ref={sentinelRef}
+            className="flex items-center justify-center py-10 text-[11px] font-semibold uppercase tracking-widest text-forest-900/50"
+            data-testid="category-load-more-sentinel"
+            aria-live="polite"
+          >
+            {loading ? 'Loading more stories…' : 'Scroll for more'}
+          </div>
+        )}
       </div>
       <Sidebar categorySlug={categorySlug} />
     </div>

@@ -16,7 +16,6 @@ import {
 import ArticleCard from '@/components/ArticleCard';
 import CountryAbout from '@/components/CountryAbout';
 import CountryDetailSections from '@/components/CountryDetailSections';
-import HotelCTA from '@/components/HotelCTA';
 import type { Metadata } from 'next';
 
 export const revalidate = 60;
@@ -138,9 +137,7 @@ export default async function DestinationPage({ params }: Props) {
         </section>
       )}
 
-      <div className="pb-20">
-        <HotelCTA destination={destination.name} subId={`destination-${slug}`} hotelsSlug={slug} />
-      </div>
+      <div className="pb-20" />
     </div>
   );
 }
@@ -254,9 +251,6 @@ function CountryDestinationPage({
           </div>
         </section>
       )}
-
-      {/* 4b. Hotels CTA */}
-      <HotelCTA destination={destination.name} subId={`destination-${destination.slug}`} hotelsSlug={destination.slug} />
 
       {/* 5. Stories — 4 cards */}
       <section className="mx-auto mt-16 max-w-7xl px-6 pb-20" data-testid="destination-stories">
