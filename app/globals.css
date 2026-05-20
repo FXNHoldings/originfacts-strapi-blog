@@ -95,7 +95,8 @@ html.flight-search-active .tpwl-search-wrap {
    Search-by-Destination sections so results have the page to themselves. */
 html.flight-search-active [data-testid="travel-pros"],
 html.flight-search-active [data-testid="popular-destinations"],
-html.flight-search-active [data-testid="cheap-flights-by-destination"] {
+html.flight-search-active [data-testid="cheap-flights-by-destination"],
+html.flight-search-active [data-testid="booking-faq"] {
   display: none;
 }
 
