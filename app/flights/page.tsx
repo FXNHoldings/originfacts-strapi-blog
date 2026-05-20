@@ -65,14 +65,14 @@ const PRO_TIPS: ProTip[] = [
     title: 'Consider one stop',
     description:
       'A single-stop itinerary often beats a non-stop by 30–50%. Look at the full list first, then narrow to direct flights only after you’ve seen what’s on offer.',
-    // image: '/illustrations/consider-one-stop.svg', // pending — SVG was truncated in chat
+    image: '/illustrations/consider-one-stop.svg',
   },
   {
     n: 4,
     title: 'Book direct when you can',
     description:
       'Once you spot the cheapest fare, click through to the airline’s own site if available. Fewer change/refund hassles than an OTA — and we earn the same affiliate commission either way.',
-    // image: '/illustrations/book-direct.svg', // pending — SVG was truncated in chat
+    image: '/illustrations/book-direct.svg',
   },
 ];
 
