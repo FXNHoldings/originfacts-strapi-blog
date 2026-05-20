@@ -4,7 +4,7 @@ import { SECTIONS } from '@/lib/sections';
 import { getLegalDoc } from '@/lib/legal';
 import { CookieSettingsButton } from '@/components/CookieConsent';
 
-const BOTTOM_BAR_SLUGS = ['privacy', 'terms', 'cookies', 'disclaimer', 'accessibility', 'contact'];
+const BOTTOM_BAR_SLUGS = ['privacy', 'terms', 'cookies'];
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -87,7 +87,7 @@ export default function Footer() {
         <div>
           <h4 className="editorial-h text-lg capitalize tracking-normal text-secondary-emphasis">Discover</h4>
           <ul className="mt-3 space-y-2 text-sm text-white/80" data-testid="footer-travel-index">
-            <li><Link href="/flights" className="hover:text-secondary">Flights</Link></li>
+            <li><Link href="/flights" className="hover:text-secondary">Flight Routes</Link></li>
             <li><Link href="/hotels" className="hover:text-secondary">Hotels</Link></li>
             <li><Link href="/countries" className="hover:text-secondary">Countries</Link></li>
             <li><Link href="/airlines" className="hover:text-secondary">Airlines</Link></li>
@@ -99,9 +99,63 @@ export default function Footer() {
           <ul className="mt-3 space-y-2 text-sm text-white/80" data-testid="footer-company">
             <li><Link href="/" className="hover:text-secondary">Home</Link></li>
             <li><Link href="/about" className="hover:text-secondary">About</Link></li>
-            <li><Link href="/contact" className="hover:text-secondary">Contact</Link></li>
+            <li className="group/legal relative" data-testid="footer-legal-stuff">
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 text-left hover:text-secondary"
+                aria-haspopup="true"
+              >
+                Legal Stuff
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-3 w-3 opacity-60"
+                  aria-hidden
+                >
+                  <polyline points="9 6 15 12 9 18" />
+                </svg>
+              </button>
+              <div
+                className="invisible absolute left-full top-0 z-10 pl-2 opacity-0 transition duration-150 group-hover/legal:visible group-hover/legal:opacity-100 group-focus-within/legal:visible group-focus-within/legal:opacity-100"
+                data-testid="footer-legal-submenu"
+              >
+                <div
+                  role="menu"
+                  className="min-w-[200px] rounded-md border border-white/10 bg-forest-900 p-1 shadow-md"
+                >
+                  <Link
+                    href="/legal/disclaimer"
+                    className="block rounded px-3 py-2 text-sm text-white/80 transition hover:bg-white/5 hover:text-secondary"
+                    role="menuitem"
+                  >
+                    Disclaimer
+                  </Link>
+                  <Link
+                    href="/legal/accessibility"
+                    className="block rounded px-3 py-2 text-sm text-white/80 transition hover:bg-white/5 hover:text-secondary"
+                    role="menuitem"
+                  >
+                    Accessibility
+                  </Link>
+                  <Link
+                    href="/legal"
+                    className="block rounded px-3 py-2 text-sm text-white/80 transition hover:bg-white/5 hover:text-secondary"
+                    role="menuitem"
+                  >
+                    Legal Notice
+                  </Link>
+                  <CookieSettingsButton className="block w-full rounded px-3 py-2 text-left text-sm text-white/80 transition hover:bg-white/5 hover:text-secondary" />
+                </div>
+              </div>
+            </li>
             <li><Link href="/legal/affiliate-disclosure" className="hover:text-secondary">Affiliate Disclosure</Link></li>
             <li><Link href="/sitemap" className="hover:text-secondary">Site Map</Link></li>
+            <li><Link href="/contact" className="hover:text-secondary">Contact</Link></li>
           </ul>
         </div>
       </div>
@@ -119,9 +173,6 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
-              <li>
-                <CookieSettingsButton />
-              </li>
             </ul>
           </nav>
         </div>
