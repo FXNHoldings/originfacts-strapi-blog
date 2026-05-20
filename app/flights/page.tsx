@@ -71,6 +71,7 @@ const PRO_TIPS: ProTip[] = [
     title: 'Book direct when you can',
     description:
       'Once you spot the cheapest fare, click through to the airline’s own site if available. Fewer change/refund hassles than an OTA — and we earn the same affiliate commission either way.',
+    // image: '/illustrations/book-direct.svg', // pending — SVG was truncated in chat
   },
 ];
 
