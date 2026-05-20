@@ -102,6 +102,26 @@ html.flight-search-active [data-testid="booking-faq"] {
   display: none;
 }
 
+/* ---------- TPWL search form fields → 4px corner radius ----------
+   TPWL ships the form with rounded-full pill fields. Override every
+   field-like element inside #tpwl-search down to 4px so the rest of
+   the page (which uses 4px on the topbar search + Pro Tip cards)
+   reads as a single system. */
+#tpwl-search button,
+#tpwl-search input,
+#tpwl-search [role="combobox"],
+#tpwl-search [role="searchbox"],
+#tpwl-search [role="button"],
+#tpwl-search [data-testid*="form"],
+#tpwl-search [class*="Field"],
+#tpwl-search [class*="field"],
+#tpwl-search [class*="Input"],
+#tpwl-search [class*="input"],
+#tpwl-search [class*="Button"],
+#tpwl-search [class*="button"] {
+  border-radius: 4px !important;
+}
+
 /* ---------- TPWL language / currency switcher → dropdown menu ----------
    TPWL renders a button + inline list for each switcher. We hide the list
    by default and pop it open on hover/focus of the button. */
