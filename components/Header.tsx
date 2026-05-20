@@ -72,14 +72,65 @@ export default function Header() {
                   Flights
                 </Link>
               </li>
-              <li data-testid="nav-item-hotels">
+              <li
+                className="group/allarticles relative"
+                data-testid="nav-item-articles"
+              >
                 <Link
-                  href="/hotels"
+                  href="/articles"
                   className="inline-flex items-center gap-1.5 px-3 py-2 text-[#000000] transition-colors hover:text-[rgb(1,79,211)]"
-                  data-testid="nav-hotels"
+                  data-testid="nav-articles"
+                  aria-haspopup="true"
                 >
-                  Hotels
+                  Blog
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-3 w-3 opacity-60"
+                    aria-hidden
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
                 </Link>
+                <div
+                  className="invisible absolute left-0 top-full z-10 pt-1 opacity-0 transition duration-150 group-hover/allarticles:visible group-hover/allarticles:opacity-100 group-focus-within/allarticles:visible group-focus-within/allarticles:opacity-100"
+                  data-testid="nav-articles-dropdown"
+                >
+                  <div
+                    role="menu"
+                    className="min-w-[220px] rounded-md border border-forest-900/10 bg-paper p-1 shadow-md"
+                  >
+                    <Link
+                      href="/hotels"
+                      className="block rounded px-3 py-2 text-base text-[#000000] transition-colors hover:bg-forest-900/5 hover:text-[rgb(1,79,211)]"
+                      role="menuitem"
+                      data-testid="nav-articles-hotels"
+                    >
+                      Hotels
+                    </Link>
+                    <Link
+                      href="/category/car-rental"
+                      className="block rounded px-3 py-2 text-base text-[#000000] transition-colors hover:bg-forest-900/5 hover:text-[rgb(1,79,211)]"
+                      role="menuitem"
+                      data-testid="nav-articles-car-rental"
+                    >
+                      Car Rental
+                    </Link>
+                    <Link
+                      href="/category/travel-tips"
+                      className="block rounded px-3 py-2 text-base text-[#000000] transition-colors hover:bg-forest-900/5 hover:text-[rgb(1,79,211)]"
+                      role="menuitem"
+                      data-testid="nav-articles-travel-tips"
+                    >
+                      Travel Tips
+                    </Link>
+                  </div>
+                </div>
               </li>
               <li
                 className="group/resources relative"
@@ -107,7 +158,7 @@ export default function Header() {
                   </svg>
                 </button>
                 <div
-                  className="invisible absolute left-0 top-full z-10 pt-1 opacity-0 transition duration-150 group-hover/resources:visible group-hover/resources:opacity-100 group-focus-within/resources:visible group-focus-within/resources:opacity-100"
+                  className="invisible absolute right-0 top-full z-10 pt-1 opacity-0 transition duration-150 group-hover/resources:visible group-hover/resources:opacity-100 group-focus-within/resources:visible group-focus-within/resources:opacity-100"
                   data-testid="nav-resources-dropdown"
                 >
                   <div
@@ -146,7 +197,7 @@ export default function Header() {
                         </svg>
                       </Link>
                       <div
-                        className="invisible absolute left-full top-0 z-10 pl-1 opacity-0 transition duration-150 group-hover/airports-sub:visible group-hover/airports-sub:opacity-100 group-focus-within/airports-sub:visible group-focus-within/airports-sub:opacity-100"
+                        className="invisible absolute right-full top-0 z-10 pr-1 opacity-0 transition duration-150 group-hover/airports-sub:visible group-hover/airports-sub:opacity-100 group-focus-within/airports-sub:visible group-focus-within/airports-sub:opacity-100"
                         data-testid="nav-airports-submenu"
                       >
                         <div
@@ -164,58 +215,6 @@ export default function Header() {
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </li>
-              <li
-                className="group/allarticles relative"
-                data-testid="nav-item-articles"
-              >
-                <Link
-                  href="/articles"
-                  className="inline-flex items-center gap-1.5 px-3 py-2 text-[#000000] transition-colors hover:text-[rgb(1,79,211)]"
-                  data-testid="nav-articles"
-                  aria-haspopup="true"
-                >
-                  All Topics
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-3 w-3 opacity-60"
-                    aria-hidden
-                  >
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                </Link>
-                <div
-                  className="invisible absolute right-0 top-full z-10 pt-1 opacity-0 transition duration-150 group-hover/allarticles:visible group-hover/allarticles:opacity-100 group-focus-within/allarticles:visible group-focus-within/allarticles:opacity-100"
-                  data-testid="nav-articles-dropdown"
-                >
-                  <div
-                    role="menu"
-                    className="min-w-[220px] rounded-md border border-forest-900/10 bg-paper p-1 shadow-md"
-                  >
-                    <Link
-                      href="/category/car-rental"
-                      className="block rounded px-3 py-2 text-base text-[#000000] transition-colors hover:bg-forest-900/5 hover:text-[rgb(1,79,211)]"
-                      role="menuitem"
-                      data-testid="nav-articles-car-rental"
-                    >
-                      Car Rental
-                    </Link>
-                    <Link
-                      href="/category/travel-tips"
-                      className="block rounded px-3 py-2 text-base text-[#000000] transition-colors hover:bg-forest-900/5 hover:text-[rgb(1,79,211)]"
-                      role="menuitem"
-                      data-testid="nav-articles-travel-tips"
-                    >
-                      Travel Tips
-                    </Link>
                   </div>
                 </div>
               </li>

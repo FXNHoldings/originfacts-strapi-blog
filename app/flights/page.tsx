@@ -3,7 +3,7 @@ import PopularDestinationsBlock from '@/components/PopularDestinationsBlock';
 import SearchByDestinationBlock from '@/components/SearchByDestinationBlock';
 
 export const metadata = {
-  title: 'Flights',
+  title: 'Flight Search',
   description: 'Search hundreds of airlines in one place. Powered by our travel partners.',
 };
 
