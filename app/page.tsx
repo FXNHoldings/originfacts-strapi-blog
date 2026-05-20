@@ -115,7 +115,7 @@ function Hero({ hero, side }: { hero?: StrapiArticle; side: StrapiArticle[] }) {
             <img
               src="https://frenify.com/work/envato/frenify/wp/mow/news/wp-content/uploads/2025/02/300ads-600.webp"
               alt="Advertisement"
-              className="h-[550px] w-full object-cover"
+              className="aspect-[300/500] w-full object-cover"
             />
           </a>
         </div>
