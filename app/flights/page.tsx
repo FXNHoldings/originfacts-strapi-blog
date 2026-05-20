@@ -194,7 +194,7 @@ export default function FlightsPage() {
 
         {/* ---------- Popular destinations ---------- */}
         <section className="mt-20" data-testid="popular-destinations">
-          <h2 className="editorial-h text-2xl font-bold text-forest-900 sm:text-3xl">
+          <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">
             Popular destinations
           </h2>
           <p className="mt-2 text-sm text-forest-900/70">
@@ -299,7 +299,7 @@ export default function FlightsPage() {
 
         {/* ---------- For travel pros ---------- */}
         <section className="mt-20" data-testid="travel-pros">
-          <h2 className="editorial-h text-2xl font-bold text-forest-900 sm:text-3xl">
+          <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">
             For travel pros
           </h2>
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -328,7 +328,7 @@ export default function FlightsPage() {
 
         {/* ---------- Search cheap flights by destination ---------- */}
         <section className="mt-20" data-testid="cheap-flights-by-destination">
-          <h2 className="editorial-h text-2xl font-bold text-forest-900 sm:text-3xl">
+          <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">
             Search cheap flights by destination
           </h2>
           <p className="mt-1 text-sm font-semibold text-forest-900/80">Find Cheap Flights</p>
@@ -398,7 +398,7 @@ export default function FlightsPage() {
 
         {/* ---------- Booking flights with Originfacts (FAQ) ---------- */}
         <section className="mt-20" data-testid="booking-faq">
-          <h2 className="editorial-h text-2xl font-bold text-forest-900 sm:text-3xl">
+          <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">
             Booking flights with Originfacts
           </h2>
           <p className="mt-2 max-w-4xl text-sm text-forest-900/70">
