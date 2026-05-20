@@ -1,11 +1,36 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
+const STICKY_THRESHOLD = 80;
+
 export default function Header() {
+  const headerRef = useRef<HTMLElement>(null);
+  const [stuck, setStuck] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(0);
+
+  useEffect(() => {
+    if (headerRef.current) setHeaderHeight(headerRef.current.offsetHeight);
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => setStuck(window.scrollY > STICKY_THRESHOLD);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
+    <>
     <header
-      className="sticky top-0 z-50 bg-white/90 backdrop-blur"
+      ref={headerRef}
+      className={`z-50 bg-white/90 backdrop-blur transition-shadow duration-200 ${
+        stuck ? 'fixed top-0 left-0 right-0 shadow-md' : 'relative'
+      }`}
       data-testid="site-header"
+      data-stuck={stuck ? 'true' : 'false'}
     >
       <div className="mx-auto flex max-w-7xl items-center gap-6 px-6 py-[0.8rem]">
         <Link href="/" className="block shrink-0" data-testid="logo-link" aria-label="Originfacts home">
@@ -233,5 +258,9 @@ export default function Header() {
         </div>
       </div>
     </header>
+    {stuck && headerHeight > 0 && (
+      <div style={{ height: headerHeight }} aria-hidden data-testid="site-header-spacer" />
+    )}
+    </>
   );
 }
