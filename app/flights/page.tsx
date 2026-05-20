@@ -136,10 +136,11 @@ export default function FlightsPage() {
       <div className="mx-auto max-w-7xl px-6 py-16" data-testid="fly-page">
         <header className="max-w-3xl">
           <h1 className="editorial-h text-[2.5rem] font-bold text-forest-900">
-            Thousands of cheap flights.
+            Compare every airline. In one search.
           </h1>
           <p className="mt-[5px] text-lg font-light text-forest-900/70">
-            Search hundreds of airlines at once. Results appear below, no page jump.
+            Live fares from hundreds of carriers and online travel agencies, ranked by total
+            price. We don&apos;t sell the ticket — we just help you find the cheapest one.
           </p>
         </header>
 
