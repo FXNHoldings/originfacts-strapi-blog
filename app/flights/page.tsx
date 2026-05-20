@@ -171,7 +171,7 @@ export default function FlightsPage() {
             {PRO_TIPS.map((tip) => (
               <li
                 key={tip.n}
-                className="flex flex-col rounded-lg bg-white p-6 shadow-sm ring-1 ring-forest-900/10 transition-shadow hover:shadow-md"
+                className="flex flex-col rounded-[4px] bg-white p-6 shadow-sm ring-1 ring-forest-900/10 transition-shadow hover:shadow-md"
               >
                 <h3 className="text-base font-bold text-forest-900">{tip.title}</h3>
                 {tip.image ? (
