@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation';
 import { getCategory, listArticles, listDestinationArticles } from '@/lib/strapi';
 import { findSection } from '@/lib/sections';
-import ArticleCard from '@/components/ArticleCard';
+import CategoryHero from '@/components/CategoryHero';
+import CategoryArticleList from '@/components/CategoryArticleList';
 import type { Metadata } from 'next';
 
 export const revalidate = 60;
@@ -72,9 +73,19 @@ export default async function CategoryPage({ params }: Props) {
           No articles in this category yet. Check back soon.
         </p>
       ) : (
-        <div className="mt-14 grid gap-12 md:grid-cols-2 lg:grid-cols-3">
-          {articles.map((a) => <ArticleCard key={a.id} article={a} size="md" />)}
-        </div>
+        <>
+          {/* Hero: 1 lead + up to 4 side tiles */}
+          <div className="mt-10">
+            <CategoryHero articles={articles.slice(0, 5)} />
+          </div>
+
+          {/* Remaining articles: row-list on the left, sidebar on the right */}
+          {articles.length > 5 && (
+            <div className="mt-16">
+              <CategoryArticleList articles={articles.slice(5)} categorySlug={slug} />
+            </div>
+          )}
+        </>
       )}
     </div>
   );
