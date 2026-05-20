@@ -58,6 +58,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             crossOrigin="anonymous"
           />
         )}
+        <Script id="tp-em-401311" strategy="afterInteractive">{`
+          (function () {
+            var script = document.createElement("script");
+            script.async = 1;
+            script.src = 'https://tp-em.com/NDAxMzEx.js?t=401311';
+            document.head.appendChild(script);
+          })();
+        `}</Script>
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
