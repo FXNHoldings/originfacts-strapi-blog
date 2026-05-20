@@ -48,7 +48,7 @@ type ProTip = { n: number; title: string; description: string; image?: string };
 const PRO_TIPS: ProTip[] = [
   {
     n: 1,
-    title: 'Be flexible on dates',
+    title: 'Flexible of Dates',
     description:
       'The cheapest fare is usually a Tuesday or Wednesday, midway between weekends. Use the calendar view in the search above to see prices laid out day by day.',
     image: '/illustrations/flexible-dates.svg',
@@ -62,14 +62,14 @@ const PRO_TIPS: ProTip[] = [
   },
   {
     n: 3,
-    title: 'Consider one stop',
+    title: 'One Stop',
     description:
       'A single-stop itinerary often beats a non-stop by 30–50%. Look at the full list first, then narrow to direct flights only after you’ve seen what’s on offer.',
     image: '/illustrations/consider-one-stop.svg',
   },
   {
     n: 4,
-    title: 'Book direct when you can',
+    title: 'Book Direct',
     description:
       'Once you spot the cheapest fare, click through to the airline’s own site if available. Fewer change/refund hassles than an OTA — and we earn the same affiliate commission either way.',
     image: '/illustrations/book-direct.svg',
