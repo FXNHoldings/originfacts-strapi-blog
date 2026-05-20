@@ -137,10 +137,10 @@ export default function FlightsPage() {
         <div className="bg-[#f0f3f5]">
           <div className="mx-auto max-w-7xl px-6 pb-14 pt-16">
             <header className="max-w-3xl">
-              <h1 className="editorial-h text-[2.5rem] font-bold text-forest-900">
+              <h1 className="editorial-h text-[2.5rem] font-bold tracking-[-1px] text-forest-900">
                 Compare every airline. In one search.
               </h1>
-              <p className="mt-[5px] text-lg font-light text-ink/75">
+              <p className="mt-[5px] text-lg font-normal text-ink/75">
                 Live fares from hundreds of carriers and online travel agencies, ranked by total
                 price. We don&apos;t sell the ticket — we just help you find the cheapest one.
               </p>
