@@ -32,7 +32,7 @@ export default function CountryAbout({ sections }: { sections: Section[] }) {
                 data-testid="country-about-read-more"
                 aria-expanded="false"
               >
-                Read more
+                Read More
               </button>
             </>
           )}

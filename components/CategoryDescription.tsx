@@ -20,7 +20,7 @@ export default function CategoryDescription({ text }: { text: string }) {
           className="mt-1 text-[1rem] font-semibold text-[rgb(1,79,211)] hover:underline"
           data-testid="category-description-read-more"
         >
-          Read more
+          Read More
         </button>
       )}
     </div>

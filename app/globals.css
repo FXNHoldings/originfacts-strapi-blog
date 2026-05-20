@@ -14,23 +14,28 @@
   .prose-article h2, .prose-article h3 {
     scroll-margin-top: 6rem;
   }
-  /* Default body text — Inter */
+  /* Default body text — Outfit */
   body {
-    font-family: var(--font-inter), system-ui, sans-serif;
+    font-family: var(--font-outfit), system-ui, sans-serif;
     font-weight: 400;
-    font-feature-settings: 'cv11';
   }
-  /* All headings → Inter 700, near-black.
+  /* All headings → Urbanist 700, near-black.
      !important on color so every heading overrides per-element
      Tailwind utilities (text-forest-900 etc) without having to edit
      each one. Components that need a different heading colour (the
      footer's yellow on navy, for example) override via a more
      specific rule below. */
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-inter), system-ui, sans-serif;
+    font-family: var(--font-urbanist), system-ui, sans-serif;
     font-weight: 700;
     letter-spacing: 0;
     color: #030303 !important;
+  }
+
+  /* Site-wide: clamp font-extrabold (800) down to 700 — extra-bold is
+     no longer used in the design system. */
+  .font-extrabold {
+    font-weight: 700 !important;
   }
 
   /* Footer headings sit on a dark navy bg — keep them brand yellow */
@@ -61,17 +66,15 @@
     color: #ffffff !important;
   }
 
-  /* Hero (homepage top section) overrides — applied to .text-white,
-     leading-[1.05] and font-extrabold inside the home-hero container. */
+  /* Hero (homepage top section) overrides — applied to .text-white
+     and leading-[1.05] inside the home-hero container. The global
+     .font-extrabold override above already clamps weight to 700. */
   [data-testid="home-hero"] .text-white {
     --tw-text-opacity: 1;
     color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
   }
   [data-testid="home-hero"] .leading-\[1\.05\] {
     line-height: 1.05;
-  }
-  [data-testid="home-hero"] .font-extrabold {
-    font-weight: 700;
   }
   ::selection {
     background: theme('colors.primary.emphasis');

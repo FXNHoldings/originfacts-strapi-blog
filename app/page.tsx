@@ -2,13 +2,26 @@ import Link from 'next/link';
 import { formatDistanceToNowStrict } from 'date-fns';
 import {
   listArticles,
-  listPopularCountryDestinations,
+  listCountriesBySlugs,
   listDestinationArticles,
   mediaUrl,
   type StrapiArticle,
 } from '@/lib/strapi';
+
+const FEATURED_COUNTRY_SLUGS = [
+  'japan',
+  'singapore',
+  'germany',
+  'south-korea',
+  'thailand',
+  'australia',
+  'united-states',
+  'united-kingdom',
+];
 import { SECTIONS } from '@/lib/sections';
 import FeaturedCountries from '@/components/FeaturedCountries';
+import SectionDescription from '@/components/SectionDescription';
+import BlogSidebar from '@/components/BlogSidebar';
 
 export const revalidate = 60;
 
@@ -16,15 +29,16 @@ export default async function HomePage() {
   const [perSection, countries] = await Promise.all([
     Promise.all(
       SECTIONS.map((s) => {
+        const pageSize = s.slug === 'travel-tips' ? 8 : 5;
         const articles =
           s.slug === 'destinations'
-            ? listDestinationArticles({ pageSize: 5 })
-            : listArticles({ category: s.slug, pageSize: 5 });
+            ? listDestinationArticles({ pageSize })
+            : listArticles({ category: s.slug, pageSize });
 
         return articles.then((r) => r.data).catch(() => []);
       }),
     ),
-    listPopularCountryDestinations(8).catch(() => []),
+    listCountriesBySlugs(FEATURED_COUNTRY_SLUGS).catch(() => []),
   ]);
 
   const bySection = Object.fromEntries(SECTIONS.map((s, i) => [s.slug, perSection[i] as StrapiArticle[]]));
@@ -84,10 +98,14 @@ export default async function HomePage() {
 
       <FeaturedCountries countries={countries} />
 
-      {SECTIONS.filter((s) => s.slug !== 'destinations').map((s) => {
+      {SECTIONS.filter((s) => s.slug !== 'destinations').flatMap((s) => {
         const posts = bySection[s.slug] ?? [];
-        if (posts.length === 0) return <EmptySection key={s.slug} section={s} />;
-        return <EditorialSection key={s.slug} section={s} posts={posts} />;
+        const sectionEl = posts.length === 0
+          ? <EmptySection key={s.slug} section={s} />
+          : <EditorialSection key={s.slug} section={s} posts={posts} />;
+        return s.slug === 'flights'
+          ? [sectionEl, <AdBanner key="ad-after-flights" />]
+          : [sectionEl];
       })}
     </div>
   );
@@ -115,7 +133,7 @@ function Hero({ hero, side }: { hero?: StrapiArticle; side: StrapiArticle[] }) {
             <img
               src="https://frenify.com/work/envato/frenify/wp/mow/news/wp-content/uploads/2025/02/300ads-600.webp"
               alt="Advertisement"
-              className="aspect-[300/500] w-full object-cover"
+              className="aspect-[300/540] w-full object-cover"
             />
           </a>
         </div>
@@ -342,6 +360,9 @@ function EditorialSection({ section, posts }: { section: Section; posts: StrapiA
   if (section.slug === 'flights') {
     return <FlightsSection section={section} posts={posts} />;
   }
+  if (section.slug === 'travel-tips') {
+    return <TravelTipsSection section={section} posts={posts} />;
+  }
 
   const [feature, ...rest] = posts;
   const list = rest.slice(0, 4);
@@ -364,7 +385,7 @@ function EditorialSection({ section, posts }: { section: Section; posts: StrapiA
     <section className="py-20" data-testid={`section-${section.slug}`}>
       <div className="mx-auto max-w-7xl px-6">
         <EditorialSectionHeader section={section} />
-        <div className={`mt-10 grid gap-8 ${gridCols} lg:gap-10`}>
+        <div className={`mt-10 grid gap-[15px] ${gridCols}`}>
           {reverse ? listEl : featureEl}
           {reverse ? featureEl : listEl}
         </div>
@@ -381,7 +402,7 @@ function FlightsSection({ section, posts }: { section: Section; posts: StrapiArt
     <section className="py-20" data-testid={`section-${section.slug}`}>
       <div className="mx-auto max-w-7xl px-6">
         <EditorialSectionHeader section={section} />
-        <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(460px,1fr)] lg:gap-9">
+        <div className="mt-10 grid gap-[15px] lg:grid-cols-[minmax(0,1.05fr)_minmax(460px,1fr)]">
           <FlightFeatureArticle article={feature} />
           <div className="divide-y divide-forest-900/15 border-y border-forest-900/15 lg:border-t-0">
             {firstSide && <FlightSideArticle article={firstSide} />}
@@ -429,15 +450,6 @@ function FlightFeatureArticle({ article }: { article: StrapiArticle }) {
             {article.excerpt}
           </p>
         )}
-        <Link
-          href={`/articles/${article.slug}`}
-          className="mt-5 inline-flex items-center gap-2 rounded-full bg-primary-highlight px-5 py-2 font-urbanist text-xs font-extrabold uppercase tracking-wide text-white transition hover:bg-primary-pressed"
-        >
-          Read more
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black text-sm leading-none text-white">
-            ↗
-          </span>
-        </Link>
       </div>
     </article>
   );
@@ -502,6 +514,109 @@ function FlightMetaLine({ article }: { article: StrapiArticle }) {
   );
 }
 
+/* ---------- Travel Tips section — 2-column masonry à la frenify/mow ---------- */
+
+function TravelTipsSection({ section, posts }: { section: Section; posts: StrapiArticle[] }) {
+  return (
+    <section className="py-20" data-testid={`section-${section.slug}`}>
+      <div className="mx-auto max-w-7xl px-6">
+        <EditorialSectionHeader section={section} />
+        <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_280px] lg:gap-14">
+          <div className="grid items-start gap-[15px] sm:grid-cols-2">
+            {posts.map((post, i) => (
+              <TravelTipCard
+                key={post.id}
+                article={post}
+                imageAspect={i % 2 === 0 ? 'aspect-[16/9]' : 'aspect-[40/27]'}
+              />
+            ))}
+          </div>
+          <BlogSidebar />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TravelTipCard({
+  article,
+  imageAspect = 'aspect-[3/2]',
+}: {
+  article: StrapiArticle;
+  imageAspect?: string;
+}) {
+  const img = mediaUrl(article.coverImage ?? null);
+  const category = article.category?.name;
+  const relative = article.publishedAt
+    ? formatDistanceToNowStrict(new Date(article.publishedAt), { addSuffix: true })
+    : null;
+
+  return (
+    <article className="group flex flex-col" data-testid={`travel-tips-card-${article.slug}`}>
+      <Link
+        href={`/articles/${article.slug}`}
+        className="block overflow-hidden rounded-[0.3rem] bg-forest-900/5"
+        aria-label={article.title}
+      >
+        {img ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={img}
+            alt={article.coverImage?.alternativeText || article.title}
+            className={`${imageAspect} w-full object-cover transition duration-500 group-hover:scale-[1.02]`}
+            loading="lazy"
+          />
+        ) : (
+          <div className={`${imageAspect} w-full bg-gradient-to-br from-primary-hover to-primary-pressed`} />
+        )}
+      </Link>
+      <div className="mt-5 flex flex-1 flex-col">
+        <div className="font-urbanist text-[11px] font-bold uppercase tracking-wider text-primary-emphasis">
+          {category && <span>{category}</span>}
+          {category && relative && (
+            <span aria-hidden className="mx-2 text-forest-900/40">✱</span>
+          )}
+          {relative && <span className="text-forest-900/55">{relative}</span>}
+        </div>
+        <Link href={`/articles/${article.slug}`}>
+          <h3 className="mt-2 font-urbanist text-xl font-bold leading-snug text-forest-950 transition group-hover:text-primary-highlight">
+            {article.title}
+          </h3>
+        </Link>
+        {article.excerpt && (
+          <p className="mt-3 line-clamp-2 text-sm leading-6 text-ink/70 sm:text-base">
+            {article.excerpt}
+          </p>
+        )}
+        <div className="mt-5">
+          <Link
+            href={`/articles/${article.slug}`}
+            className="inline-flex items-center gap-2 rounded-full border border-forest-900/15 bg-white px-4 py-2 font-urbanist text-[11px] font-bold uppercase tracking-widest text-forest-900 transition hover:border-primary-emphasis hover:text-primary-emphasis"
+          >
+            Read More
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-forest-900 text-white transition group-hover:bg-primary-emphasis">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-3 w-3"
+                aria-hidden
+              >
+                <line x1="7" y1="17" x2="17" y2="7" />
+                <polyline points="7 7 17 7 17 17" />
+              </svg>
+            </span>
+          </Link>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 function splitTitleLead(title: string) {
   const words = title.trim().split(/\s+/);
   if (words.length <= 2) return [title, ''];
@@ -510,23 +625,48 @@ function splitTitleLead(title: string) {
 
 function EditorialSectionHeader({ section }: { section: Section }) {
   return (
-    <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-      <div className="max-w-3xl">
+    <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <h2 className="font-urbanist text-2xl font-bold leading-tight text-forest-900 sm:text-3xl">
           {section.title}
         </h2>
-        <p className="mt-4 max-w-3xl text-sm leading-6 text-ink/75 sm:text-base">
-          {section.description}
-        </p>
+        <Link
+          href={`/category/${section.slug}`}
+          className="inline-flex w-fit items-center justify-center rounded-[0.3rem] border border-forest-900 px-4 py-2 font-urbanist text-xs font-bold uppercase tracking-wider text-forest-900 transition hover:bg-primary-emphasis hover:text-white"
+          data-testid={`section-all-${section.slug}`}
+        >
+          See all
+        </Link>
       </div>
-      <Link
-        href={`/category/${section.slug}`}
-        className="inline-flex w-fit items-center justify-center rounded-[0.3rem] border border-forest-900 px-4 py-2 font-urbanist text-xs font-bold uppercase tracking-wider text-forest-900 transition hover:bg-primary-emphasis hover:text-white"
-        data-testid={`section-all-${section.slug}`}
-      >
-        See all
-      </Link>
+      <SectionDescription
+        text={section.description}
+        testId={`section-readmore-${section.slug}`}
+      />
     </div>
+  );
+}
+
+function AdBanner() {
+  return (
+    <section className="py-10" data-testid="home-ad-banner">
+      <div className="mx-auto max-w-7xl px-6">
+        <p className="text-center text-[10px] font-bold uppercase tracking-[0.3em] text-forest-900/50">
+          Advertisement
+        </p>
+        <a
+          href="/contact"
+          aria-label="Advertise with Originfacts"
+          className="mt-3 block overflow-hidden rounded-[0.3rem] bg-gradient-to-br from-[#15172b] via-[#1f2240] to-[#15172b]"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/ads/mow-banner.jpg"
+            alt="Modern blog and magazine theme"
+            className="aspect-[1600/250] w-full object-cover"
+          />
+        </a>
+      </div>
+    </section>
   );
 }
 

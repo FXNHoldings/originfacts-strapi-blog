@@ -294,6 +294,22 @@ export async function listPopularCountryDestinations(limit = 8) {
     .map((r) => r.c);
 }
 
+/**
+ * Fetch a curated list of country-type destinations by slug, preserving the
+ * order the slugs were given. Used by the homepage "Explore by country"
+ * block when we want a hand-picked set instead of the popularity ranking.
+ */
+export async function listCountriesBySlugs(slugs: string[]) {
+  if (slugs.length === 0) return [] as StrapiDestination[];
+  const res = await strapiFetch<ListResponse<StrapiDestination>>('destinations', {
+    filters: { type: { $eq: 'country' }, slug: { $in: slugs } },
+    populate: ['heroImage'],
+    pagination: { pageSize: Math.max(slugs.length, 25) },
+  });
+  const bySlug = new Map(res.data.map((d) => [d.slug, d]));
+  return slugs.map((s) => bySlug.get(s)).filter((d): d is StrapiDestination => Boolean(d));
+}
+
 export async function listCitiesByCountryCode(code: string, limit = 100) {
   const res = await strapiFetch<ListResponse<StrapiDestination>>('destinations', {
     filters: { type: { $eq: 'city' }, countryCode: { $eqi: code } },
