@@ -52,7 +52,7 @@ export default function ContactPage() {
 
           <div>
             <h2 className="editorial-h text-sm uppercase tracking-widest text-forest-800/70">
-              Office
+              Mailing Address
             </h2>
             <address className="mt-2 text-base not-italic leading-relaxed text-forest-900">
               FXN HOLDINGS LIMITED
