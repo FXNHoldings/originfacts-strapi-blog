@@ -138,7 +138,7 @@ export default async function AirlinePage({ params }: Props) {
             {routes.map((r) => (
               <Link
                 key={r.id}
-                href={`/flights/${r.slug}`}
+                href={`/flight-routes/${r.slug}`}
                 className="group flex items-center justify-between rounded-[0.3rem] border border-forest-900/10 bg-paper p-5 transition hover:-translate-y-0.5 hover:border-forest-900/30 hover:shadow-sm"
                 data-testid={`airline-route-${r.slug}`}
               >

@@ -76,6 +76,7 @@ export default async function SitemapPage() {
           <h2 className={sectionTitle}>Discover</h2>
           <ul className="mt-4 space-y-2 text-sm">
             <li><Link href="/flights" className={linkClass}>Flights</Link></li>
+            <li><Link href="/flight-routes" className={linkClass}>Flight Routes</Link></li>
             <li><Link href="/hotels" className={linkClass}>Hotels</Link></li>
             <li><Link href="/countries" className={linkClass}>Countries</Link></li>
             <li><Link href="/airlines" className={linkClass}>Airlines</Link></li>

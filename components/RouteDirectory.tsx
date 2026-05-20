@@ -178,7 +178,7 @@ function RouteCard({ route }: { route: StrapiRoute }) {
   const d = route.destination!;
   return (
     <Link
-      href={`/flights/${route.slug}`}
+      href={`/flight-routes/${route.slug}`}
       className="group flex flex-col gap-2 rounded-[0.3rem] border border-forest-900/10 bg-paper px-4 py-3 transition hover:-translate-y-0.5 hover:border-forest-900/30"
       data-testid={`route-card-${route.slug}`}
     >

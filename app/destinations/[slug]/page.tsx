@@ -131,7 +131,7 @@ export default async function DestinationPage({ params }: Props) {
             {routes.map((r) => <RouteCard key={r.id} r={r} />)}
           </div>
           <div className="mt-6">
-            <Link href="/flights" className="text-sm font-medium text-forest-700 hover:underline">
+            <Link href="/flight-routes" className="text-sm font-medium text-forest-700 hover:underline">
               Browse all routes →
             </Link>
           </div>
@@ -248,7 +248,7 @@ function CountryDestinationPage({
             {routes.slice(0, 4).map((r) => <RouteCard key={r.id} r={r} />)}
           </div>
           <div className="mt-6">
-            <Link href="/flights" className="text-sm font-medium text-forest-700 hover:underline">
+            <Link href="/flight-routes" className="text-sm font-medium text-forest-700 hover:underline">
               Browse all routes →
             </Link>
           </div>
@@ -296,7 +296,7 @@ function HeroStat({ label, value }: { label: string; value: number }) {
 function RouteCard({ r }: { r: Awaited<ReturnType<typeof listRoutesToDestination>>[number] }) {
   return (
     <Link
-      href={`/flights/${r.slug}`}
+      href={`/flight-routes/${r.slug}`}
       className="group flex items-center justify-between rounded-lg border border-forest-900/10 bg-paper p-5 transition hover:-translate-y-0.5 hover:border-forest-900/30 hover:shadow-sm"
       data-testid={`destination-route-${r.slug}`}
     >
