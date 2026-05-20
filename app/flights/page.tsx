@@ -133,21 +133,26 @@ export default function FlightsPage() {
 })();`}
       </Script>
 
-      <div className="mx-auto max-w-7xl px-6 py-16" data-testid="fly-page">
-        <header className="max-w-3xl">
-          <h1 className="editorial-h text-[2.5rem] font-bold text-forest-900">
-            Compare every airline. In one search.
-          </h1>
-          <p className="mt-[5px] text-lg font-light text-forest-900/70">
-            Live fares from hundreds of carriers and online travel agencies, ranked by total
-            price. We don&apos;t sell the ticket — we just help you find the cheapest one.
-          </p>
-        </header>
+      <div data-testid="fly-page">
+        <div className="bg-[#f0f3f5]">
+          <div className="mx-auto max-w-7xl px-6 pb-14 pt-16">
+            <header className="max-w-3xl">
+              <h1 className="editorial-h text-[2.5rem] font-bold text-forest-900">
+                Compare every airline. In one search.
+              </h1>
+              <p className="mt-[5px] text-lg font-light text-forest-900/70">
+                Live fares from hundreds of carriers and online travel agencies, ranked by total
+                price. We don&apos;t sell the ticket — we just help you find the cheapest one.
+              </p>
+            </header>
 
-        <div className="tpwl-search-wrap mt-10">
-          <div id="tpwl-search" />
+            <div className="tpwl-search-wrap mt-10">
+              <div id="tpwl-search" />
+            </div>
+          </div>
         </div>
 
+        <div className="mx-auto max-w-7xl px-6 pb-16">
         <div className="mt-12">
           <div id="tpwl-tickets" />
         </div>
@@ -294,6 +299,7 @@ export default function FlightsPage() {
             ))}
           </div>
         </section>
+        </div>
       </div>
     </>
   );

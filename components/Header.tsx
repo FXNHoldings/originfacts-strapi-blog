@@ -4,7 +4,7 @@ import Image from 'next/image';
 export default function Header() {
   return (
     <header
-      className="sticky top-0 z-50 border-b border-primary-emphasis/10 bg-paper/90 backdrop-blur"
+      className="sticky top-0 z-50 border-b border-primary-emphasis/10 bg-white/90 backdrop-blur"
       data-testid="site-header"
     >
       <div className="mx-auto flex max-w-7xl items-center gap-6 px-6 py-[0.8rem]">
