@@ -44,38 +44,6 @@ export default function Header() {
           />
         </Link>
 
-        <form
-          action="/articles"
-          method="get"
-          role="search"
-          className="hidden md:flex h-10 w-full max-w-md flex-1 items-center gap-2 rounded-[4px] border border-forest-900/15 bg-white px-4 transition focus-within:border-primary-emphasis"
-          data-testid="header-search"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="h-4 w-4 shrink-0 text-forest-900/50"
-            aria-hidden
-          >
-            <circle cx="11" cy="11" r="7" />
-            <path d="m21 21-4.3-4.3" />
-          </svg>
-          <label htmlFor="header-search-input" className="sr-only">Search stories</label>
-          <input
-            id="header-search-input"
-            type="search"
-            name="q"
-            placeholder="Search stories…"
-            className="h-full w-full bg-transparent text-sm text-forest-900 outline-none placeholder:text-forest-900/45"
-            data-testid="header-search-input"
-          />
-        </form>
-
         <div className="ml-auto flex items-center justify-end gap-2">
           <nav className="hidden md:block" data-testid="primary-nav">
             <ul className="flex items-center justify-end gap-1 font-urbanist text-[1rem] font-bold tracking-[0.3px]">
@@ -255,13 +223,6 @@ export default function Header() {
             </ul>
           </nav>
 
-          <Link
-            href="/contact"
-            className="ml-2 hidden lg:inline-flex h-10 items-center justify-center rounded-[20px] bg-forest-900 px-5 font-urbanist text-[1rem] font-bold capitalize tracking-wider text-white transition hover:bg-primary-emphasis"
-            data-testid="nav-get-in-touch"
-          >
-            Get in Touch
-          </Link>
         </div>
       </div>
     </header>

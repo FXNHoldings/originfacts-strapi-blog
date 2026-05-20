@@ -156,6 +156,11 @@ export default function Footer() {
                 </Link>
               </li>
             ))}
+            <li>
+              <Link href="/hot-posts" className="hover:text-secondary">
+                Trending
+              </Link>
+            </li>
           </ul>
         </div>
       </div>

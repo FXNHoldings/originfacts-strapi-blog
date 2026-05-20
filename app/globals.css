@@ -48,7 +48,7 @@
   h4.font-extrabold, h5.font-extrabold, h6.font-extrabold,
   h1.font-bold, h2.font-bold, h3.font-bold,
   h4.font-bold, h5.font-bold, h6.font-bold {
-    font-weight: 600 !important;
+    font-weight: 700 !important;
   }
 
   /* Single post page — headings bumped to weight 700 (overrides the
@@ -142,6 +142,11 @@
   [data-testid="home-hero-col-3"] .sm\:text-lg {
     font-size: 1.125rem;
     line-height: 1.3rem !important;
+  }
+  /* Column 3 mini-list (bottom section) post titles — 16px / 20px. */
+  [data-testid="home-hero-col-3"] [data-testid^="hero-mini-"] h2 {
+    font-size: 16px !important;
+    line-height: 20px !important;
   }
   ::selection {
     background: theme('colors.primary.emphasis');

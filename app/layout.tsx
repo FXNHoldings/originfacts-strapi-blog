@@ -5,7 +5,10 @@ import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CookieConsent from '@/components/CookieConsent';
+import FixedRightBar from '@/components/FixedRightBar';
+import FixedPopularNow from '@/components/FixedPopularNow';
 import { ADSENSE_CLIENT, ADSENSE_ENABLED } from '@/lib/adsense';
+import { listSidebarArticles } from '@/lib/strapi';
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -40,7 +43,9 @@ export const metadata: Metadata = {
   other: ADSENSE_ENABLED ? { 'google-adsense-account': ADSENSE_CLIENT } : {},
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const sidebar = await listSidebarArticles(7).catch(() => ({ recent: [], popular: [] }));
+
   return (
     <html lang="en" className={`${outfit.variable} ${urbanist.variable}`}>
       <body className="min-h-screen flex flex-col font-sans font-normal grain" data-testid="app-shell">
@@ -75,6 +80,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         `}</Script>
         <Header />
         <main className="flex-1">{children}</main>
+        <FixedPopularNow articles={sidebar.popular} />
+        <FixedRightBar popularPosts={sidebar.popular} />
         <Footer />
         <CookieConsent />
       </body>

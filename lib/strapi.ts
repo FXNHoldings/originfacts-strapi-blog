@@ -194,6 +194,19 @@ export async function listSidebarCategoryTiles(slugs: string[]) {
 }
 
 /**
+ * Returns articles for the Hot Posts page — ranked by readingTimeMinutes
+ * desc (engagement-depth proxy until we track real views).
+ */
+export async function listHotArticles(opts: { page?: number; pageSize?: number } = {}) {
+  const res = await strapiFetch<ListResponse<StrapiArticle>>('articles', {
+    sort: ['readingTimeMinutes:desc', 'publishedAt:desc'],
+    populate: ['coverImage', 'category', 'tags', 'author', 'destinations'],
+    pagination: { page: opts.page ?? 1, pageSize: opts.pageSize ?? 12 },
+  });
+  return res;
+}
+
+/**
  * Returns the article whose publishedAt is immediately before / after
  * the given timestamp. Used for the Previous/Next post nav on the
  * single-article page.

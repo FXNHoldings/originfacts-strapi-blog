@@ -26,6 +26,7 @@ import SectionDescription from '@/components/SectionDescription';
 import BlogSidebar from '@/components/BlogSidebar';
 import AdBanner from '@/components/AdBanner';
 import SubscribeBlock from '@/components/SubscribeBlock';
+import TagsBar from '@/components/TagsBar';
 
 export const revalidate = 60;
 
@@ -101,6 +102,12 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
+
+      <TagsBar />
+
+      <div className="mx-auto max-w-7xl px-6">
+        <hr className="border-0 border-t" style={{ borderColor: '#ddd' }} />
+      </div>
 
       <Hero hero={hero} side={side} />
 
