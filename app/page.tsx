@@ -204,7 +204,7 @@ function HeroCompactStory({ article }: { article: StrapiArticle }) {
       <div className="mt-3">
         <HeroStoryMeta article={article} />
         <Link href={`/articles/${article.slug}`}>
-          <h2 className="mt-1 font-urbanist text-base font-extrabold leading-tight text-forest-950 transition group-hover:text-primary-highlight">
+          <h2 className="mt-1 line-clamp-1 font-urbanist text-base font-extrabold leading-tight text-forest-950 transition group-hover:text-primary-highlight">
             {article.title}
           </h2>
         </Link>
