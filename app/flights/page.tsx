@@ -196,7 +196,7 @@ export default function FlightsPage() {
         </section>
 
         {/* ---------- Search cheap flights by destination ---------- */}
-        <section className="mt-20" data-testid="cheap-flights-by-destination">
+        <section className="mt-32" data-testid="cheap-flights-by-destination">
           <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">
             Search cheap flights by destination
           </h2>
