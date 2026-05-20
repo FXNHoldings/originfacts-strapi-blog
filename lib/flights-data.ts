@@ -49,7 +49,6 @@ export const DESTINATION_CITIES: { name: string; iata: string }[] = [
   { name: 'New Delhi', iata: 'DEL' },
   { name: 'Kathmandu', iata: 'KTM' },
   { name: 'Manila', iata: 'MNL' },
-  { name: 'Ho Chi Minh City', iata: 'SGN' },
 ];
 
 // Alternate origin cities offered inside each disclosure ("From X → Y"
