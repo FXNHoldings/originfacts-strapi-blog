@@ -4,7 +4,7 @@ import { SECTIONS } from '@/lib/sections';
 import { getLegalDoc } from '@/lib/legal';
 import { CookieSettingsButton } from '@/components/CookieConsent';
 
-const BOTTOM_BAR_SLUGS = ['privacy', 'terms', 'cookies'];
+const BOTTOM_BAR_SLUGS = ['privacy', 'terms', 'cookies', 'affiliate-disclosure'];
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -153,7 +153,6 @@ export default function Footer() {
                 </div>
               </div>
             </li>
-            <li><Link href="/legal/affiliate-disclosure" className="hover:text-secondary">Affiliate Disclosure</Link></li>
             <li><Link href="/sitemap" className="hover:text-secondary">Site Map</Link></li>
             <li><Link href="/contact" className="hover:text-secondary">Contact</Link></li>
           </ul>
