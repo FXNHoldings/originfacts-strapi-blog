@@ -43,35 +43,31 @@ const BOOKING_FAQ: { q: string; a: string }[] = [
   },
 ];
 
-type ProTip = { n: number; title: string; description: string; image?: string };
+type ProTip = { n: number; title: string; tagline: string; image?: string };
 
 const PRO_TIPS: ProTip[] = [
   {
     n: 1,
     title: 'Flexible of Dates',
-    description:
-      'The cheapest fare is usually a Tuesday or Wednesday, midway between weekends. Use the calendar view in the search above to see prices laid out day by day.',
+    tagline: 'Shift a day or two, save 20–40%.',
     image: '/illustrations/flexible-dates.svg',
   },
   {
     n: 2,
-    title: 'Search the whole month',
-    description:
-      'Switch to the "cheapest month" tab to surface the lowest fare anywhere in the next 60 days. One click usually saves more than any other trick.',
+    title: 'Search the Whole Month',
+    tagline: 'One click reveals the cheapest day to fly.',
     image: '/illustrations/search-month.svg',
   },
   {
     n: 3,
     title: 'One Stop',
-    description:
-      'A single-stop itinerary often beats a non-stop by 30–50%. Look at the full list first, then narrow to direct flights only after you’ve seen what’s on offer.',
+    tagline: 'Layovers often beat non-stop by 30–50%.',
     image: '/illustrations/consider-one-stop.svg',
   },
   {
     n: 4,
     title: 'Book Direct',
-    description:
-      'Once you spot the cheapest fare, click through to the airline’s own site if available. Fewer change/refund hassles than an OTA — and we earn the same affiliate commission either way.',
+    tagline: 'Skip the OTA, deal straight with the airline.',
     image: '/illustrations/book-direct.svg',
   },
 ];
@@ -174,6 +170,7 @@ export default function FlightsPage() {
                 className="flex flex-col rounded-[4px] bg-white p-6 shadow-sm ring-1 ring-forest-900/10 transition-shadow hover:shadow-md"
               >
                 <h3 className="text-base font-bold text-forest-900">{tip.title}</h3>
+                <p className="mt-1 text-sm text-forest-900/70">{tip.tagline}</p>
                 {tip.image ? (
                   <div className="mt-4 flex flex-1 items-center justify-center">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -185,17 +182,12 @@ export default function FlightsPage() {
                     />
                   </div>
                 ) : (
-                  <>
-                    <span
-                      aria-hidden
-                      className="mt-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-emphasis/10 text-base font-bold text-primary-emphasis"
-                    >
-                      {tip.n}
-                    </span>
-                    <p className="mt-3 text-sm leading-relaxed text-forest-900/70">
-                      {tip.description}
-                    </p>
-                  </>
+                  <span
+                    aria-hidden
+                    className="mt-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-emphasis/10 text-base font-bold text-primary-emphasis"
+                  >
+                    {tip.n}
+                  </span>
                 )}
               </li>
             ))}
