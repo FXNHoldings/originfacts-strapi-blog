@@ -7,7 +7,7 @@ export default function Header() {
       className="sticky top-0 z-50 border-b border-primary-emphasis/10 bg-paper/90 backdrop-blur"
       data-testid="site-header"
     >
-      <div className="mx-auto flex max-w-7xl items-center gap-6 px-6 py-5">
+      <div className="mx-auto flex max-w-7xl items-center gap-6 px-6 py-[0.8rem]">
         <Link href="/" className="block shrink-0" data-testid="logo-link" aria-label="Originfacts home">
           <Image
             src="/brand/logo/logo.svg"
@@ -15,7 +15,7 @@ export default function Header() {
             width={300}
             height={167}
             priority
-            className="h-12 w-auto sm:h-14"
+            className="h-[3rem] w-auto"
           />
         </Link>
 
