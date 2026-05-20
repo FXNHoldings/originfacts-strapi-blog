@@ -42,6 +42,15 @@
   [data-testid="site-footer"] h6 {
     color: #ffe200 !important;
   }
+
+  /* Hero overlay tiles (homepage top section) — titles sit on top of an
+     image with a dark gradient, so force them white over the global
+     #030303 heading default. */
+  [data-testid^="hero-overlay-"] h1,
+  [data-testid^="hero-overlay-"] h2,
+  [data-testid^="hero-overlay-"] h3 {
+    color: #ffffff !important;
+  }
   ::selection {
     background: theme('colors.primary.emphasis');
     color: theme('colors.secondary.DEFAULT');
