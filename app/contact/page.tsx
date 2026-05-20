@@ -24,7 +24,7 @@ export default function ContactPage() {
       <header className="max-w-3xl">
         <p className="chip">Contact</p>
         <h1 className="editorial-h mt-5 text-3xl font-bold leading-tight text-forest-900 sm:text-4xl">
-          Contact Us
+          Get in Touch
         </h1>
         <p className="mt-3 text-lg font-light text-forest-900/75">
           We're here to help with questions about Originfacts, our website content, affiliate
