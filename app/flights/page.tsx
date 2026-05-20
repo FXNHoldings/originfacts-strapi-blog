@@ -112,7 +112,7 @@ export default function FlightsPage() {
 
       <div data-testid="fly-page">
         <div className="bg-white">
-          <div className="mx-auto max-w-7xl px-6 pb-12 pt-16">
+          <div className="mx-auto max-w-7xl px-6 pb-14 pt-20">
             <header className="max-w-3xl">
               <h1 className="editorial-h text-3xl font-bold text-forest-900">
                 Find a flight
