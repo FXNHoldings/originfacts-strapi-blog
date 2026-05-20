@@ -60,6 +60,19 @@
   [data-testid^="hero-overlay-"] h6 {
     color: #ffffff !important;
   }
+
+  /* Hero (homepage top section) overrides — applied to .text-white,
+     leading-[1.05] and font-extrabold inside the home-hero container. */
+  [data-testid="home-hero"] .text-white {
+    --tw-text-opacity: 1;
+    color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
+  }
+  [data-testid="home-hero"] .leading-\[1\.05\] {
+    line-height: 1.05;
+  }
+  [data-testid="home-hero"] .font-extrabold {
+    font-weight: 700;
+  }
   ::selection {
     background: theme('colors.primary.emphasis');
     color: theme('colors.secondary.DEFAULT');
