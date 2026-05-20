@@ -218,7 +218,7 @@ export default function FlightsPage() {
                       href={tpwlSearchUrl(FALLBACK_ORIGIN.iata, dest.iata)}
                       target="_blank"
                       rel="noopener noreferrer sponsored"
-                      className="flex-1 text-sm font-semibold text-forest-900 hover:text-primary-emphasis"
+                      className="flex-1 text-sm font-semibold text-[#1411ec] hover:text-primary-emphasis"
                     >
                       {dest.name} flights
                     </a>
@@ -248,7 +248,7 @@ export default function FlightsPage() {
                           href={tpwlSearchUrl(o.iata, dest.iata)}
                           target="_blank"
                           rel="noopener noreferrer sponsored"
-                          className="block py-1 text-sm text-ink/75 hover:text-primary-emphasis"
+                          className="block py-1 text-sm text-[#1411ec] hover:text-primary-emphasis"
                         >
                           From {o.name} → {dest.name}{' '}
                           <span className="font-mono text-xs text-forest-900/40">
