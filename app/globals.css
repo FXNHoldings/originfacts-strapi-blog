@@ -46,9 +46,18 @@
   /* Hero overlay tiles (homepage top section) — titles sit on top of an
      image with a dark gradient, so force them white over the global
      #030303 heading default. */
+  [data-testid="home-hero"] [data-testid^="hero-overlay-"] h1,
+  [data-testid="home-hero"] [data-testid^="hero-overlay-"] h2,
+  [data-testid="home-hero"] [data-testid^="hero-overlay-"] h3,
+  [data-testid="home-hero"] [data-testid^="hero-overlay-"] h4,
+  [data-testid="home-hero"] [data-testid^="hero-overlay-"] h5,
+  [data-testid="home-hero"] [data-testid^="hero-overlay-"] h6,
   [data-testid^="hero-overlay-"] h1,
   [data-testid^="hero-overlay-"] h2,
-  [data-testid^="hero-overlay-"] h3 {
+  [data-testid^="hero-overlay-"] h3,
+  [data-testid^="hero-overlay-"] h4,
+  [data-testid^="hero-overlay-"] h5,
+  [data-testid^="hero-overlay-"] h6 {
     color: #ffffff !important;
   }
   ::selection {
