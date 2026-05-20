@@ -14,7 +14,7 @@ export default function Footer() {
 
   return (
     <footer className="mt-24 border-t border-primary-emphasis/10 bg-forest-950 text-white" data-testid="site-footer">
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-16 md:grid-cols-[55fr_15fr_20fr_10fr]">
+      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-16 md:grid-cols-[50fr_20fr_20fr_10fr]">
         <div>
           <Link href="/" aria-label="Originfacts home" className="inline-block" data-testid="footer-logo-link">
             <Image
