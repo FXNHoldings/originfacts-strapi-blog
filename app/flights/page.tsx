@@ -110,25 +110,20 @@ export default function FlightsPage() {
 })();`}
       </Script>
 
-      <div data-testid="fly-page">
-        <div className="bg-white">
-          <div className="mx-auto max-w-7xl px-6 pb-14 pt-20">
-            <header className="max-w-3xl">
-              <h1 className="editorial-h text-3xl font-bold text-forest-900">
-                Find a flight
-              </h1>
-              <p className="mt-4 text-lg font-light text-forest-900/70">
-                Search hundreds of airlines at once. Results appear below, no page jump.
-              </p>
-            </header>
+      <div className="mx-auto max-w-7xl px-6 py-16" data-testid="fly-page">
+        <header className="max-w-3xl">
+          <h1 className="editorial-h text-3xl font-bold text-forest-900">
+            Find a flight
+          </h1>
+          <p className="mt-4 text-lg font-light text-forest-900/70">
+            Search hundreds of airlines at once. Results appear below, no page jump.
+          </p>
+        </header>
 
-            <div className="tpwl-search-wrap mt-10">
-              <div id="tpwl-search" />
-            </div>
-          </div>
+        <div className="tpwl-search-wrap mt-10">
+          <div id="tpwl-search" />
         </div>
 
-        <div className="mx-auto max-w-7xl px-6 pb-16">
         <div className="mt-12">
           <div id="tpwl-tickets" />
         </div>
@@ -310,7 +305,6 @@ export default function FlightsPage() {
             })}
           </div>
         </section>
-        </div>
       </div>
     </>
   );
