@@ -69,6 +69,15 @@
   }
 }
 
+/* ---------- /flights: hide browse sections once search results render ----------
+   When TPWL injects ticket results into #tpwl-tickets, collapse the Popular
+   Destinations + Search-by-Destination sections so the user focuses on
+   results. Comes back automatically when results are cleared. */
+[data-testid="fly-page"]:has(#tpwl-tickets:not(:empty)) [data-testid="popular-destinations"],
+[data-testid="fly-page"]:has(#tpwl-tickets:not(:empty)) [data-testid="cheap-flights-by-destination"] {
+  display: none;
+}
+
 /* ---------- TPWL language / currency switcher → dropdown menu ----------
    TPWL renders a button + inline list for each switcher. We hide the list
    by default and pop it open on hover/focus of the button. */
