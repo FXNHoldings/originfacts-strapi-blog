@@ -14,15 +14,14 @@
   .prose-article h2, .prose-article h3 {
     scroll-margin-top: 6rem;
   }
-  /* Default body text — Inter */
+  /* Default body text — Outfit */
   body {
-    font-family: var(--font-inter), system-ui, sans-serif;
+    font-family: var(--font-outfit), system-ui, sans-serif;
     font-weight: 400;
-    font-feature-settings: 'cv11';
   }
-  /* All headings default to Inter */
+  /* All headings → Urbanist */
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-inter), system-ui, sans-serif;
+    font-family: var(--font-urbanist), system-ui, sans-serif;
     font-weight: 700;
     letter-spacing: 0;
   }
