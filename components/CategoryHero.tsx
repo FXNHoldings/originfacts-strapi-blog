@@ -1,22 +1,10 @@
 import Link from 'next/link';
-import { formatDistanceToNow } from 'date-fns';
 import { mediaUrl, type StrapiArticle } from '@/lib/strapi';
 
 type Size = 'lead' | 'side';
 
-function relTime(iso?: string) {
-  if (!iso) return '';
-  try {
-    return `${formatDistanceToNow(new Date(iso))} ago`;
-  } catch {
-    return '';
-  }
-}
-
 function Tile({ article, size }: { article: StrapiArticle; size: Size }) {
   const img = mediaUrl(article.coverImage ?? null);
-  const cat = article.category?.name?.toUpperCase() ?? '';
-  const time = relTime(article.publishedAt);
 
   return (
     <Link
@@ -48,19 +36,8 @@ function Tile({ article, size }: { article: StrapiArticle; size: Size }) {
           size === 'lead' ? 'p-6 sm:p-8' : 'p-4 sm:p-5'
         }`}
       >
-        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest">
-          {cat && (
-            <span className="rounded-sm bg-black/30 px-2 py-1 backdrop-blur-sm">{cat}</span>
-          )}
-          {time && (
-            <>
-              <span aria-hidden className="text-white/60">·</span>
-              <span className="text-white/80">{time}</span>
-            </>
-          )}
-        </div>
         <h3
-          className={`mt-3 font-bold leading-tight text-white drop-shadow-sm transition group-hover:text-white/90 ${
+          className={`font-bold leading-tight !text-white drop-shadow-sm transition group-hover:!text-white/90 ${
             size === 'lead' ? 'text-2xl sm:text-3xl' : 'text-base sm:text-lg'
           }`}
         >
