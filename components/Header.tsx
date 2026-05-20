@@ -106,6 +106,14 @@ export default function Header() {
                     className="min-w-[220px] rounded-md border border-forest-900/10 bg-paper p-1 shadow-md"
                   >
                     <Link
+                      href="/category/flights"
+                      className="block rounded px-3 py-2 text-base text-[#000000] transition-colors hover:bg-forest-900/5 hover:text-[rgb(1,79,211)]"
+                      role="menuitem"
+                      data-testid="nav-articles-flights"
+                    >
+                      Flights
+                    </Link>
+                    <Link
                       href="/hotels"
                       className="block rounded px-3 py-2 text-base text-[#000000] transition-colors hover:bg-forest-900/5 hover:text-[rgb(1,79,211)]"
                       role="menuitem"
