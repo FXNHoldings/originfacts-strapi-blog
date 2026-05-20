@@ -25,9 +25,12 @@ export default function ContactForm() {
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (status.type === 'sending') return;
+    // Capture form ref synchronously — React nullifies e.currentTarget once
+    // the handler returns / hits the first await.
+    const form = e.currentTarget;
     setStatus({ type: 'sending' });
 
-    const fd = new FormData(e.currentTarget);
+    const fd = new FormData(form);
     const payload = {
       name: String(fd.get('name') ?? ''),
       email: String(fd.get('email') ?? ''),
@@ -49,7 +52,7 @@ export default function ContactForm() {
         return;
       }
       setStatus({ type: 'ok' });
-      e.currentTarget.reset();
+      form.reset();
     } catch {
       setStatus({ type: 'error', msg: 'Network error. Please try again.' });
     }
