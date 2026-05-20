@@ -28,7 +28,8 @@ function Tile({ article, size }: { article: StrapiArticle; size: Size }) {
         <div className="absolute inset-0 bg-gradient-to-br from-forest-800 to-forest-950" />
       )}
 
-      {/* Dark gradient overlay for legibility */}
+      {/* Dark layer over the whole image + a stronger gradient at the bottom for title legibility */}
+      <div className="absolute inset-0 bg-black/35" />
       <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
       <div
