@@ -14,8 +14,8 @@ const BOOKING_FAQ: { q: string; a: string }[] = [
     a: 'Enter your origin, destination, and dates in the search box above. Originfacts compares fares from hundreds of airlines and online travel agencies through our partner Travelpayouts and surfaces the lowest price for each route — usually within a few seconds. For the absolute cheapest fares, leave the dates flexible and use the calendar view to spot which day of the week is least expensive.',
   },
   {
-    q: 'Does Originfacts actually book my flight?',
-    a: 'No. Originfacts is a travel blog with a metasearch widget — once you find a fare you like, you complete the booking directly on the airline or OTA website. That means your ticket, payment, and any changes or refunds are handled by them, not us, and you keep any loyalty miles or status credits.',
+    q: 'Do you earn a commission when I book through Originfacts?',
+    a: 'Yes. Originfacts is an affiliate of Travelpayouts and earns a small commission when you complete a booking via one of our search links — at no extra cost to you. It’s how we keep the blog independently funded and the search free to use. See our Affiliate Disclosure for the full details.',
   },
   {
     q: 'Are the prices I see the same as on the airline’s own website?',
@@ -38,8 +38,8 @@ const BOOKING_FAQ: { q: string; a: string }[] = [
     a: 'Fares are pulled live every time you load a result, and airlines adjust them constantly based on demand, seat availability, and competitor pricing. If you see a good fare, lock it in — it can move within minutes.',
   },
   {
-    q: 'Do you earn a commission when I book through Originfacts?',
-    a: 'Yes. Originfacts is an affiliate of Travelpayouts and earns a small commission when you complete a booking via one of our search links — at no extra cost to you. It’s how we keep the blog independently funded and the search free to use. See our Affiliate Disclosure for the full details.',
+    q: 'Does Originfacts actually book my flight?',
+    a: 'No. Originfacts is a travel blog with a metasearch widget — once you find a fare you like, you complete the booking directly on the airline or OTA website. That means your ticket, payment, and any changes or refunds are handled by them, not us, and you keep any loyalty miles or status credits.',
   },
 ];
 
