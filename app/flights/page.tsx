@@ -47,25 +47,25 @@ const TRAVEL_PROS: TravelProCard[] = [
     title: 'Plan with AI',
     description: 'Get travel questions answered',
     image: 'https://nxt.deals/images/plan-with-ai.svg',
-    bg: 'from-amber-100 to-orange-200',
+    bg: 'from-forest-100 to-forest-200',
   },
   {
     title: 'Best Time to Travel',
     description: 'Know when to save',
     image: 'https://nxt.deals/images/best-time.svg',
-    bg: 'from-sky-100 to-blue-200',
+    bg: 'from-sand-100 to-sand-200',
   },
   {
     title: 'Explore',
     description: 'See destinations on your budget',
     image: 'https://nxt.deals/images/explore.svg',
-    bg: 'from-emerald-100 to-teal-200',
+    bg: 'from-primary-hover to-primary-pressed',
   },
   {
     title: 'Trips',
     description: 'Keep all your plans in one place',
     image: 'https://nxt.deals/images/trips.svg',
-    bg: 'from-rose-100 to-pink-200',
+    bg: 'from-sand-200 to-sand-300',
   },
 ];
 
@@ -248,7 +248,7 @@ export default function FlightsPage() {
               rel="noopener noreferrer sponsored"
               className="group flex aspect-[4/3] overflow-hidden rounded border border-forest-900/15 bg-white hover:border-primary-emphasis hover:shadow-sm lg:col-span-2 lg:aspect-[8/3]"
             >
-              <div className="hidden h-full w-1/2 shrink-0 items-end justify-center bg-gradient-to-br from-amber-100 via-orange-100 to-rose-100 sm:flex">
+              <div className="hidden h-full w-1/2 shrink-0 items-end justify-center bg-gradient-to-br from-sand-100 via-secondary to-primary-hover sm:flex">
                 <svg
                   className="size-28 -translate-y-2 text-primary-emphasis"
                   viewBox="0 0 64 64"
