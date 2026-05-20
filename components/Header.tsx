@@ -69,7 +69,7 @@ export default function Header() {
                   className="inline-flex items-center gap-1.5 px-3 py-2 text-[#000000] transition-colors hover:text-[rgb(1,79,211)]"
                   data-testid="nav-flights"
                 >
-                  Flights
+                  Flight Search
                 </Link>
               </li>
               <li
