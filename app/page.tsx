@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { formatDistanceToNowStrict } from 'date-fns';
 import {
   listArticles,
   listPopularCountryDestinations,
@@ -130,11 +131,11 @@ function Hero({ hero, side }: { hero?: StrapiArticle; side: StrapiArticle[] }) {
           )}
         </div>
 
-        <div className="grid gap-0 sm:grid-cols-2 lg:grid-cols-1">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
           {rightTop && <HeroOverlayStory article={rightTop} size="small" />}
           {rightBottom && <HeroOverlayStory article={rightBottom} size="small" />}
           {miniList.length > 0 && (
-            <div className="grid gap-0 sm:col-span-2 lg:col-span-1">
+            <div className="divide-y divide-forest-900/15 sm:col-span-2 lg:col-span-1">
               {miniList.slice(0, 4).map((article) => (
                 <HeroMiniStory key={article.id} article={article} />
               ))}
@@ -274,7 +275,7 @@ function HeroMiniStory({ article }: { article: StrapiArticle }) {
   return (
     <Link
       href={`/articles/${article.slug}`}
-      className="group grid grid-cols-[58px_minmax(0,1fr)] gap-3"
+      className="group grid grid-cols-[64px_minmax(0,1fr)] items-center gap-3 py-3 first:pt-0 last:pb-0"
       data-testid={`hero-mini-${article.slug}`}
     >
       <div className="overflow-hidden rounded-[0.3rem] bg-forest-900/5">
@@ -291,7 +292,7 @@ function HeroMiniStory({ article }: { article: StrapiArticle }) {
       </div>
       <div className="min-w-0">
         <HeroStoryMeta article={article} />
-        <h2 className="mt-1 line-clamp-2 font-urbanist text-sm font-extrabold leading-tight text-forest-950 transition group-hover:text-primary-highlight">
+        <h2 className="mt-1 line-clamp-2 font-urbanist text-sm font-bold leading-snug text-forest-950 transition group-hover:text-primary-highlight">
           {article.title}
         </h2>
       </div>
@@ -301,11 +302,23 @@ function HeroMiniStory({ article }: { article: StrapiArticle }) {
 
 function HeroStoryMeta({ article, light = false }: { article: StrapiArticle; light?: boolean }) {
   const category = article.category?.name ?? 'Travel';
+  const relative = article.publishedAt
+    ? formatDistanceToNowStrict(new Date(article.publishedAt), { addSuffix: true })
+    : null;
   return (
-    <div className={`font-urbanist text-[10px] font-extrabold uppercase tracking-wide ${light ? 'text-white/80' : 'text-forest-900/60'}`}>
-      {category}
-      <span className={light ? 'mx-1.5 text-white/55' : 'mx-1.5 text-forest-900/35'}>~</span>
-      <span>{article.readingTimeMinutes ?? 5} min read</span>
+    <div className={`font-urbanist text-[10px] font-extrabold uppercase tracking-wide ${light ? 'text-white/85' : 'text-primary-emphasis'}`}>
+      <span>{category}</span>
+      {relative && (
+        <>
+          <span
+            aria-hidden
+            className={`mx-1.5 inline-block translate-y-[-1px] ${light ? 'text-white/55' : 'text-forest-900/40'}`}
+          >
+            ✱
+          </span>
+          <span className={light ? 'text-white/80' : 'text-forest-900/55'}>{relative}</span>
+        </>
+      )}
     </div>
   );
 }
