@@ -40,7 +40,7 @@ export default async function HomePage() {
     latest.push(a);
   }
   const hero = latest[0];
-  const side = latest.slice(1, 11);
+  const side = latest.slice(1, 12);
 
   const organizationJsonLd = {
     '@context': 'https://schema.org',
