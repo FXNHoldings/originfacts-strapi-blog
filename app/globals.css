@@ -132,12 +132,10 @@ html.flight-search-active [data-testid="cheap-flights-by-destination"] {
 }
 [data-testid="localization-button-languages"]::after,
 [data-testid="localization-button-currencies"]::after {
-  content: "";
-  width: 10px;
-  height: 10px;
-  background: currentColor;
-  -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>') no-repeat center / contain;
-          mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>') no-repeat center / contain;
+  content: "\25BE"; /* ▾ — black down-pointing small triangle */
+  margin-left: 4px;
+  font-size: 11px;
+  line-height: 1;
   opacity: 0.6;
 }
 
