@@ -405,9 +405,9 @@ export default function FlightsPage() {
             Quick answers to the questions readers ask us most about searching, booking,
             and saving on flights.
           </p>
-          <div className="mt-6 divide-y divide-forest-900/10 border-y border-forest-900/10">
+          <div className="mt-6 grid gap-x-12 sm:grid-cols-1 lg:grid-cols-2">
             {BOOKING_FAQ.map((item) => (
-              <details key={item.q} className="group">
+              <details key={item.q} className="group border-b border-forest-900/10">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-base font-semibold text-forest-900 transition hover:text-primary-emphasis">
                   <span>{item.q}</span>
                   <svg
