@@ -177,7 +177,7 @@ function Sidebar({ categorySlug }: { categorySlug: string }) {
           <span aria-hidden className="h-px w-10 bg-forest-900/20" />
         </h3>
         <Link
-          href="/flights"
+          href="/flight-search"
           className="mt-4 block overflow-hidden rounded border border-forest-900/10 bg-white shadow-sm transition hover:border-primary-emphasis hover:shadow-md"
         >
           <div className="aspect-[4/3] bg-gradient-to-br from-sand-100 via-secondary to-primary-hover" />

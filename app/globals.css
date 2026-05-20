@@ -85,7 +85,7 @@
   }
 }
 
-/* ---------- /flights: make the search form sticky during results ----------
+/* ---------- /flight-search: make the search form sticky during results ----------
    Matches the behaviour on the flights.originfacts.com white-label so users
    can tweak origin/destination/dates without scrolling back up. The site
    Header is sticky at top: 0 with z-50 (~96px tall on desktop, ~72px mobile);
@@ -104,8 +104,8 @@ html.flight-search-active .tpwl-search-wrap {
   }
 }
 
-/* ---------- /flights: hide browse sections once search results render ----------
-   The bootstrap script in app/flights/page.tsx toggles
+/* ---------- /flight-search: hide browse sections once search results render ----------
+   The bootstrap script in app/flight-search/page.tsx toggles
    `.flight-search-active` on <html> whenever ?flightSearch is in the URL
    (TPWL dispatches a `urlchange` event on submit, which the script listens
    to). When that class is present, collapse the Popular Destinations and
