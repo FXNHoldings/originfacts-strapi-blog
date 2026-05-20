@@ -97,7 +97,7 @@ export default function PopularDestinationsBlock() {
       <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">
         Popular destinations
       </h2>
-      <p className="mt-2 text-[1rem] text-forest-900/70">
+      <p className="mt-2 text-[1rem] text-ink/75">
         These alluring destinations from{' '}
         <span className="text-primary-emphasis">
           {origin.name} {origin.iata}
@@ -174,7 +174,7 @@ export default function PopularDestinationsBlock() {
           <div className="flex flex-1 flex-col justify-between p-5">
             <div>
               <h3 className="text-base font-bold text-forest-900">Want to fly for even less?</h3>
-              <p className="mt-2 text-xs text-forest-900/70">
+              <p className="mt-2 text-xs text-ink/75">
                 Search our best deals, price drops, and travel hacks.
               </p>
             </div>

@@ -140,7 +140,7 @@ export default function FlightsPage() {
               <h1 className="editorial-h text-[2.5rem] font-bold text-forest-900">
                 Compare every airline. In one search.
               </h1>
-              <p className="mt-[5px] text-lg font-light text-forest-900/70">
+              <p className="mt-[5px] text-lg font-light text-ink/75">
                 Live fares from hundreds of carriers and online travel agencies, ranked by total
                 price. We don&apos;t sell the ticket — we just help you find the cheapest one.
               </p>
@@ -171,7 +171,7 @@ export default function FlightsPage() {
                 className="flex flex-col rounded-[4px] bg-white p-6 shadow-sm ring-1 ring-forest-900/10 transition-shadow hover:shadow-md"
               >
                 <h3 className="text-base font-bold text-forest-900">{tip.title}</h3>
-                <p className="mt-1 text-sm text-forest-900/70">{tip.tagline}</p>
+                <p className="mt-1 text-sm text-ink/75">{tip.tagline}</p>
                 {tip.image ? (
                   <div className="mt-4 flex flex-1 items-center justify-center">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -200,7 +200,7 @@ export default function FlightsPage() {
           <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">
             Search cheap flights by destination
           </h2>
-          <p className="mt-2 max-w-4xl text-[1rem] text-forest-900/70">
+          <p className="mt-2 max-w-4xl text-[1rem] text-ink/75">
             Compare deals from hundreds of airline sites in one place. Whether you&apos;re booking a
             last-minute getaway or planning ahead, browse popular destinations below to surface the
             best fares for your next trip.
@@ -248,7 +248,7 @@ export default function FlightsPage() {
                           href={tpwlSearchUrl(o.iata, dest.iata)}
                           target="_blank"
                           rel="noopener noreferrer sponsored"
-                          className="block py-1 text-sm text-forest-900/70 hover:text-primary-emphasis"
+                          className="block py-1 text-sm text-ink/75 hover:text-primary-emphasis"
                         >
                           From {o.name} → {dest.name}{' '}
                           <span className="font-mono text-xs text-forest-900/40">
@@ -269,7 +269,7 @@ export default function FlightsPage() {
           <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">
             Booking flights with Originfacts
           </h2>
-          <p className="mt-2 max-w-4xl text-[1rem] text-forest-900/70">
+          <p className="mt-2 max-w-4xl text-[1rem] text-ink/75">
             Quick answers to the questions readers ask us most about searching, booking,
             and saving on flights.
           </p>
@@ -292,7 +292,7 @@ export default function FlightsPage() {
                     <polyline points="6 9 12 15 18 9" />
                   </svg>
                 </summary>
-                <div className="pb-5 pr-8 text-[1rem] leading-relaxed text-forest-900/75">
+                <div className="pb-5 pr-8 text-[1rem] leading-relaxed text-ink/75">
                   {item.a}
                 </div>
               </details>
