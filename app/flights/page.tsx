@@ -1,5 +1,4 @@
 import Script from 'next/script';
-import Link from 'next/link';
 
 export const metadata = {
   title: 'Flights',
@@ -91,14 +90,31 @@ const ORIGIN_CITIES: { name: string; iata: string }[] = [
   { name: 'Dubai', iata: 'DXB' },
 ];
 
-function flySearchUrl(origin: string, destination: string): string {
+const TPWL_HOST = 'https://flights.originfacts.com';
+
+function pad(n: number) { return String(n).padStart(2, '0'); }
+function ymd(d: Date) { return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
+
+// Build a URL that lands on the Travelpayouts white-label and auto-runs
+// the search there. TPWL injects marker=314807 + trs=401311 server-side,
+// so this is the path that carries the affiliate tracking — internal
+// /flights?… links don't, which is why they were broken.
+function tpwlSearchUrl(origin: string, destination: string): string {
+  const depart = new Date();
+  depart.setHours(0, 0, 0, 0);
+  depart.setDate(depart.getDate() + 30);
+  const ret = new Date(depart);
+  ret.setDate(depart.getDate() + 7);
   const params = new URLSearchParams({
-    origin,
-    destination,
+    origin_iata: origin,
+    destination_iata: destination,
+    depart_date: ymd(depart),
+    return_date: ymd(ret),
     adults: '1',
-    cabinClass: 'economy',
+    trip_class: 'Y',
+    with_request: 'true',
   });
-  return `/flights?${params.toString()}`;
+  return `${TPWL_HOST}/?${params.toString()}`;
 }
 
 export default function FlightsPage() {
@@ -175,9 +191,11 @@ export default function FlightsPage() {
           </p>
           <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
             {destinations.map((d) => (
-              <Link
+              <a
                 key={d.iata}
-                href={flySearchUrl(ORIGIN.iata, d.iata)}
+                href={tpwlSearchUrl(ORIGIN.iata, d.iata)}
+                target="_blank"
+                rel="noopener noreferrer sponsored"
                 className={`group relative aspect-[4/3] overflow-hidden rounded bg-forest-900/10 ${
                   WIDE_DESTINATIONS.has(d.iata) ? 'lg:col-span-2 lg:aspect-[8/3]' : ''
                 }`}
@@ -211,11 +229,13 @@ export default function FlightsPage() {
                     <polyline points="9 6 15 12 9 18" />
                   </svg>
                 </div>
-              </Link>
+              </a>
             ))}
 
-            <Link
-              href="/flights"
+            <a
+              href={`${TPWL_HOST}/`}
+              target="_blank"
+              rel="noopener noreferrer sponsored"
               className="group flex aspect-[4/3] overflow-hidden rounded border border-forest-900/15 bg-white hover:border-primary-emphasis hover:shadow-sm lg:col-span-2 lg:aspect-[8/3]"
             >
               <div className="hidden h-full w-1/2 shrink-0 items-end justify-center bg-gradient-to-br from-amber-100 via-orange-100 to-rose-100 sm:flex">
@@ -263,7 +283,7 @@ export default function FlightsPage() {
                   </svg>
                 </span>
               </div>
-            </Link>
+            </a>
           </div>
         </section>
 
@@ -287,12 +307,14 @@ export default function FlightsPage() {
                   className="group border-b border-forest-900/10"
                 >
                   <summary className="flex cursor-pointer list-none items-center justify-between py-4">
-                    <Link
-                      href={flySearchUrl(ORIGIN.iata, dest.iata)}
+                    <a
+                      href={tpwlSearchUrl(ORIGIN.iata, dest.iata)}
+                      target="_blank"
+                      rel="noopener noreferrer sponsored"
                       className="flex-1 text-sm font-semibold text-forest-900 hover:text-primary-emphasis"
                     >
                       {dest.name} flights
-                    </Link>
+                    </a>
                     <span
                       className="rounded-full p-1.5 text-forest-900/40 transition group-hover:bg-forest-900/5 group-hover:text-primary-emphasis"
                       aria-label={`Show popular routes to ${dest.name}`}
@@ -315,15 +337,17 @@ export default function FlightsPage() {
                   <ul className="space-y-1 pb-4">
                     {origins.map((o) => (
                       <li key={o.iata}>
-                        <Link
-                          href={flySearchUrl(o.iata, dest.iata)}
+                        <a
+                          href={tpwlSearchUrl(o.iata, dest.iata)}
+                          target="_blank"
+                          rel="noopener noreferrer sponsored"
                           className="block py-1 text-sm text-forest-900/70 hover:text-primary-emphasis"
                         >
                           From {o.name} → {dest.name}{' '}
                           <span className="font-mono text-xs text-forest-900/40">
                             {o.iata}–{dest.iata}
                           </span>
-                        </Link>
+                        </a>
                       </li>
                     ))}
                   </ul>
