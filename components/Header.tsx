@@ -227,15 +227,6 @@ export default function Header() {
                   </div>
                 </div>
               </li>
-              <li data-testid="nav-item-contact">
-                <Link
-                  href="/contact"
-                  className="inline-flex items-center gap-1.5 px-3 py-2 text-[#000000] transition-colors hover:text-[rgb(1,79,211)]"
-                  data-testid="nav-contact"
-                >
-                  Contact
-                </Link>
-              </li>
             </ul>
           </nav>
 
