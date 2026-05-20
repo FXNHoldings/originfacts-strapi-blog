@@ -11,8 +11,7 @@ export default function ContactPage() {
   return (
     <article className="mx-auto max-w-7xl px-6 py-16" data-testid="contact-page">
       <header className="max-w-3xl">
-        <p className="chip">Contact</p>
-        <h1 className="editorial-h mt-5 text-3xl font-bold leading-tight text-forest-900 sm:text-4xl">
+        <h1 className="editorial-h text-3xl font-bold leading-tight text-forest-900 sm:text-4xl">
           Get in Touch
         </h1>
         <p className="mt-3 text-lg font-light text-forest-900/75">
