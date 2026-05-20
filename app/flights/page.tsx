@@ -276,7 +276,7 @@ export default function FlightsPage() {
           <div className="mt-6 grid gap-x-12 sm:grid-cols-1 lg:grid-cols-2">
             {BOOKING_FAQ.map((item) => (
               <details key={item.q} className="group border-b border-forest-900/10">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-base font-semibold text-forest-900 transition hover:text-primary-emphasis">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-[1rem] font-semibold text-forest-900 transition hover:text-primary-emphasis">
                   <span>{item.q}</span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
