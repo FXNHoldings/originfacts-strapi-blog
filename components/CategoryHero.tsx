@@ -39,7 +39,7 @@ function Tile({ article, size }: { article: StrapiArticle; size: Size }) {
       >
         <h3
           className={`font-bold leading-tight !text-white drop-shadow-sm transition group-hover:!text-white/90 ${
-            size === 'lead' ? 'text-2xl sm:text-3xl' : 'text-base sm:text-lg'
+            size === 'lead' ? 'text-2xl sm:text-3xl' : 'text-[14px]'
           }`}
         >
           {article.title}
