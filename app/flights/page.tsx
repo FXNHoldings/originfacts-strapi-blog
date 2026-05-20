@@ -43,7 +43,7 @@ const BOOKING_FAQ: { q: string; a: string }[] = [
   },
 ];
 
-type ProTip = { n: number; title: string; description: string };
+type ProTip = { n: number; title: string; description: string; image?: string };
 
 const PRO_TIPS: ProTip[] = [
   {
@@ -51,12 +51,14 @@ const PRO_TIPS: ProTip[] = [
     title: 'Be flexible on dates',
     description:
       'The cheapest fare is usually a Tuesday or Wednesday, midway between weekends. Use the calendar view in the search above to see prices laid out day by day.',
+    image: '/illustrations/flexible-dates.svg',
   },
   {
     n: 2,
     title: 'Search the whole month',
     description:
       'Switch to the "cheapest month" tab to surface the lowest fare anywhere in the next 60 days. One click usually saves more than any other trick.',
+    image: '/illustrations/search-month.svg',
   },
   {
     n: 3,
@@ -169,16 +171,30 @@ export default function FlightsPage() {
                 key={tip.n}
                 className="flex flex-col rounded-2xl bg-white p-6 shadow-sm ring-1 ring-forest-900/10 transition-shadow hover:shadow-md"
               >
-                <span
-                  aria-hidden
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-emphasis/10 text-base font-bold text-primary-emphasis"
-                >
-                  {tip.n}
-                </span>
-                <h3 className="mt-5 text-base font-bold text-forest-900">{tip.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-forest-900/70">
-                  {tip.description}
-                </p>
+                <h3 className="text-base font-bold text-forest-900">{tip.title}</h3>
+                {tip.image ? (
+                  <div className="mt-4 flex flex-1 items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={tip.image}
+                      alt=""
+                      loading="lazy"
+                      className="h-40 w-auto object-contain"
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <span
+                      aria-hidden
+                      className="mt-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-emphasis/10 text-base font-bold text-primary-emphasis"
+                    >
+                      {tip.n}
+                    </span>
+                    <p className="mt-3 text-sm leading-relaxed text-forest-900/70">
+                      {tip.description}
+                    </p>
+                  </>
+                )}
               </li>
             ))}
           </ol>
