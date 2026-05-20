@@ -69,6 +69,109 @@
   }
 }
 
+/* ---------- TPWL language / currency switcher → dropdown menu ----------
+   TPWL renders a button + inline list for each switcher. We hide the list
+   by default and pop it open on hover/focus of the button. */
+[class*="SearchEdit-module__localization"],
+[class*="SearchView-module__localization"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+[data-testid="localization-button-languages"],
+[data-testid="localization-button-currencies"] {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #ffffff;
+  border: 1px solid rgba(7, 20, 43, 0.15);
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #07142b;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+[data-testid="localization-button-languages"]:hover,
+[data-testid="localization-button-currencies"]:hover {
+  border-color: #014fd3;
+  color: #014fd3;
+}
+[data-testid="localization-button-languages"]::after,
+[data-testid="localization-button-currencies"]::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: currentColor;
+  -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>') no-repeat center / contain;
+          mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>') no-repeat center / contain;
+  opacity: 0.6;
+}
+
+[data-testid="localization-list-languages"],
+[data-testid="localization-list-currencies"] {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 1000;
+  min-width: 220px;
+  max-height: 320px;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  background: #ffffff;
+  border: 1px solid rgba(7, 20, 43, 0.10);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(7, 20, 43, 0.10);
+}
+
+[class*="SearchEdit-module__localization"]:has([data-testid="localization-button-languages"]:hover) [data-testid="localization-list-languages"],
+[class*="SearchEdit-module__localization"]:has([data-testid="localization-button-languages"]:focus-within) [data-testid="localization-list-languages"],
+[class*="SearchEdit-module__localization"]:has([data-testid="localization-list-languages"]:hover) [data-testid="localization-list-languages"],
+[class*="SearchView-module__localization"]:has([data-testid="localization-button-languages"]:hover) [data-testid="localization-list-languages"],
+[class*="SearchView-module__localization"]:has([data-testid="localization-button-languages"]:focus-within) [data-testid="localization-list-languages"],
+[class*="SearchView-module__localization"]:has([data-testid="localization-list-languages"]:hover) [data-testid="localization-list-languages"],
+[class*="SearchEdit-module__localization"]:has([data-testid="localization-button-currencies"]:hover) [data-testid="localization-list-currencies"],
+[class*="SearchEdit-module__localization"]:has([data-testid="localization-button-currencies"]:focus-within) [data-testid="localization-list-currencies"],
+[class*="SearchEdit-module__localization"]:has([data-testid="localization-list-currencies"]:hover) [data-testid="localization-list-currencies"],
+[class*="SearchView-module__localization"]:has([data-testid="localization-button-currencies"]:hover) [data-testid="localization-list-currencies"],
+[class*="SearchView-module__localization"]:has([data-testid="localization-button-currencies"]:focus-within) [data-testid="localization-list-currencies"],
+[class*="SearchView-module__localization"]:has([data-testid="localization-list-currencies"]:hover) [data-testid="localization-list-currencies"] {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+[data-testid="localization-list-languages"] > *,
+[data-testid="localization-list-currencies"] > * {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  font-size: 14px;
+  color: #07142b;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+[data-testid="localization-list-languages"] > *:hover,
+[data-testid="localization-list-currencies"] > *:hover {
+  background: rgba(7, 20, 43, 0.05);
+  color: #014fd3;
+}
+
 /* Article body — Inter normal, keep headings bold */
 .prose-article {
   @apply prose prose-stone
