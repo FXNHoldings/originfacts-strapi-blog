@@ -4,6 +4,7 @@ import { marked } from 'marked';
 import Link from 'next/link';
 import { getArticle, listArticles, mediaUrl } from '@/lib/strapi';
 import ArticleCard from '@/components/ArticleCard';
+import AdSlot from '@/components/AdSlot';
 import ShareButtons from '@/components/ShareButtons';
 import { SECTIONS } from '@/lib/sections';
 import type { Metadata } from 'next';
@@ -221,6 +222,8 @@ export default async function ArticlePage({ params }: Props) {
               data-testid="article-body"
               dangerouslySetInnerHTML={{ __html: html }}
             />
+
+            <AdSlot slot="0000000000" className="mt-12" />
 
             {article.gallery && article.gallery.length > 0 && (
               <div className="mt-12" data-testid="article-gallery">

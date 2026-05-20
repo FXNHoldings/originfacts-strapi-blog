@@ -106,38 +106,6 @@ function Hero({ hero, side }: { hero?: StrapiArticle; side: StrapiArticle[] }) {
         </div>
       </div>
 
-      <form
-        action="/articles"
-        className="mt-8 flex items-center gap-3 rounded-xl border-2 border-forest-600/70 bg-paper px-5 py-3"
-        data-testid="hero-search"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="h-5 w-5 shrink-0 text-forest-600"
-          aria-hidden
-        >
-          <circle cx="11" cy="11" r="7" />
-          <path d="m21 21-4.3-4.3" />
-        </svg>
-        <input
-          type="search"
-          name="q"
-          placeholder="Where do you want to go?"
-          className="flex-1 bg-transparent text-base text-forest-900 outline-none placeholder:text-forest-900/50"
-        />
-        <button
-          type="submit"
-          className="font-urbanist shrink-0 text-sm font-bold uppercase tracking-wider text-forest-700 transition hover:text-forest-600"
-        >
-          Find Travel Inspiration
-        </button>
-      </form>
     </section>
   );
 }

@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CookieConsent from '@/components/CookieConsent';
+import { ADSENSE_CLIENT, ADSENSE_ENABLED } from '@/lib/adsense';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -28,12 +30,34 @@ export const metadata: Metadata = {
       'application/rss+xml': [{ url: '/feed.xml', title: 'Originfacts RSS' }],
     },
   },
+  other: ADSENSE_ENABLED ? { 'google-adsense-account': ADSENSE_CLIENT } : {},
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable}>
       <body className="min-h-screen flex flex-col font-sans font-normal grain" data-testid="app-shell">
+        <Script id="consent-default" strategy="beforeInteractive">{`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          window.gtag = gtag;
+          gtag('consent', 'default', {
+            ad_storage: 'denied',
+            ad_user_data: 'denied',
+            ad_personalization: 'denied',
+            analytics_storage: 'denied',
+            wait_for_update: 500
+          });
+        `}</Script>
+        {ADSENSE_ENABLED && (
+          <Script
+            id="adsbygoogle"
+            async
+            strategy="afterInteractive"
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+            crossOrigin="anonymous"
+          />
+        )}
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

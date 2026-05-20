@@ -18,6 +18,20 @@ type View = 'banner' | 'settings';
 const ALL_OFF: ConsentState['categories'] = { essential: true, analytics: false, marketing: false };
 const ALL_ON: ConsentState['categories'] = { essential: true, analytics: true, marketing: true };
 
+type GtagFn = (...args: unknown[]) => void;
+
+function applyConsentMode(categories: ConsentState['categories']) {
+  if (typeof window === 'undefined') return;
+  const gtag = (window as unknown as { gtag?: GtagFn }).gtag;
+  if (typeof gtag !== 'function') return;
+  gtag('consent', 'update', {
+    ad_storage: categories.marketing ? 'granted' : 'denied',
+    ad_user_data: categories.marketing ? 'granted' : 'denied',
+    ad_personalization: categories.marketing ? 'granted' : 'denied',
+    analytics_storage: categories.analytics ? 'granted' : 'denied',
+  });
+}
+
 function readStoredConsent(): ConsentState | null {
   if (typeof window === 'undefined') return null;
   try {
@@ -42,6 +56,7 @@ function persistConsent(categories: ConsentState['categories']) {
   } catch {
     /* private mode / disabled storage — fall through silently */
   }
+  applyConsentMode(categories);
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('originfacts:consent', { detail: payload }));
   }
@@ -59,6 +74,7 @@ export default function CookieConsent() {
       setView('banner');
     } else {
       setCategories(existing.categories);
+      applyConsentMode(existing.categories);
     }
 
     const onReopen = () => {
