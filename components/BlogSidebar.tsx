@@ -29,13 +29,13 @@ export default function BlogSidebar({
   return (
     <aside className="space-y-10 lg:sticky lg:top-24 lg:self-start" data-testid="blog-sidebar">
       <div>
-        <div className="inline-flex rounded-full border border-forest-900/10 bg-white p-1 shadow-sm">
+        <div className="inline-flex border border-forest-900/10 bg-white p-1 shadow-sm">
           <button
             type="button"
             onClick={() => setTab('popular')}
             aria-pressed={tab === 'popular'}
             className={
-              'rounded-full px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest transition ' +
+              'px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest transition ' +
               (tab === 'popular' ? 'bg-forest-900 text-white' : 'text-forest-900/60 hover:text-forest-900')
             }
           >

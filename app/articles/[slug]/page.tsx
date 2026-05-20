@@ -2,10 +2,19 @@ import { notFound } from 'next/navigation';
 import { format } from 'date-fns';
 import { marked } from 'marked';
 import Link from 'next/link';
-import { getArticle, listArticles, mediaUrl } from '@/lib/strapi';
+import {
+  getAdjacentArticles,
+  getArticle,
+  listArticles,
+  listSidebarArticles,
+  listSidebarCategoryTiles,
+  mediaUrl,
+} from '@/lib/strapi';
 import ArticleCard from '@/components/ArticleCard';
 import AdSlot from '@/components/AdSlot';
 import ShareButtons from '@/components/ShareButtons';
+import BlogSidebar from '@/components/BlogSidebar';
+import RelatedPostsSlider from '@/components/RelatedPostsSlider';
 import { SECTIONS } from '@/lib/sections';
 import type { Metadata } from 'next';
 
@@ -44,15 +53,18 @@ export default async function ArticlePage({ params }: Props) {
   const hero = mediaUrl(article.coverImage ?? null);
   const date = article.publishedAt ? format(new Date(article.publishedAt), 'd MMMM yyyy') : '';
 
-  // Related by category + sidebar latest
-  const [relatedRes, latestRes] = await Promise.all([
+  // Related by category + sidebar + prev/next post by publishedAt
+  const [relatedRes, sidebar, categoryTiles, adjacent] = await Promise.all([
     article.category
-      ? listArticles({ category: article.category.slug, pageSize: 5 }).catch(() => ({ data: [] as Awaited<ReturnType<typeof listArticles>>['data'] }))
+      ? listArticles({ category: article.category.slug, pageSize: 12 }).catch(() => ({ data: [] as Awaited<ReturnType<typeof listArticles>>['data'] }))
       : Promise.resolve({ data: [] as Awaited<ReturnType<typeof listArticles>>['data'] }),
-    listArticles({ pageSize: 6 }).catch(() => ({ data: [] as Awaited<ReturnType<typeof listArticles>>['data'] })),
+    listSidebarArticles(5).catch(() => ({ recent: [], popular: [] })),
+    listSidebarCategoryTiles(
+      SECTIONS.filter((s) => s.slug !== 'destinations').map((s) => s.slug),
+    ).catch(() => []),
+    getAdjacentArticles(article.publishedAt, article.id).catch(() => ({ prev: null, next: null })),
   ]);
-  const related = relatedRes.data.filter((x) => x.id !== article.id).slice(0, 4);
-  const latest = latestRes.data.filter((x) => x.id !== article.id).slice(0, 5);
+  const related = relatedRes.data.filter((x) => x.id !== article.id).slice(0, 8);
 
   const articleUrl = `https://www.originfacts.com/articles/${article.slug}`;
   const articleImage = mediaUrl(article.ogImage ?? article.coverImage ?? null);
@@ -169,54 +181,62 @@ export default async function ArticlePage({ params }: Props) {
         </ol>
       </nav>
 
-      {/* Hero */}
-      <header className="mx-auto max-w-7xl px-6 pt-6">
-        <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-widest text-forest-800/70">
-          {article.category && (
-            <Link href={`/category/${article.category.slug}`} className="chip hover:bg-forest-800/10">
-              {article.category.name}
-            </Link>
-          )}
-          {date && <time dateTime={article.publishedAt}>{date}</time>}
-          {article.readingTimeMinutes ? <span>· {article.readingTimeMinutes} min read</span> : null}
-        </div>
-        <h1 className="editorial-h mt-6 text-3xl font-bold leading-tight text-forest-900" data-testid="article-title">
-          {article.title}
-        </h1>
-        {article.excerpt && (
-          <p className="mt-6 max-w-3xl text-base text-ink/75 sm:text-lg">{article.excerpt}</p>
-        )}
-        {article.author && (
-          <div className="mt-8 flex items-center gap-3 text-sm text-forest-900/80">
-            {mediaUrl(article.author.avatar ?? null) && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={mediaUrl(article.author.avatar ?? null)!} alt={article.author.name} className="h-10 w-10 rounded-full object-cover" />
-            )}
-            <span>
-              by <strong className="text-forest-900">{article.author.name}</strong>
-            </span>
-          </div>
-        )}
-      </header>
-
-      {hero && (
-        <div className="mx-auto mt-10 max-w-7xl px-6">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={hero}
-            alt={article.coverImage?.alternativeText || article.title}
-            className="aspect-[16/9] w-full rounded-3xl object-cover shadow-2xl shadow-forest-900/10"
-          />
-        </div>
-      )}
-
-      {/* Body + sidebar */}
-      <div className="mx-auto max-w-7xl px-6 py-16">
+      {/* Body — single 2-column layout: title + featured image + body live in
+          column 1 alongside BlogSidebar in column 2 (frenify single post pattern). */}
+      <div className="mx-auto max-w-7xl px-6 pt-6 pb-16">
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="min-w-0" data-testid="article-main">
-            <div className="mb-10">
+            <header className="mb-8">
+              <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-widest text-forest-800/70">
+                {article.category && (
+                  <Link href={`/category/${article.category.slug}`} className="chip hover:bg-forest-800/10">
+                    {article.category.name}
+                  </Link>
+                )}
+                {date && <time dateTime={article.publishedAt}>{date}</time>}
+                {article.readingTimeMinutes ? <span>· {article.readingTimeMinutes} min read</span> : null}
+              </div>
+              <h1
+                className="editorial-h mt-5 text-[clamp(1.5rem,2vw+1rem,2rem)] font-bold leading-tight text-forest-900"
+                data-testid="article-title"
+              >
+                {article.title}
+              </h1>
+              {article.excerpt && (
+                <p className="mt-5 text-base text-ink/75 sm:text-lg">{article.excerpt}</p>
+              )}
+              {article.author && (
+                <div className="mt-6 flex items-center gap-3 text-sm text-forest-900/80">
+                  {mediaUrl(article.author.avatar ?? null) && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={mediaUrl(article.author.avatar ?? null)!}
+                      alt={article.author.name}
+                      className="h-10 w-10 rounded-full object-cover"
+                    />
+                  )}
+                  <span>
+                    by <strong className="text-forest-900">{article.author.name}</strong>
+                  </span>
+                </div>
+              )}
+            </header>
+
+            <div className="mb-6">
               <ShareButtons title={article.title} slug={article.slug} />
             </div>
+
+            {hero && (
+              <div className="mb-10">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={hero}
+                  alt={article.coverImage?.alternativeText || article.title}
+                  className="aspect-[16/9] w-full rounded-[0.3rem] object-cover"
+                />
+              </div>
+            )}
+
             <div
               className="prose-article"
               data-testid="article-body"
@@ -249,6 +269,12 @@ export default async function ArticlePage({ params }: Props) {
               </div>
             )}
 
+            <CommentsSection slug={article.slug} />
+
+            {(adjacent.prev || adjacent.next) && (
+              <AdjacentPostsNav prev={adjacent.prev} next={adjacent.next} />
+            )}
+
             {article.destinations && article.destinations.length > 0 && (
               <div className="mt-12 border-t border-forest-900/10 pt-8">
                 <h3 className="editorial-h text-sm uppercase tracking-widest text-forest-800/70">Places in this story</h3>
@@ -273,84 +299,248 @@ export default async function ArticlePage({ params }: Props) {
             )}
           </div>
 
-          <aside className="lg:sticky lg:top-24 lg:self-start" data-testid="article-sidebar">
-            <div className="rounded border border-forest-900/10 bg-paper p-5">
-              <h3 className="editorial-h text-sm uppercase tracking-normal text-forest-800/70">
-                Categories
-              </h3>
-              <ul className="mt-3 space-y-2 text-sm" data-testid="sidebar-categories">
-                {SECTIONS.map((s) => (
-                  <li key={s.slug}>
-                    <Link
-                      href={`/category/${s.slug}`}
-                      className={`block rounded-md px-2 py-1.5 transition hover:bg-forest-900/5 ${
-                        article.category?.slug === s.slug
-                          ? 'font-semibold text-primary-emphasis'
-                          : 'text-forest-900'
-                      }`}
-                    >
-                      {s.title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {latest.length > 0 && (
-              <div className="mt-6 rounded border border-forest-900/10 bg-paper p-5">
-                <h3 className="editorial-h text-sm uppercase tracking-normal text-forest-800/70">
-                  Latest posts
-                </h3>
-                <ul className="mt-3 space-y-4" data-testid="sidebar-latest">
-                  {latest.map((p) => {
-                    const thumb = mediaUrl(p.coverImage ?? null);
-                    const pubDate = p.publishedAt ? format(new Date(p.publishedAt), 'd MMM yyyy') : '';
-                    return (
-                      <li key={p.id}>
-                        <Link href={`/articles/${p.slug}`} className="group grid grid-cols-[64px_minmax(0,1fr)] gap-3">
-                          <div className="overflow-hidden rounded-md bg-forest-900/5">
-                            {thumb ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
-                                src={thumb}
-                                alt={p.coverImage?.alternativeText || p.title}
-                                className="aspect-square h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                                loading="lazy"
-                              />
-                            ) : (
-                              <div className="aspect-square bg-gradient-to-br from-primary-hover to-primary-pressed" />
-                            )}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="line-clamp-2 text-sm font-semibold leading-snug text-forest-900 transition group-hover:text-primary-highlight">
-                              {p.title}
-                            </p>
-                            {pubDate && (
-                              <p className="mt-1 text-xs text-forest-900/60">{pubDate}</p>
-                            )}
-                          </div>
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            )}
-          </aside>
+          <BlogSidebar
+            popularPosts={sidebar.popular}
+            recentPosts={sidebar.recent}
+            categoryTiles={categoryTiles}
+          />
         </div>
       </div>
 
-      {/* Related */}
       {related.length > 0 && (
-        <section className="border-t border-forest-900/10 bg-forest-900/[0.02]">
-          <div className="mx-auto max-w-7xl px-6 py-16" data-testid="related-section">
-            <h2 className="editorial-h text-3xl font-bold text-forest-900">Keep reading</h2>
-            <div className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-              {related.map((a) => <ArticleCard key={a.id} article={a} size="sm" hideMeta />)}
+        <section
+          className="border-t border-forest-900/10 bg-forest-900/[0.02]"
+          data-testid="related-section"
+        >
+          <div className="mx-auto max-w-7xl px-6 py-16">
+            <h2 className="editorial-h text-2xl font-bold text-forest-900 sm:text-3xl">
+              Related Posts
+            </h2>
+            <div className="mt-8">
+              <RelatedPostsSlider articles={related} />
             </div>
           </div>
         </section>
       )}
     </article>
+  );
+}
+
+function CommentsSection({ slug }: { slug: string }) {
+  return (
+    <section
+      className="mt-12 border-t border-forest-900/10 pt-10"
+      data-testid="comments-section"
+      aria-labelledby="comments-heading"
+    >
+      <header>
+        <h2
+          id="comments-heading"
+          className="editorial-h text-2xl font-bold text-forest-900 sm:text-3xl"
+        >
+          Leave a Reply
+        </h2>
+        <p className="mt-2 text-sm text-ink/65">
+          Your email address will not be published. Required fields are marked{' '}
+          <span className="text-primary-emphasis">*</span>
+        </p>
+      </header>
+
+      <form
+        action={`/api/comments/${slug}`}
+        method="post"
+        className="mt-8 grid gap-5"
+        data-testid="comments-form"
+      >
+        <div className="grid gap-2">
+          <label
+            htmlFor="comment-body"
+            className="text-[11px] font-bold uppercase tracking-widest text-forest-900"
+          >
+            Comment <span className="text-primary-emphasis">*</span>
+          </label>
+          <textarea
+            id="comment-body"
+            name="comment"
+            rows={6}
+            required
+            className="w-full rounded-[0.3rem] border border-forest-900/15 bg-white px-4 py-3 text-sm text-forest-950 placeholder:text-forest-900/45 focus:border-primary-emphasis focus:outline-none focus:ring-2 focus:ring-primary-emphasis/20"
+            placeholder="Share your thoughts on this story…"
+          />
+        </div>
+
+        <div className="grid gap-5 sm:grid-cols-3">
+          <div className="grid gap-2">
+            <label
+              htmlFor="comment-name"
+              className="text-[11px] font-bold uppercase tracking-widest text-forest-900"
+            >
+              Name <span className="text-primary-emphasis">*</span>
+            </label>
+            <input
+              id="comment-name"
+              name="name"
+              type="text"
+              required
+              autoComplete="name"
+              className="h-11 w-full rounded-[0.3rem] border border-forest-900/15 bg-white px-3 text-sm text-forest-950 focus:border-primary-emphasis focus:outline-none focus:ring-2 focus:ring-primary-emphasis/20"
+            />
+          </div>
+          <div className="grid gap-2">
+            <label
+              htmlFor="comment-email"
+              className="text-[11px] font-bold uppercase tracking-widest text-forest-900"
+            >
+              Email <span className="text-primary-emphasis">*</span>
+            </label>
+            <input
+              id="comment-email"
+              name="email"
+              type="email"
+              required
+              autoComplete="email"
+              className="h-11 w-full rounded-[0.3rem] border border-forest-900/15 bg-white px-3 text-sm text-forest-950 focus:border-primary-emphasis focus:outline-none focus:ring-2 focus:ring-primary-emphasis/20"
+            />
+          </div>
+          <div className="grid gap-2">
+            <label
+              htmlFor="comment-website"
+              className="text-[11px] font-bold uppercase tracking-widest text-forest-900"
+            >
+              Website
+            </label>
+            <input
+              id="comment-website"
+              name="website"
+              type="url"
+              autoComplete="url"
+              className="h-11 w-full rounded-[0.3rem] border border-forest-900/15 bg-white px-3 text-sm text-forest-950 focus:border-primary-emphasis focus:outline-none focus:ring-2 focus:ring-primary-emphasis/20"
+            />
+          </div>
+        </div>
+
+        <label className="flex items-start gap-2 text-sm text-ink/75">
+          <input
+            type="checkbox"
+            name="remember"
+            defaultChecked
+            className="mt-1 h-4 w-4 rounded border-forest-900/30 text-primary-emphasis focus:ring-primary-emphasis"
+          />
+          <span>Save my name, email, and website in this browser for the next time I comment.</span>
+        </label>
+
+        <div>
+          <button
+            type="submit"
+            className="inline-flex h-11 items-center justify-center rounded-[0.3rem] bg-forest-900 px-6 font-urbanist text-sm font-bold uppercase tracking-wider text-white transition hover:bg-primary-emphasis"
+          >
+            Post Comment
+          </button>
+        </div>
+      </form>
+    </section>
+  );
+}
+
+function AdjacentPostsNav({
+  prev,
+  next,
+}: {
+  prev: Awaited<ReturnType<typeof getAdjacentArticles>>['prev'];
+  next: Awaited<ReturnType<typeof getAdjacentArticles>>['next'];
+}) {
+  return (
+    <div
+      className="mt-14 grid grid-cols-1 overflow-hidden rounded border border-forest-900/15 sm:grid-cols-2"
+      data-testid="adjacent-posts"
+    >
+      {prev && <AdjacentPostCard direction="previous" article={prev} />}
+      {!prev && next && <div className="hidden sm:block" />}
+      {next && <AdjacentPostCard direction="next" article={next} />}
+    </div>
+  );
+}
+
+function AdjacentPostCard({
+  direction,
+  article,
+}: {
+  direction: 'previous' | 'next';
+  article: NonNullable<Awaited<ReturnType<typeof getAdjacentArticles>>['prev']>;
+}) {
+  const img = mediaUrl(article.coverImage ?? null);
+  const category = article.category?.name?.toUpperCase();
+  const relative = article.publishedAt ? format(new Date(article.publishedAt), 'd MMM yyyy') : '';
+  const isNext = direction === 'next';
+  const label = isNext ? 'NEXT POST' : 'PREVIOUS POST';
+
+  return (
+    <Link
+      href={`/articles/${article.slug}`}
+      className={`group flex flex-col gap-4 p-5 sm:p-6 ${isNext ? 'sm:border-l sm:border-forest-900/15' : ''}`}
+      data-testid={`adjacent-${direction}`}
+    >
+      <div
+        className={`flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-forest-900 ${
+          isNext ? 'justify-end' : ''
+        }`}
+      >
+        {!isNext && <span aria-hidden className="h-px w-10 bg-forest-900/25" />}
+        {isNext && <span>{label}</span>}
+        {!isNext && <span>{label}</span>}
+        {isNext && <span aria-hidden className="h-px w-10 bg-forest-900/25" />}
+      </div>
+
+      <div
+        className={`grid items-center gap-4 ${
+          isNext
+            ? 'grid-cols-[minmax(0,1fr)_80px] text-right'
+            : 'grid-cols-[80px_minmax(0,1fr)]'
+        }`}
+      >
+        {!isNext && (
+          <div className="overflow-hidden rounded bg-forest-900/5">
+            {img ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={img}
+                alt={article.coverImage?.alternativeText || article.title}
+                className="aspect-square h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                loading="lazy"
+              />
+            ) : (
+              <div className="aspect-square bg-gradient-to-br from-primary-hover to-primary-pressed" />
+            )}
+          </div>
+        )}
+        <div className="min-w-0">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-primary-emphasis">
+            {category && <span>{category}</span>}
+            {category && relative && (
+              <span aria-hidden className="mx-2 text-forest-900/40">✱</span>
+            )}
+            {relative && <span className="text-forest-900/55">{relative}</span>}
+          </div>
+          <h3 className="mt-2 line-clamp-2 font-urbanist text-lg font-bold leading-snug text-forest-950 transition group-hover:text-primary-emphasis sm:text-xl">
+            {article.title}
+          </h3>
+        </div>
+        {isNext && (
+          <div className="overflow-hidden rounded bg-forest-900/5">
+            {img ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={img}
+                alt={article.coverImage?.alternativeText || article.title}
+                className="aspect-square h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                loading="lazy"
+              />
+            ) : (
+              <div className="aspect-square bg-gradient-to-br from-primary-hover to-primary-pressed" />
+            )}
+          </div>
+        )}
+      </div>
+    </Link>
   );
 }

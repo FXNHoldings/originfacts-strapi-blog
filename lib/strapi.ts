@@ -194,6 +194,31 @@ export async function listSidebarCategoryTiles(slugs: string[]) {
 }
 
 /**
+ * Returns the article whose publishedAt is immediately before / after
+ * the given timestamp. Used for the Previous/Next post nav on the
+ * single-article page.
+ */
+export async function getAdjacentArticles(publishedAt: string, currentId: number) {
+  const [prevRes, nextRes] = await Promise.all([
+    strapiFetch<ListResponse<StrapiArticle>>('articles', {
+      filters: { publishedAt: { $lt: publishedAt } },
+      sort: ['publishedAt:desc'],
+      populate: ['coverImage', 'category'],
+      pagination: { pageSize: 1 },
+    }).catch(() => ({ data: [] as StrapiArticle[] })),
+    strapiFetch<ListResponse<StrapiArticle>>('articles', {
+      filters: { publishedAt: { $gt: publishedAt } },
+      sort: ['publishedAt:asc'],
+      populate: ['coverImage', 'category'],
+      pagination: { pageSize: 1 },
+    }).catch(() => ({ data: [] as StrapiArticle[] })),
+  ]);
+  const prev = prevRes.data.find((a) => a.id !== currentId) ?? null;
+  const next = nextRes.data.find((a) => a.id !== currentId) ?? null;
+  return { prev, next };
+}
+
+/**
  * Returns 5 most-recent and 5 "popular" articles for the BlogSidebar.
  * Popular uses reading-time desc as a depth/engagement proxy until we
  * track real views.

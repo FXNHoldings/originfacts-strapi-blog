@@ -5,7 +5,7 @@
 @layer base {
   html {
     background: #ffffff;
-    color: theme('colors.ink');
+    color: #666666;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
@@ -14,10 +14,11 @@
   .prose-article h2, .prose-article h3 {
     scroll-margin-top: 6rem;
   }
-  /* Default body text — Outfit */
+  /* Default body text — Urbanist */
   body {
-    font-family: var(--font-outfit), system-ui, sans-serif;
+    font-family: var(--font-urbanist), system-ui, sans-serif;
     font-weight: 400;
+    letter-spacing: 0.2px;
   }
   /* All headings → Outfit 600, near-black.
      !important on font-family/weight/color so every heading overrides
@@ -26,11 +27,16 @@
      that need a different heading colour (the footer's yellow on
      navy, for example) override via a more specific rule below. */
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-outfit), system-ui, sans-serif !important;
-    font-weight: 600 !important;
+    font-family: var(--font-urbanist), system-ui, sans-serif !important;
+    font-weight: 700 !important;
     letter-spacing: 0px !important;
     color: #030303 !important;
   }
+  /* Fluid heading scale — clamps between mobile and desktop. */
+  h1 { font-size: clamp(1.6rem, 1.5vw + 1rem, 2.25rem); }
+  h2 { font-size: clamp(1.25rem, 0.9vw + 0.95rem, 1.6rem); }
+  h3 { font-size: clamp(1.125rem, 0.6vw + 0.9rem, 1.375rem); }
+  h4 { font-size: clamp(1rem,    0.4vw + 0.85rem, 1.125rem); }
 
   /* Site-wide: clamp .font-extrabold (800) down to 700 on non-heading
      elements (eyebrow labels etc). Headings remain at 600 — the more
@@ -43,6 +49,45 @@
   h1.font-bold, h2.font-bold, h3.font-bold,
   h4.font-bold, h5.font-bold, h6.font-bold {
     font-weight: 600 !important;
+  }
+
+  /* Single post page — headings bumped to weight 700 (overrides the
+     global 600). Font-family is already Urbanist from the global rule. */
+  [data-testid="article-page"] h1,
+  [data-testid="article-page"] h2,
+  [data-testid="article-page"] h3,
+  [data-testid="article-page"] h4,
+  [data-testid="article-page"] h5,
+  [data-testid="article-page"] h6 {
+    font-weight: 700 !important;
+  }
+  /* Category page — h1/h2/h3 to weight 700 (scoped via the dynamic
+     category-page-<slug> testid). */
+  [data-testid^="category-page-"] h1,
+  [data-testid^="category-page-"] h2,
+  [data-testid^="category-page-"] h3 {
+    font-weight: 700 !important;
+  }
+  /* Category page sidebar — Popular/Recent post row titles, fluid 14→16px
+     with bold weight and slight letter-spacing. Specificity 0,2,1 wins. */
+  [data-testid^="category-page-"] [data-testid="blog-sidebar"] h4 {
+    font-size: clamp(0.875rem, 0.3vw + 0.8rem, 1rem) !important;
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+    letter-spacing: 0.3px !important;
+  }
+  /* Single post page — h2 fluid (~1.1rem mobile → ~1.4rem desktop). */
+  [data-testid="article-page"] h2 {
+    font-size: clamp(1.1rem, 0.8vw + 0.85rem, 1.4rem) !important;
+  }
+  /* Single post page sidebar — Popular/Recent post row titles render
+     in Outfit 600 at 18px (overrides the article-page Urbanist 700
+     heading rule above). Specificity 0,2,1 beats the heading rule's
+     0,1,1, so this wins even though both are !important. */
+  [data-testid="article-page"] [data-testid="blog-sidebar"] h4 {
+    font-size: clamp(0.875rem, 0.3vw + 0.8rem, 1rem) !important;
+    line-height: 1.25 !important;
+    letter-spacing: 0.3px !important;
   }
 
   /* Footer headings sit on a dark navy bg — keep them brand yellow */
@@ -294,14 +339,21 @@ html.flight-search-active [data-testid="booking-faq"] {
   color: #014fd3;
 }
 
-/* Article body — Inter normal, keep headings bold */
+/* Article body — Outfit body text at 18px / 300, keep headings bold */
 .prose-article {
   @apply prose prose-stone
-         prose-p:font-sans prose-p:font-normal
-         prose-li:font-sans prose-li:font-normal
+         prose-p:font-sans prose-p:font-light
+         prose-li:font-sans prose-li:font-light
          prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tightest prose-headings:text-forest-900
          prose-a:text-primary-emphasis prose-a:no-underline hover:prose-a:text-primary-highlight hover:prose-a:underline
          prose-strong:font-medium prose-strong:text-ink
          prose-blockquote:border-l-sand-500 prose-blockquote:font-display prose-blockquote:font-normal prose-blockquote:text-forest-900 prose-blockquote:not-italic;
   max-width: none;
+}
+.prose-article p,
+.prose-article li {
+  font-size: clamp(0.95rem, 0.3vw + 0.85rem, 1.0625rem);
+  font-weight: 300;
+  color: #666666;
+  line-height: 1.7;
 }

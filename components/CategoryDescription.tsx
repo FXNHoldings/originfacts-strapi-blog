@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-const PREVIEW_WORDS = 15;
+const PREVIEW_WORDS = 30;
 
 export default function CategoryDescription({ text }: { text: string }) {
   const [expanded, setExpanded] = useState(false);
@@ -11,19 +11,21 @@ export default function CategoryDescription({ text }: { text: string }) {
   const preview = isTruncatable ? words.slice(0, PREVIEW_WORDS).join(' ') : text;
 
   return (
-    <p className="mt-5 text-[1rem] text-ink/75" data-testid="category-description">
-      {expanded || !isTruncatable ? text : `${preview}… `}
-      {isTruncatable && (
-        <button
-          type="button"
-          onClick={() => setExpanded((v) => !v)}
-          className="ml-1 inline text-[15px] font-semibold text-primary-emphasis underline underline-offset-2 hover:no-underline"
-          aria-expanded={expanded}
-          data-testid="category-description-read-more"
-        >
-          {expanded ? 'Show less' : 'Read More'}
-        </button>
-      )}
-    </p>
+    <div className="mt-6 max-w-[80%]" data-testid="category-description">
+      <p className="text-base font-medium leading-relaxed text-forest-900/70 sm:text-lg">
+        {expanded || !isTruncatable ? text : `${preview}… `}
+        {isTruncatable && (
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className="ml-1 inline align-baseline text-[15px] font-semibold text-primary-emphasis underline underline-offset-2 hover:no-underline"
+            aria-expanded={expanded}
+            data-testid="category-description-read-more"
+          >
+            {expanded ? 'Show less' : 'Read More'}
+          </button>
+        )}
+      </p>
+    </div>
   );
 }

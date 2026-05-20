@@ -32,7 +32,7 @@ export default function Header() {
       data-testid="site-header"
       data-stuck={stuck ? 'true' : 'false'}
     >
-      <div className="mx-auto flex max-w-7xl items-center gap-6 px-6 py-[0.8rem]">
+      <div className="flex w-full items-center gap-6 px-[50px] py-[0.8rem]">
         <Link href="/" className="block shrink-0" data-testid="logo-link" aria-label="Originfacts home">
           <Image
             src="/brand/logo/logo.svg"
@@ -78,7 +78,7 @@ export default function Header() {
 
         <div className="ml-auto flex items-center justify-end gap-2">
           <nav className="hidden md:block" data-testid="primary-nav">
-            <ul className="flex items-center justify-end gap-1 font-urbanist text-[1rem] font-semibold tracking-[0.3px]">
+            <ul className="flex items-center justify-end gap-1 font-urbanist text-[1rem] font-bold tracking-[0.3px]">
               <li data-testid="nav-item-destinations">
                 <Link
                   href="/destinations"
@@ -255,6 +255,13 @@ export default function Header() {
             </ul>
           </nav>
 
+          <Link
+            href="/contact"
+            className="ml-2 hidden lg:inline-flex h-10 items-center justify-center rounded-[20px] bg-forest-900 px-5 font-urbanist text-[1rem] font-bold capitalize tracking-wider text-white transition hover:bg-primary-emphasis"
+            data-testid="nav-get-in-touch"
+          >
+            Get in Touch
+          </Link>
         </div>
       </div>
     </header>
