@@ -49,7 +49,7 @@ const PRO_TIPS: ProTip[] = [
   {
     n: 1,
     title: 'Flexible of Dates',
-    tagline: 'Shift a day or two, save 20–40%.',
+    tagline: 'Shift a day or two, you could save 20–40%.',
     image: '/illustrations/flexible-dates.svg',
   },
   {
