@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Outfit, Urbanist } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 import Header from '@/components/Header';
@@ -12,17 +12,10 @@ import FixedSocialFollow from '@/components/FixedSocialFollow';
 import { ADSENSE_CLIENT, ADSENSE_ENABLED } from '@/lib/adsense';
 import { listSidebarArticles } from '@/lib/strapi';
 
-const outfit = Outfit({
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-outfit',
+  variable: '--font-inter',
   weight: ['300', '400', '500', '600', '700'],
-  display: 'swap',
-});
-
-const urbanist = Urbanist({
-  subsets: ['latin'],
-  variable: '--font-urbanist',
-  weight: ['400', '500', '600', '700'],
   display: 'swap',
 });
 
@@ -49,7 +42,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const sidebar = await listSidebarArticles(7).catch(() => ({ recent: [], popular: [] }));
 
   return (
-    <html lang="en" className={`${outfit.variable} ${urbanist.variable}`}>
+    <html lang="en" className={inter.variable}>
       <body className="min-h-screen flex flex-col font-sans font-normal grain" data-testid="app-shell">
         <Script id="consent-default" strategy="beforeInteractive">{`
           window.dataLayer = window.dataLayer || [];
@@ -81,6 +74,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           })();
         `}</Script>
         <Header />
+        <div className="px-[50px] py-4">
+          <hr className="border-0 border-t" style={{ borderColor: '#ddd' }} />
+        </div>
         <main className="flex-1">{children}</main>
         <FixedPopularNow articles={sidebar.popular} />
         <FixedRightBar popularPosts={sidebar.popular} />

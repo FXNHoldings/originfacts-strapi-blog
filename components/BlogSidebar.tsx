@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { mediaUrl, type StrapiArticle } from '@/lib/strapi';
+import WeatherWidget from './WeatherWidget';
 
 export type SidebarCategoryTile = {
   slug: string;
@@ -28,44 +29,45 @@ export default function BlogSidebar({
 
   return (
     <aside className="space-y-10 lg:sticky lg:top-24 lg:self-start" data-testid="blog-sidebar">
-      <div>
-        <div className="inline-flex border border-forest-900/10 bg-white p-1 shadow-sm">
-          <button
-            type="button"
-            onClick={() => setTab('popular')}
-            aria-pressed={tab === 'popular'}
-            className={
-              'px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest transition ' +
-              (tab === 'popular' ? 'bg-forest-900 text-white' : 'text-forest-900/60 hover:text-forest-900')
-            }
-          >
-            Popular
-          </button>
-          <button
-            type="button"
-            onClick={() => setTab('recent')}
-            aria-pressed={tab === 'recent'}
-            className={
-              'rounded-full px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest transition ' +
-              (tab === 'recent' ? 'bg-forest-900 text-white' : 'text-forest-900/60 hover:text-forest-900')
-            }
-          >
-            Recent
-          </button>
-        </div>
-        {activePosts.length > 0 && (
-          <ul
-            className="mt-5 divide-y divide-forest-900/10"
-            data-testid={`blog-sidebar-${tab}-list`}
-          >
-            {activePosts.map((post) => (
-              <li key={post.id} className="py-3 first:pt-0 last:pb-0">
-                <SidebarPostRow article={post} />
+      <WeatherWidget />
+
+      {categoryTiles.length > 0 && (
+        <div data-testid="blog-sidebar-categories">
+          <h3 className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-forest-900">
+            Categories
+            <span aria-hidden className="h-px w-10 bg-forest-900/20" />
+          </h3>
+          <ul className="mt-4 space-y-3">
+            {categoryTiles.map((t) => (
+              <li key={t.slug}>
+                <Link
+                  href={`/category/${t.slug}`}
+                  className="group relative block h-16 overflow-hidden rounded bg-forest-900"
+                >
+                  {t.image && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={t.image}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover opacity-60 transition duration-500 group-hover:scale-105 group-hover:opacity-70"
+                      loading="lazy"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/35 to-black/55" />
+                  <div className="absolute inset-0 flex items-center justify-between px-4">
+                    <span className="font-urbanist text-sm font-bold uppercase tracking-wider text-white">
+                      {t.name}
+                    </span>
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/25 text-xs font-bold text-white backdrop-blur">
+                      {t.count}
+                    </span>
+                  </div>
+                </Link>
               </li>
             ))}
           </ul>
-        )}
-      </div>
+        </div>
+      )}
 
       <div>
         <h3 className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-forest-900">
@@ -122,43 +124,44 @@ export default function BlogSidebar({
         </ul>
       </div>
 
-      {categoryTiles.length > 0 && (
-        <div data-testid="blog-sidebar-categories">
-          <h3 className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-forest-900">
-            Categories
-            <span aria-hidden className="h-px w-10 bg-forest-900/20" />
-          </h3>
-          <ul className="mt-4 space-y-3">
-            {categoryTiles.map((t) => (
-              <li key={t.slug}>
-                <Link
-                  href={`/category/${t.slug}`}
-                  className="group relative block h-16 overflow-hidden rounded bg-forest-900"
-                >
-                  {t.image && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={t.image}
-                      alt=""
-                      className="absolute inset-0 h-full w-full object-cover opacity-60 transition duration-500 group-hover:scale-105 group-hover:opacity-70"
-                      loading="lazy"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/35 to-black/55" />
-                  <div className="absolute inset-0 flex items-center justify-between px-4">
-                    <span className="font-urbanist text-sm font-bold uppercase tracking-wider text-white">
-                      {t.name}
-                    </span>
-                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/25 text-xs font-bold text-white backdrop-blur">
-                      {t.count}
-                    </span>
-                  </div>
-                </Link>
+      <div>
+        <div className="inline-flex border border-forest-900/10 bg-white p-1 shadow-sm">
+          <button
+            type="button"
+            onClick={() => setTab('popular')}
+            aria-pressed={tab === 'popular'}
+            className={
+              'px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest transition ' +
+              (tab === 'popular' ? 'bg-forest-900 text-white' : 'text-forest-900/60 hover:text-forest-900')
+            }
+          >
+            Popular
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('recent')}
+            aria-pressed={tab === 'recent'}
+            className={
+              'rounded-full px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest transition ' +
+              (tab === 'recent' ? 'bg-forest-900 text-white' : 'text-forest-900/60 hover:text-forest-900')
+            }
+          >
+            Recent
+          </button>
+        </div>
+        {activePosts.length > 0 && (
+          <ul
+            className="mt-5 divide-y divide-forest-900/10"
+            data-testid={`blog-sidebar-${tab}-list`}
+          >
+            {activePosts.map((post) => (
+              <li key={post.id} className="py-3 first:pt-0 last:pb-0">
+                <SidebarPostRow article={post} />
               </li>
             ))}
           </ul>
-        </div>
-      )}
+        )}
+      </div>
 
       <div>
         <h3 className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-forest-900">

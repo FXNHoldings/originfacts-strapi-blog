@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { mediaUrl, type StrapiArticle } from '@/lib/strapi';
 
-const AUTO_ADVANCE_MS = 4500;
+const AUTO_ADVANCE_MS = 2200;
 
 export default function RelatedPostsSlider({ articles }: { articles: StrapiArticle[] }) {
   const trackRef = useRef<HTMLDivElement>(null);

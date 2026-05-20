@@ -44,12 +44,66 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+/**
+ * Insert gallery images into the rendered article HTML at evenly-spaced
+ * paragraph boundaries instead of dumping them all at the bottom. Falls
+ * back to appending the leftover images if there aren't enough paragraphs
+ * to interleave evenly.
+ */
+function interleaveGallery(
+  html: string,
+  gallery: NonNullable<Awaited<ReturnType<typeof getArticle>>>['gallery'],
+  fallbackAlt: string,
+): string {
+  if (!gallery || gallery.length === 0) return html;
+
+  // Split on closing </p> while preserving the tag with each chunk.
+  const rawParts = html.split('</p>');
+  const chunks = rawParts.map((p, i, arr) => (i < arr.length - 1 ? `${p}</p>` : p));
+  const nonEmpty = chunks.filter((c) => c.trim());
+  if (nonEmpty.length === 0) {
+    // No paragraphs to interleave with — just append all images at the end.
+    return html + gallery.map((img) => renderInlineImg(img, fallbackAlt)).join('');
+  }
+
+  // Evenly spread N images across (paragraphCount + 1) gaps.
+  const step = Math.max(1, Math.floor(nonEmpty.length / (gallery.length + 1)));
+  const out: string[] = [];
+  let nextGalleryIdx = 0;
+
+  nonEmpty.forEach((chunk, i) => {
+    out.push(chunk);
+    if (nextGalleryIdx < gallery.length && (i + 1) % step === 0) {
+      out.push(renderInlineImg(gallery[nextGalleryIdx], fallbackAlt));
+      nextGalleryIdx += 1;
+    }
+  });
+
+  // Stragglers (gallery longer than paragraph slots) — append at the end.
+  while (nextGalleryIdx < gallery.length) {
+    out.push(renderInlineImg(gallery[nextGalleryIdx], fallbackAlt));
+    nextGalleryIdx += 1;
+  }
+  return out.join('');
+}
+
+function renderInlineImg(
+  img: NonNullable<NonNullable<Awaited<ReturnType<typeof getArticle>>>['gallery']>[number],
+  fallbackAlt: string,
+): string {
+  const url = mediaUrl(img);
+  if (!url) return '';
+  const alt = (img.alternativeText || fallbackAlt).replace(/"/g, '&quot;');
+  return `<figure class="article-inline-image my-8"><img src="${url}" alt="${alt}" class="aspect-[16/9] w-full rounded-lg object-cover" loading="lazy" /></figure>`;
+}
+
 export default async function ArticlePage({ params }: Props) {
   const { slug } = await params;
   const article = await getArticle(slug);
   if (!article) notFound();
 
-  const html = await marked.parse(article.content || '', { async: true });
+  const rawHtml = await marked.parse(article.content || '', { async: true });
+  const html = interleaveGallery(rawHtml, article.gallery, article.title);
   const hero = mediaUrl(article.coverImage ?? null);
   const date = article.publishedAt ? format(new Date(article.publishedAt), 'd MMMM yyyy') : '';
 
@@ -127,77 +181,72 @@ export default async function ArticlePage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      {/* Breadcrumb */}
-      <nav
-        aria-label="Breadcrumb"
-        className="mx-auto max-w-7xl px-6 pt-8"
-        data-testid="breadcrumb"
-      >
-        <ol
-          itemScope
-          itemType="https://schema.org/BreadcrumbList"
-          className="flex flex-wrap items-center gap-2 text-xs text-forest-900/60"
-        >
-          <li
-            itemProp="itemListElement"
-            itemScope
-            itemType="https://schema.org/ListItem"
-            className="flex items-center gap-2"
-          >
-            <Link href="/" itemProp="item" className="hover:text-primary-emphasis">
-              <span itemProp="name">Home</span>
-            </Link>
-            <meta itemProp="position" content="1" />
-            <span aria-hidden className="text-forest-900/30">/</span>
-          </li>
-          {article.category && (
-            <li
-              itemProp="itemListElement"
-              itemScope
-              itemType="https://schema.org/ListItem"
-              className="flex items-center gap-2"
-            >
-              <Link
-                href={`/category/${article.category.slug}`}
-                itemProp="item"
-                className="hover:text-primary-emphasis"
-              >
-                <span itemProp="name">{article.category.name}</span>
-              </Link>
-              <meta itemProp="position" content="2" />
-              <span aria-hidden className="text-forest-900/30">/</span>
-            </li>
-          )}
-          <li
-            itemProp="itemListElement"
-            itemScope
-            itemType="https://schema.org/ListItem"
-            aria-current="page"
-            className="truncate text-forest-900"
-          >
-            <span itemProp="name">{article.title}</span>
-            <meta itemProp="position" content={article.category ? '3' : '2'} />
-          </li>
-        </ol>
-      </nav>
-
-      {/* Body — single 2-column layout: title + featured image + body live in
-          column 1 alongside BlogSidebar in column 2 (frenify single post pattern). */}
-      <div className="mx-auto max-w-7xl px-6 pt-6 pb-16">
+      {/* Body — single 2-column layout: breadcrumb + title + featured image
+          + body live in column 1 alongside BlogSidebar in column 2
+          (frenify single post pattern). */}
+      <div className="mx-auto max-w-7xl px-6 pt-8 pb-16">
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="min-w-0" data-testid="article-main">
-            <header className="mb-8">
-              <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-widest text-forest-800/70">
-                {article.category && (
-                  <Link href={`/category/${article.category.slug}`} className="chip hover:bg-forest-800/10">
-                    {article.category.name}
+            <nav
+              aria-label="Breadcrumb"
+              className="mb-6 border-y border-forest-900/15 py-2"
+              data-testid="breadcrumb"
+            >
+              <ol
+                itemScope
+                itemType="https://schema.org/BreadcrumbList"
+                className="flex flex-wrap items-center gap-x-3 gap-y-1 font-urbanist text-[12px] font-bold uppercase tracking-widest"
+              >
+                <li
+                  itemProp="itemListElement"
+                  itemScope
+                  itemType="https://schema.org/ListItem"
+                  className="flex items-center gap-3"
+                >
+                  <Link
+                    href="/"
+                    itemProp="item"
+                    className="text-forest-950 transition hover:text-primary-emphasis"
+                  >
+                    <span itemProp="name">Home</span>
                   </Link>
+                  <meta itemProp="position" content="1" />
+                  <span aria-hidden className="text-forest-900/35">/</span>
+                </li>
+                {article.category && (
+                  <li
+                    itemProp="itemListElement"
+                    itemScope
+                    itemType="https://schema.org/ListItem"
+                    className="flex items-center gap-3"
+                  >
+                    <Link
+                      href={`/category/${article.category.slug}`}
+                      itemProp="item"
+                      className="text-forest-950 transition hover:text-primary-emphasis"
+                    >
+                      <span itemProp="name">{article.category.name}</span>
+                    </Link>
+                    <meta itemProp="position" content="2" />
+                    <span aria-hidden className="text-forest-900/35">/</span>
+                  </li>
                 )}
-                {date && <time dateTime={article.publishedAt}>{date}</time>}
-                {article.readingTimeMinutes ? <span>· {article.readingTimeMinutes} min read</span> : null}
-              </div>
+                <li
+                  itemProp="itemListElement"
+                  itemScope
+                  itemType="https://schema.org/ListItem"
+                  aria-current="page"
+                  className="truncate text-forest-900/55"
+                >
+                  <span itemProp="name">{article.title}</span>
+                  <meta itemProp="position" content={article.category ? '3' : '2'} />
+                </li>
+              </ol>
+            </nav>
+
+            <header className="mb-8">
               <h1
-                className="editorial-h mt-5 text-[clamp(1.5rem,2vw+1rem,2rem)] font-bold leading-tight text-forest-900"
+                className="editorial-h text-[clamp(1.5rem,2vw+1rem,2rem)] font-bold leading-tight text-forest-900"
                 data-testid="article-title"
               >
                 {article.title}
@@ -205,6 +254,15 @@ export default async function ArticlePage({ params }: Props) {
               {article.excerpt && (
                 <p className="mt-5 text-base text-ink/75 sm:text-lg">{article.excerpt}</p>
               )}
+              <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs uppercase tracking-widest text-forest-800/70">
+                {date && <time dateTime={article.publishedAt}>{date}</time>}
+                {date && article.readingTimeMinutes ? (
+                  <span aria-hidden className="text-forest-900/40">·</span>
+                ) : null}
+                {article.readingTimeMinutes ? (
+                  <span>{article.readingTimeMinutes} min read</span>
+                ) : null}
+              </div>
               {article.author && (
                 <div className="mt-6 flex items-center gap-3 text-sm text-forest-900/80">
                   {mediaUrl(article.author.avatar ?? null) && (
@@ -244,30 +302,6 @@ export default async function ArticlePage({ params }: Props) {
             />
 
             <AdSlot slot="0000000000" className="mt-12" />
-
-            {article.gallery && article.gallery.length > 0 && (
-              <div className="mt-12" data-testid="article-gallery">
-                <h3 className="editorial-h text-sm uppercase tracking-widest text-forest-800/70">
-                  Gallery
-                </h3>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                  {article.gallery.map((img, i) => {
-                    const url = mediaUrl(img);
-                    if (!url) return null;
-                    return (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        key={i}
-                        src={url}
-                        alt={img.alternativeText || `${article.title} — image ${i + 1}`}
-                        className="aspect-[4/3] w-full rounded-lg object-cover"
-                        loading="lazy"
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            )}
 
             <CommentsSection slug={article.slug} />
 
