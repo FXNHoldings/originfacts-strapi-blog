@@ -40,7 +40,7 @@ export default async function HomePage() {
     latest.push(a);
   }
   const hero = latest[0];
-  const side = latest.slice(1, 12);
+  const side = latest.slice(1, 13);
 
   const organizationJsonLd = {
     '@context': 'https://schema.org',
@@ -136,7 +136,7 @@ function Hero({ hero, side }: { hero?: StrapiArticle; side: StrapiArticle[] }) {
           {rightBottom && <HeroOverlayStory article={rightBottom} size="small" />}
           {miniList.length > 0 && (
             <div className="divide-y divide-forest-900/15 sm:col-span-2 lg:col-span-1">
-              {miniList.slice(0, 4).map((article) => (
+              {miniList.slice(0, 5).map((article) => (
                 <HeroMiniStory key={article.id} article={article} />
               ))}
             </div>
