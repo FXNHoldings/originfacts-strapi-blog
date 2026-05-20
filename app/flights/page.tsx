@@ -176,7 +176,7 @@ export default function FlightsPage() {
 
       <div className="mx-auto max-w-7xl px-6 py-16" data-testid="fly-page">
         <header className="max-w-3xl">
-          <h1 className="editorial-h text-3xl font-bold text-forest-900">
+          <h1 className="editorial-h text-[2.5rem] font-bold text-forest-900">
             Thousands of cheap flights.
           </h1>
           <p className="mt-4 text-lg font-light text-forest-900/70">
