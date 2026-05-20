@@ -91,7 +91,7 @@ export default function Header() {
                   data-testid="nav-articles"
                   aria-haspopup="true"
                 >
-                  More Topics
+                  More Articles
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
