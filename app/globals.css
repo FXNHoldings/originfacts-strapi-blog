@@ -69,8 +69,9 @@
   }
 }
 
-/* ---------- /flights: search form drop shadow ---------- */
+/* ---------- /flights: search form drop shadow + padding ---------- */
 .tpwl-search-wrap #tpwl-search {
+  padding: 10px;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
               rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
 }
