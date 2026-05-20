@@ -120,7 +120,7 @@ export default function FlightsPage() {
           </p>
         </header>
 
-        <div className="mt-10">
+        <div className="tpwl-search-wrap mt-10">
           <div id="tpwl-search" />
         </div>
 
