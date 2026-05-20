@@ -4,7 +4,7 @@
 
 @layer base {
   html {
-    background: theme('colors.paper');
+    background: #ffffff;
     color: theme('colors.ink');
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
