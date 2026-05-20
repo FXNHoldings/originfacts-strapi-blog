@@ -120,11 +120,11 @@ function Hero({ hero, side }: { hero?: StrapiArticle; side: StrapiArticle[] }) {
           </a>
         </div>
 
-        <div className="grid gap-5">
+        <div className="grid gap-4">
           <HeroOverlayStory article={hero} priority size="large" />
           {centerWide && <HeroOverlayStory article={centerWide} size="wide" />}
           {(summaryOne || summaryTwo) && (
-            <div className="grid gap-5 border-t border-forest-900/15 pt-5 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2">
               {summaryOne && <HeroTextStory article={summaryOne} />}
               {summaryTwo && <HeroTextStory article={summaryTwo} />}
             </div>
