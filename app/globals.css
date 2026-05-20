@@ -70,11 +70,13 @@
 }
 
 /* ---------- /flights: hide browse sections once search results render ----------
-   When TPWL injects ticket results into #tpwl-tickets, collapse the Popular
-   Destinations + Search-by-Destination sections so the user focuses on
-   results. Comes back automatically when results are cleared. */
-[data-testid="fly-page"]:has(#tpwl-tickets:not(:empty)) [data-testid="popular-destinations"],
-[data-testid="fly-page"]:has(#tpwl-tickets:not(:empty)) [data-testid="cheap-flights-by-destination"] {
+   The bootstrap script in app/flights/page.tsx toggles
+   `.flight-search-active` on <html> whenever ?flightSearch is in the URL
+   (TPWL dispatches a `urlchange` event on submit, which the script listens
+   to). When that class is present, collapse the Popular Destinations and
+   Search-by-Destination sections so results have the page to themselves. */
+html.flight-search-active [data-testid="popular-destinations"],
+html.flight-search-active [data-testid="cheap-flights-by-destination"] {
   display: none;
 }
 

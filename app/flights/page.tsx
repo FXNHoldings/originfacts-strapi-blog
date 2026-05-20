@@ -98,6 +98,18 @@ export default function FlightsPage() {
 })();`}
       </Script>
 
+      <Script id="flight-search-state" strategy="afterInteractive">
+        {`(function () {
+  function update() {
+    var hasParam = new URLSearchParams(window.location.search).has("flightSearch");
+    document.documentElement.classList.toggle("flight-search-active", hasParam);
+  }
+  update();
+  window.addEventListener("popstate", update);
+  window.addEventListener("urlchange", update);
+})();`}
+      </Script>
+
       <div className="mx-auto max-w-7xl px-6 py-16" data-testid="fly-page">
         <header className="max-w-3xl">
           <h1 className="editorial-h text-3xl font-bold text-forest-900">
