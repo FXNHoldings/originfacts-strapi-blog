@@ -58,8 +58,7 @@ export default async function CategoryPage({ params }: Props) {
   return (
     <div className="mx-auto max-w-7xl px-6 py-16" data-testid={`category-page-${slug}`}>
       <header className="max-w-3xl">
-        <p className="chip">Category</p>
-        <h1 className="editorial-h mt-5 text-3xl font-bold text-forest-900">{category.name}</h1>
+        <h1 className="editorial-h text-3xl font-bold !text-white">{category.name}</h1>
         {category.tagline && (
           <p className="font-urbanist mt-4 text-sm uppercase tracking-wider text-forest-900/60">{category.tagline}</p>
         )}
