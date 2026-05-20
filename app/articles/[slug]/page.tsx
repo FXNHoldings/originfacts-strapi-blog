@@ -346,7 +346,7 @@ export default async function ArticlePage({ params }: Props) {
           <div className="mx-auto max-w-7xl px-6 py-16" data-testid="related-section">
             <h2 className="editorial-h text-3xl font-bold text-forest-900">Keep reading</h2>
             <div className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-              {related.map((a) => <ArticleCard key={a.id} article={a} size="sm" />)}
+              {related.map((a) => <ArticleCard key={a.id} article={a} size="sm" hideMeta />)}
             </div>
           </div>
         </section>
