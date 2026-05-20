@@ -73,28 +73,6 @@ export default function Footer() {
           </ul>
         </div>
         <div>
-          <h4 className="editorial-h text-lg capitalize tracking-normal text-secondary-emphasis">Topics</h4>
-          <ul className="mt-3 space-y-2 text-sm text-white/80" data-testid="footer-topics">
-            {SECTIONS.map((section) => (
-              <li key={section.slug}>
-                <Link href={`/category/${section.slug}`} className="hover:text-secondary">
-                  {section.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <h4 className="editorial-h text-lg capitalize tracking-normal text-secondary-emphasis">Discover</h4>
-          <ul className="mt-3 space-y-2 text-sm text-white/80" data-testid="footer-travel-index">
-            <li><Link href="/flight-routes" className="hover:text-secondary">Flight Routes</Link></li>
-            <li><Link href="/hotels" className="hover:text-secondary">Hotels</Link></li>
-            <li><Link href="/countries" className="hover:text-secondary">Countries</Link></li>
-            <li><Link href="/airlines" className="hover:text-secondary">Airlines</Link></li>
-            <li><Link href="/airports" className="hover:text-secondary">Airports</Link></li>
-          </ul>
-        </div>
-        <div>
           <h4 className="editorial-h text-lg capitalize tracking-normal text-secondary-emphasis">Company</h4>
           <ul className="mt-3 space-y-2 text-sm text-white/80" data-testid="footer-company">
             <li><Link href="/" className="hover:text-secondary">Home</Link></li>
@@ -155,6 +133,28 @@ export default function Footer() {
             </li>
             <li><Link href="/sitemap" className="hover:text-secondary">Site Map</Link></li>
             <li><Link href="/contact" className="hover:text-secondary">Contact</Link></li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="editorial-h text-lg capitalize tracking-normal text-secondary-emphasis">Discover</h4>
+          <ul className="mt-3 space-y-2 text-sm text-white/80" data-testid="footer-travel-index">
+            <li><Link href="/flight-routes" className="hover:text-secondary">Flight Routes</Link></li>
+            <li><Link href="/hotels" className="hover:text-secondary">Hotels</Link></li>
+            <li><Link href="/countries" className="hover:text-secondary">Countries</Link></li>
+            <li><Link href="/airlines" className="hover:text-secondary">Airlines</Link></li>
+            <li><Link href="/airports" className="hover:text-secondary">Airports</Link></li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="editorial-h text-lg capitalize tracking-normal text-secondary-emphasis">Topics</h4>
+          <ul className="mt-3 space-y-2 text-sm text-white/80" data-testid="footer-topics">
+            {SECTIONS.map((section) => (
+              <li key={section.slug}>
+                <Link href={`/category/${section.slug}`} className="hover:text-secondary">
+                  {section.title}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
       </div>
