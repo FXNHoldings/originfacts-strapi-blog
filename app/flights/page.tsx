@@ -159,10 +159,6 @@ export default function FlightsPage() {
           <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">
             How to find a cheap flight
           </h2>
-          <p className="mt-2 max-w-3xl text-sm text-forest-900/70">
-            Four habits that turn the search box above into a price-cutting tool, not just a
-            booking form.
-          </p>
           <ol className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {PRO_TIPS.map((tip) => (
               <li
