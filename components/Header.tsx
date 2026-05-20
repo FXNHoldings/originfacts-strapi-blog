@@ -63,15 +63,6 @@ export default function Header() {
                   Destinations
                 </Link>
               </li>
-              <li data-testid="nav-item-flights">
-                <Link
-                  href="/flight-search"
-                  className="inline-flex items-center gap-1.5 px-3 py-2 text-[#000000] transition-colors hover:text-[rgb(1,79,211)]"
-                  data-testid="nav-flights"
-                >
-                  Flight Search
-                </Link>
-              </li>
               <li
                 className="group/allarticles relative"
                 data-testid="nav-item-articles"
@@ -174,6 +165,14 @@ export default function Header() {
                     className="min-w-[220px] rounded-md border border-forest-900/10 bg-paper p-1 shadow-md"
                   >
                     <Link
+                      href="/flight-search"
+                      className="block rounded px-3 py-2 text-base text-[#000000] transition-colors hover:bg-forest-900/5 hover:text-[rgb(1,79,211)]"
+                      role="menuitem"
+                      data-testid="nav-resources-flight-search"
+                    >
+                      Flight Search
+                    </Link>
+                    <Link
                       href="/airlines"
                       className="block rounded px-3 py-2 text-base text-[#000000] transition-colors hover:bg-forest-900/5 hover:text-[rgb(1,79,211)]"
                       role="menuitem"
@@ -225,6 +224,15 @@ export default function Header() {
                     </div>
                   </div>
                 </div>
+              </li>
+              <li data-testid="nav-item-contact">
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 text-[#000000] transition-colors hover:text-[rgb(1,79,211)]"
+                  data-testid="nav-contact"
+                >
+                  Contact
+                </Link>
               </li>
             </ul>
           </nav>
