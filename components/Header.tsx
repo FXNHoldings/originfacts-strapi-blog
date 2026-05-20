@@ -23,7 +23,7 @@ export default function Header() {
           action="/articles"
           method="get"
           role="search"
-          className="hidden md:flex h-10 w-full max-w-md flex-1 items-center gap-2 rounded-full border border-forest-900/15 bg-white px-4 transition focus-within:border-primary-emphasis"
+          className="hidden md:flex h-10 w-full max-w-md flex-1 items-center gap-2 rounded-[4px] border border-forest-900/15 bg-white px-4 transition focus-within:border-primary-emphasis"
           data-testid="header-search"
         >
           <svg
