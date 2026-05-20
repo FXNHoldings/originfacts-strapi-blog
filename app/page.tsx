@@ -223,7 +223,7 @@ function HeroOverlayStory({
   size: 'large' | 'wide' | 'small';
 }) {
   const img = mediaUrl(article.coverImage ?? null);
-  const aspect = size === 'large' ? 'aspect-[1/1.04]' : size === 'wide' ? 'aspect-[1.82/1]' : 'aspect-[1.23/1]';
+  const aspect = size === 'large' ? 'aspect-[1/1.04]' : size === 'wide' ? 'aspect-[1.6/1]' : 'aspect-[1.23/1]';
   const titleSize = size === 'large' ? 'text-2xl sm:text-3xl' : 'text-base sm:text-lg';
 
   return (
