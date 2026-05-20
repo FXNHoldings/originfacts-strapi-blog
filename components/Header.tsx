@@ -53,7 +53,7 @@ export default function Header() {
 
         <div className="ml-auto flex items-center justify-end gap-2">
           <nav className="hidden md:block" data-testid="primary-nav">
-            <ul className="flex items-center justify-end gap-1 font-urbanist text-[1rem] font-medium">
+            <ul className="flex items-center justify-end gap-1 font-urbanist text-[1rem] font-semibold tracking-[0.3px]">
               <li data-testid="nav-item-destinations">
                 <Link
                   href="/destinations"
