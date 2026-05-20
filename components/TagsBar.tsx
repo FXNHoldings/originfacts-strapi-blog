@@ -39,7 +39,7 @@ export default function TagsBar() {
   }, []);
 
   return (
-    <section className="mt-[50px] mb-6" data-testid="home-tags-bar">
+    <section className="mt-[50px] py-8" data-testid="home-tags-bar">
       <div className="mx-auto max-w-7xl px-6">
         <div
           className="relative h-10 overflow-hidden rounded-[5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)]"

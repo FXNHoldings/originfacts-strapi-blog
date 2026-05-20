@@ -7,6 +7,8 @@ import Footer from '@/components/Footer';
 import CookieConsent from '@/components/CookieConsent';
 import FixedRightBar from '@/components/FixedRightBar';
 import FixedPopularNow from '@/components/FixedPopularNow';
+import FixedScrollToTop from '@/components/FixedScrollToTop';
+import FixedSocialFollow from '@/components/FixedSocialFollow';
 import { ADSENSE_CLIENT, ADSENSE_ENABLED } from '@/lib/adsense';
 import { listSidebarArticles } from '@/lib/strapi';
 
@@ -82,6 +84,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <main className="flex-1">{children}</main>
         <FixedPopularNow articles={sidebar.popular} />
         <FixedRightBar popularPosts={sidebar.popular} />
+        <FixedScrollToTop />
+        <FixedSocialFollow />
         <Footer />
         <CookieConsent />
       </body>

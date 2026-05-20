@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import MobileNav from './MobileNav';
 
 const STICKY_THRESHOLD = 80;
 
@@ -32,7 +33,7 @@ export default function Header() {
       data-testid="site-header"
       data-stuck={stuck ? 'true' : 'false'}
     >
-      <div className="flex w-full items-center gap-6 px-[50px] py-[0.8rem]">
+      <div className="flex w-full items-center gap-6 px-6 py-[0.8rem] lg:px-[50px]">
         <Link href="/" className="block shrink-0" data-testid="logo-link" aria-label="Originfacts home">
           <Image
             src="/brand/logo/logo.svg"
@@ -44,7 +45,9 @@ export default function Header() {
           />
         </Link>
 
-        <div className="ml-auto flex items-center justify-end gap-2">
+        <MobileNav />
+
+        <div className="ml-auto hidden items-center justify-end gap-2 lg:flex">
           <nav className="hidden md:block" data-testid="primary-nav">
             <ul className="flex items-center justify-end gap-1 font-urbanist text-[1rem] font-bold tracking-[0.3px]">
               <li data-testid="nav-item-destinations">

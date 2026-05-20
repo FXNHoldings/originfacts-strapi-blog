@@ -242,13 +242,30 @@ function CategoryFeedCard({
             {article.excerpt}
           </p>
         )}
-        <Link
-          href={`/articles/${article.slug}`}
-          className="mt-4 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-wider text-primary-emphasis underline underline-offset-2 hover:no-underline"
-        >
-          Read More
-          <span aria-hidden>→</span>
-        </Link>
+        <div className="mt-5">
+          <Link
+            href={`/articles/${article.slug}`}
+            className="inline-flex items-center gap-2 rounded-full border border-forest-900/15 bg-white px-4 py-2 font-urbanist text-[11px] font-bold uppercase tracking-widest text-forest-900 transition hover:border-primary-emphasis hover:text-primary-emphasis"
+          >
+            Read More
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-forest-900 text-white transition group-hover:bg-primary-emphasis">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-3 w-3"
+                aria-hidden
+              >
+                <line x1="7" y1="17" x2="17" y2="7" />
+                <polyline points="7 7 17 7 17 17" />
+              </svg>
+            </span>
+          </Link>
+        </div>
       </div>
     </article>
   );

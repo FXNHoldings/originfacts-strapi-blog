@@ -34,7 +34,7 @@ export default async function HomePage() {
   const [perSection, countries, sidebar, categoryTiles] = await Promise.all([
     Promise.all(
       SECTIONS.map((s) => {
-        const pageSize = s.slug === 'travel-tips' ? 8 : 5;
+        const pageSize = s.slug === 'travel-tips' ? 8 : s.slug === 'flights' ? 6 : 5;
         const articles =
           s.slug === 'destinations'
             ? listDestinationArticles({ pageSize })
@@ -145,7 +145,7 @@ function Hero({ hero, side }: { hero?: StrapiArticle; side: StrapiArticle[] }) {
   const [leftTop, leftBottom, centerWide, rightTop, rightBottom, summaryOne, summaryTwo, ...miniList] = side;
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-10" data-testid="home-hero">
+    <section className="mx-auto max-w-7xl px-6 py-8" data-testid="home-hero">
       <div className="grid gap-5 lg:grid-cols-[minmax(210px,0.78fr)_minmax(360px,1.55fr)_minmax(240px,0.82fr)]">
         <div
           className="grid gap-5 sm:grid-cols-2 lg:grid-cols-1"
@@ -448,7 +448,7 @@ function EditorialSection({
 
 function FlightsSection({ section, posts }: { section: Section; posts: StrapiArticle[] }) {
   const [feature, firstSide, secondSide, ...rest] = posts;
-  const list = rest.slice(0, 2);
+  const list = rest.slice(0, 3);
 
   return (
     <section className="py-20" data-testid={`section-${section.slug}`}>
