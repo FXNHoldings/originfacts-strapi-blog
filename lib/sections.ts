@@ -41,8 +41,8 @@ export const SECTIONS: Section[] = [
     layout: 'wirecutter',
   },
   {
-    slug: 'car-rental',
-    title: 'Car Rental',
+    slug: 'car-rentals',
+    title: 'Car Rentals',
     tagline: 'Wheels without the markup',
     description:
       'Renting a car has more landmines than booking a flight: airport surcharges, fuel policies that punish honesty, "free upgrades" that aren\'t, and damage claims that can outlive the trip itself. This section pulls apart the daily-rate game on the routes most travelers actually take — Mediterranean coastlines, US road trips, New Zealand loops — and explains exactly which insurance you need, which agencies still respect a reservation, and the off-airport pickup pattern that quietly knocks 30%+ off the bill. Everything written from a driver\'s seat, not a press release.',

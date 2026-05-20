@@ -16,6 +16,8 @@ const nextConfig = {
     return [
       // Travel Resources merged into Travel Tips on 2026-05-02.
       { source: '/category/travel-resources', destination: '/category/travel-tips', permanent: true },
+      // Car Rental → Car Rentals (category renamed in Strapi, 2026-05-20).
+      { source: '/category/car-rental', destination: '/category/car-rentals', permanent: true },
       // Old /flights/<slug> route-detail pages → /flight-routes/<slug>. Must come before
       // the bare /flights redirect so it takes precedence.
       { source: '/flights/:slug+', destination: '/flight-routes/:slug+', permanent: true },
