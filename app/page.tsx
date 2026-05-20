@@ -275,7 +275,7 @@ function HeroMiniStory({ article }: { article: StrapiArticle }) {
   return (
     <Link
       href={`/articles/${article.slug}`}
-      className="group grid grid-cols-[64px_minmax(0,1fr)] items-center gap-3 py-3 first:pt-0 last:pb-0"
+      className="group grid grid-cols-[80px_minmax(0,1fr)] items-center gap-3 py-3 first:pt-0 last:pb-0"
       data-testid={`hero-mini-${article.slug}`}
     >
       <div className="overflow-hidden rounded-[0.3rem] bg-forest-900/5">
