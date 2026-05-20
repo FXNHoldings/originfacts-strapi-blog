@@ -76,7 +76,7 @@
    the search bar sits right beneath it. */
 html.flight-search-active .tpwl-search-wrap {
   position: sticky;
-  top: 96px;
+  top: 75px;
   z-index: 40;
   margin-top: 16px;
   padding: 12px 0;
@@ -94,6 +94,7 @@ html.flight-search-active .tpwl-search-wrap {
    (TPWL dispatches a `urlchange` event on submit, which the script listens
    to). When that class is present, collapse the Popular Destinations and
    Search-by-Destination sections so results have the page to themselves. */
+html.flight-search-active [data-testid="travel-pros"],
 html.flight-search-active [data-testid="popular-destinations"],
 html.flight-search-active [data-testid="cheap-flights-by-destination"] {
   display: none;

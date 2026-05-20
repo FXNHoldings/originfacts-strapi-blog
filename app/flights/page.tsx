@@ -5,6 +5,35 @@ export const metadata = {
   description: 'Search hundreds of airlines in one place. Powered by our travel partners.',
 };
 
+type TravelProCard = { title: string; description: string; image: string; bg: string };
+
+const TRAVEL_PROS: TravelProCard[] = [
+  {
+    title: 'Plan with AI',
+    description: 'Get travel questions answered',
+    image: 'https://nxt.deals/images/plan-with-ai.svg',
+    bg: 'from-amber-100 to-orange-200',
+  },
+  {
+    title: 'Best Time to Travel',
+    description: 'Know when to save',
+    image: 'https://nxt.deals/images/best-time.svg',
+    bg: 'from-sky-100 to-blue-200',
+  },
+  {
+    title: 'Explore',
+    description: 'See destinations on your budget',
+    image: 'https://nxt.deals/images/explore.svg',
+    bg: 'from-emerald-100 to-teal-200',
+  },
+  {
+    title: 'Trips',
+    description: 'Keep all your plans in one place',
+    image: 'https://nxt.deals/images/trips.svg',
+    bg: 'from-rose-100 to-pink-200',
+  },
+];
+
 type Destination = { name: string; iata: string; country: string; imageUrl: string; priceUsd: number };
 
 const ORIGIN = { name: 'London', iata: 'LON' };
@@ -127,6 +156,35 @@ export default function FlightsPage() {
         <div className="mt-12">
           <div id="tpwl-tickets" />
         </div>
+
+        {/* ---------- For travel pros ---------- */}
+        <section className="mt-20" data-testid="travel-pros">
+          <h2 className="editorial-h text-2xl font-bold text-forest-900 sm:text-3xl">
+            For travel pros
+          </h2>
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {TRAVEL_PROS.map((card) => (
+              <article
+                key={card.title}
+                className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-forest-900/10 transition-shadow hover:shadow-md"
+              >
+                <div>
+                  <h3 className="text-lg font-bold text-forest-900">{card.title}</h3>
+                  <p className="mt-1 text-sm text-primary-emphasis">{card.description}</p>
+                </div>
+                <div className={`flex h-40 items-center justify-center rounded-xl bg-gradient-to-br ${card.bg}`}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={card.image}
+                    alt=""
+                    loading="lazy"
+                    className="h-full w-auto object-contain p-3"
+                  />
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
 
         {/* ---------- Popular destinations ---------- */}
         <section className="mt-20" data-testid="popular-destinations">
