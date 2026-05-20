@@ -195,7 +195,7 @@ export default function FlightsPage() {
           <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">
             Search cheap flights by destination
           </h2>
-          <p className="mt-2 max-w-4xl text-sm text-forest-900/70">
+          <p className="mt-2 max-w-4xl text-[1rem] text-forest-900/70">
             Compare deals from hundreds of airline sites in one place. Whether you&apos;re booking a
             last-minute getaway or planning ahead, browse popular destinations below to surface the
             best fares for your next trip.
@@ -264,7 +264,7 @@ export default function FlightsPage() {
           <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">
             Booking flights with Originfacts
           </h2>
-          <p className="mt-2 max-w-4xl text-sm text-forest-900/70">
+          <p className="mt-2 max-w-4xl text-[1rem] text-forest-900/70">
             Quick answers to the questions readers ask us most about searching, booking,
             and saving on flights.
           </p>

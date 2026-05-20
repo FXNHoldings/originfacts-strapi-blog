@@ -97,7 +97,7 @@ export default function PopularDestinationsBlock() {
       <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">
         Popular destinations
       </h2>
-      <p className="mt-2 text-sm text-forest-900/70">
+      <p className="mt-2 text-[1rem] text-forest-900/70">
         These alluring destinations from{' '}
         <span className="text-primary-emphasis">
           {origin.name} {origin.iata}
