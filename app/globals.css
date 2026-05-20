@@ -69,6 +69,12 @@
   }
 }
 
+/* ---------- /flights: search form drop shadow ---------- */
+.tpwl-search-wrap #tpwl-search {
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
+              rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+}
+
 /* ---------- /flights: make the search form sticky during results ----------
    Matches the behaviour on the flights.originfacts.com white-label so users
    can tweak origin/destination/dates without scrolling back up. The site
