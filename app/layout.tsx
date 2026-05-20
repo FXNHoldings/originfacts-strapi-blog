@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Outfit } from 'next/font/google';
+import { Outfit, Urbanist } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 import Header from '@/components/Header';
@@ -10,6 +10,13 @@ import { ADSENSE_CLIENT, ADSENSE_ENABLED } from '@/lib/adsense';
 const outfit = Outfit({
   subsets: ['latin'],
   variable: '--font-outfit',
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  display: 'swap',
+});
+
+const urbanist = Urbanist({
+  subsets: ['latin'],
+  variable: '--font-urbanist',
   weight: ['300', '400', '500', '600', '700', '800', '900'],
   display: 'swap',
 });
@@ -35,7 +42,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={outfit.variable}>
+    <html lang="en" className={`${outfit.variable} ${urbanist.variable}`}>
       <body className="min-h-screen flex flex-col font-sans font-normal grain" data-testid="app-shell">
         <Script id="consent-default" strategy="beforeInteractive">{`
           window.dataLayer = window.dataLayer || [];

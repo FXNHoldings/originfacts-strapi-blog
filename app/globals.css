@@ -20,9 +20,9 @@
     font-weight: 400;
     font-feature-settings: 'cv11';
   }
-  /* All headings → Inter, near-black */
+  /* All headings → Urbanist 700, near-black */
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-outfit), system-ui, sans-serif;
+    font-family: var(--font-urbanist), system-ui, sans-serif;
     font-weight: 700;
     letter-spacing: 0;
     color: #030303;

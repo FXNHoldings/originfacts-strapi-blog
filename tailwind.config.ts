@@ -40,8 +40,8 @@ export default {
       },
       fontFamily: {
         sans: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
-        urbanist: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-urbanist)', 'system-ui', 'sans-serif'],
+        urbanist: ['var(--font-urbanist)', 'system-ui', 'sans-serif'],
         outfit: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
       },
       letterSpacing: { tightest: '0' },
