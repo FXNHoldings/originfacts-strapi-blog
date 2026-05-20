@@ -162,6 +162,58 @@ export async function listArticles(opts: { page?: number; pageSize?: number; cat
   return res;
 }
 
+/**
+ * For the BlogSidebar's "Categories" block: given an ordered list of
+ * category slugs, returns each one's name, post count, and a sample
+ * cover image (taken from the most-recent article in the category).
+ */
+export async function listSidebarCategoryTiles(slugs: string[]) {
+  if (slugs.length === 0) return [];
+  const results = await Promise.all(
+    slugs.map(async (slug) => {
+      try {
+        const res = await strapiFetch<ListResponse<StrapiArticle>>('articles', {
+          filters: { category: { slug: { $eqi: slug } } },
+          sort: ['publishedAt:desc'],
+          populate: ['coverImage', 'category'],
+          pagination: { pageSize: 1 },
+        });
+        const sample = res.data[0];
+        return {
+          slug,
+          name: sample?.category?.name ?? slug,
+          count: res.meta?.pagination?.total ?? 0,
+          image: sample ? mediaUrl(sample.coverImage ?? null) : null,
+        };
+      } catch {
+        return { slug, name: slug, count: 0, image: null };
+      }
+    }),
+  );
+  return results;
+}
+
+/**
+ * Returns 5 most-recent and 5 "popular" articles for the BlogSidebar.
+ * Popular uses reading-time desc as a depth/engagement proxy until we
+ * track real views.
+ */
+export async function listSidebarArticles(limit = 5) {
+  const [recentRes, popularRes] = await Promise.all([
+    strapiFetch<ListResponse<StrapiArticle>>('articles', {
+      sort: ['publishedAt:desc'],
+      populate: ['coverImage', 'category'],
+      pagination: { pageSize: limit },
+    }),
+    strapiFetch<ListResponse<StrapiArticle>>('articles', {
+      sort: ['readingTimeMinutes:desc', 'publishedAt:desc'],
+      populate: ['coverImage', 'category'],
+      pagination: { pageSize: limit },
+    }),
+  ]);
+  return { recent: recentRes.data, popular: popularRes.data };
+}
+
 export async function listDestinationArticles(opts: { page?: number; pageSize?: number } = {}) {
   const res = await strapiFetch<ListResponse<StrapiArticle>>('articles', {
     sort: ['publishedAt:desc'],

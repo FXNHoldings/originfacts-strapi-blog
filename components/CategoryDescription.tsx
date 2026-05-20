@@ -2,27 +2,28 @@
 
 import { useState } from 'react';
 
+const PREVIEW_WORDS = 15;
+
 export default function CategoryDescription({ text }: { text: string }) {
   const [expanded, setExpanded] = useState(false);
+  const words = text.split(/\s+/).filter(Boolean);
+  const isTruncatable = words.length > PREVIEW_WORDS;
+  const preview = isTruncatable ? words.slice(0, PREVIEW_WORDS).join(' ') : text;
 
   return (
-    <div className="mt-5 text-[1rem] text-ink/75" data-testid="category-description">
-      <p
-        className={expanded ? '' : 'line-clamp-2'}
-        style={expanded ? undefined : { WebkitLineClamp: 2 }}
-      >
-        {text}
-      </p>
-      {!expanded && (
+    <p className="mt-5 text-[1rem] text-ink/75" data-testid="category-description">
+      {expanded || !isTruncatable ? text : `${preview}… `}
+      {isTruncatable && (
         <button
           type="button"
-          onClick={() => setExpanded(true)}
-          className="mt-1 text-[1rem] font-semibold text-[rgb(1,79,211)] hover:underline"
+          onClick={() => setExpanded((v) => !v)}
+          className="ml-1 inline text-[15px] font-semibold text-primary-emphasis underline underline-offset-2 hover:no-underline"
+          aria-expanded={expanded}
           data-testid="category-description-read-more"
         >
-          Read More
+          {expanded ? 'Show less' : 'Read More'}
         </button>
       )}
-    </div>
+    </p>
   );
 }

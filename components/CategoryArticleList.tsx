@@ -105,22 +105,29 @@ function Row({ article }: { article: StrapiArticle }) {
   );
 }
 
-function Sidebar({ categorySlug }: { categorySlug: string }) {
-  return <BlogSidebar backToTopHref={`/category/${categorySlug}`} />;
-}
-
 export default function CategoryArticleList({
   initialArticles,
   categorySlug,
   initialPage,
   pageSize,
   hasMore: initialHasMore,
+  popularPosts = [],
+  recentPosts = [],
+  categoryTiles = [],
 }: {
   initialArticles: StrapiArticle[];
   categorySlug: string;
   initialPage: number;
   pageSize: number;
   hasMore: boolean;
+  popularPosts?: StrapiArticle[];
+  recentPosts?: StrapiArticle[];
+  categoryTiles?: {
+    slug: string;
+    name: string;
+    count: number;
+    image: string | null;
+  }[];
 }) {
   const [articles, setArticles] = useState<StrapiArticle[]>(initialArticles);
   const [page, setPage] = useState<number>(initialPage);
@@ -192,7 +199,12 @@ export default function CategoryArticleList({
           </div>
         )}
       </div>
-      <Sidebar categorySlug={categorySlug} />
+      <BlogSidebar
+        popularPosts={popularPosts}
+        recentPosts={recentPosts}
+        categoryTiles={categoryTiles}
+        backToTopHref={`/category/${categorySlug}`}
+      />
     </div>
   );
 }

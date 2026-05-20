@@ -4,6 +4,8 @@ import {
   listArticles,
   listCountriesBySlugs,
   listDestinationArticles,
+  listSidebarArticles,
+  listSidebarCategoryTiles,
   mediaUrl,
   type StrapiArticle,
 } from '@/lib/strapi';
@@ -22,11 +24,13 @@ import { SECTIONS } from '@/lib/sections';
 import FeaturedCountries from '@/components/FeaturedCountries';
 import SectionDescription from '@/components/SectionDescription';
 import BlogSidebar from '@/components/BlogSidebar';
+import AdBanner from '@/components/AdBanner';
+import SubscribeBlock from '@/components/SubscribeBlock';
 
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const [perSection, countries] = await Promise.all([
+  const [perSection, countries, sidebar, categoryTiles] = await Promise.all([
     Promise.all(
       SECTIONS.map((s) => {
         const pageSize = s.slug === 'travel-tips' ? 8 : 5;
@@ -39,6 +43,10 @@ export default async function HomePage() {
       }),
     ),
     listCountriesBySlugs(FEATURED_COUNTRY_SLUGS).catch(() => []),
+    listSidebarArticles(5).catch(() => ({ recent: [], popular: [] })),
+    listSidebarCategoryTiles(
+      SECTIONS.filter((s) => s.slug !== 'destinations').map((s) => s.slug),
+    ).catch(() => []),
   ]);
 
   const bySection = Object.fromEntries(SECTIONS.map((s, i) => [s.slug, perSection[i] as StrapiArticle[]]));
@@ -96,15 +104,26 @@ export default async function HomePage() {
 
       <Hero hero={hero} side={side} />
 
+      <SubscribeBlock />
+
       <FeaturedCountries countries={countries} />
 
       {SECTIONS.filter((s) => s.slug !== 'destinations').flatMap((s) => {
         const posts = bySection[s.slug] ?? [];
         const sectionEl = posts.length === 0
           ? <EmptySection key={s.slug} section={s} />
-          : <EditorialSection key={s.slug} section={s} posts={posts} />;
+          : (
+              <EditorialSection
+                key={s.slug}
+                section={s}
+                posts={posts}
+                sidebarRecent={sidebar.recent}
+                sidebarPopular={sidebar.popular}
+                sidebarCategoryTiles={categoryTiles}
+              />
+            );
         return s.slug === 'flights'
-          ? [sectionEl, <AdBanner key="ad-after-flights" />]
+          ? [sectionEl, <AdBanner key="ad-after-flights" testId="home-ad-banner" />]
           : [sectionEl];
       })}
     </div>
@@ -121,7 +140,10 @@ function Hero({ hero, side }: { hero?: StrapiArticle; side: StrapiArticle[] }) {
   return (
     <section className="mx-auto max-w-7xl px-6 py-10" data-testid="home-hero">
       <div className="grid gap-5 lg:grid-cols-[minmax(210px,0.78fr)_minmax(360px,1.55fr)_minmax(240px,0.82fr)]">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-1">
+        <div
+          className="grid gap-5 sm:grid-cols-2 lg:grid-cols-1"
+          data-testid="home-hero-col-1"
+        >
           {leftTop && <HeroCompactStory article={leftTop} />}
           {leftBottom && <HeroCompactStory article={leftBottom} />}
           <a
@@ -138,7 +160,7 @@ function Hero({ hero, side }: { hero?: StrapiArticle; side: StrapiArticle[] }) {
           </a>
         </div>
 
-        <div className="grid gap-4">
+        <div className="grid gap-4" data-testid="home-hero-col-2">
           <HeroOverlayStory article={hero} priority size="large" />
           {centerWide && <HeroOverlayStory article={centerWide} size="wide" />}
           {(summaryOne || summaryTwo) && (
@@ -149,7 +171,10 @@ function Hero({ hero, side }: { hero?: StrapiArticle; side: StrapiArticle[] }) {
           )}
         </div>
 
-        <div className="grid gap-4 self-start sm:grid-cols-2 lg:grid-cols-1">
+        <div
+          className="grid gap-4 self-start sm:grid-cols-2 lg:grid-cols-1"
+          data-testid="home-hero-col-3"
+        >
           {rightTop && <HeroOverlayStory article={rightTop} size="small" />}
           {rightBottom && <HeroOverlayStory article={rightBottom} size="small" />}
           {miniList.length > 0 && (
@@ -356,12 +381,32 @@ function EmptySection({ section }: { section: Section }) {
 
 /* ---------- Editorial section — feature + stacked list ---------- */
 
-function EditorialSection({ section, posts }: { section: Section; posts: StrapiArticle[] }) {
+function EditorialSection({
+  section,
+  posts,
+  sidebarRecent = [],
+  sidebarPopular = [],
+  sidebarCategoryTiles = [],
+}: {
+  section: Section;
+  posts: StrapiArticle[];
+  sidebarRecent?: StrapiArticle[];
+  sidebarPopular?: StrapiArticle[];
+  sidebarCategoryTiles?: { slug: string; name: string; count: number; image: string | null }[];
+}) {
   if (section.slug === 'flights') {
     return <FlightsSection section={section} posts={posts} />;
   }
   if (section.slug === 'travel-tips') {
-    return <TravelTipsSection section={section} posts={posts} />;
+    return (
+      <TravelTipsSection
+        section={section}
+        posts={posts}
+        sidebarRecent={sidebarRecent}
+        sidebarPopular={sidebarPopular}
+        sidebarCategoryTiles={sidebarCategoryTiles}
+      />
+    );
   }
 
   const [feature, ...rest] = posts;
@@ -516,7 +561,19 @@ function FlightMetaLine({ article }: { article: StrapiArticle }) {
 
 /* ---------- Travel Tips section — 2-column masonry à la frenify/mow ---------- */
 
-function TravelTipsSection({ section, posts }: { section: Section; posts: StrapiArticle[] }) {
+function TravelTipsSection({
+  section,
+  posts,
+  sidebarRecent = [],
+  sidebarPopular = [],
+  sidebarCategoryTiles = [],
+}: {
+  section: Section;
+  posts: StrapiArticle[];
+  sidebarRecent?: StrapiArticle[];
+  sidebarPopular?: StrapiArticle[];
+  sidebarCategoryTiles?: { slug: string; name: string; count: number; image: string | null }[];
+}) {
   return (
     <section className="py-20" data-testid={`section-${section.slug}`}>
       <div className="mx-auto max-w-7xl px-6">
@@ -531,7 +588,11 @@ function TravelTipsSection({ section, posts }: { section: Section; posts: Strapi
               />
             ))}
           </div>
-          <BlogSidebar />
+          <BlogSidebar
+            popularPosts={sidebarPopular}
+            recentPosts={sidebarRecent}
+            categoryTiles={sidebarCategoryTiles}
+          />
         </div>
       </div>
     </section>
@@ -643,30 +704,6 @@ function EditorialSectionHeader({ section }: { section: Section }) {
         testId={`section-readmore-${section.slug}`}
       />
     </div>
-  );
-}
-
-function AdBanner() {
-  return (
-    <section className="py-10" data-testid="home-ad-banner">
-      <div className="mx-auto max-w-7xl px-6">
-        <p className="text-center text-[10px] font-bold uppercase tracking-[0.3em] text-forest-900/50">
-          Advertisement
-        </p>
-        <a
-          href="/contact"
-          aria-label="Advertise with Originfacts"
-          className="mt-3 block overflow-hidden rounded-[0.3rem] bg-gradient-to-br from-[#15172b] via-[#1f2240] to-[#15172b]"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/ads/mow-banner.jpg"
-            alt="Modern blog and magazine theme"
-            className="aspect-[1600/250] w-full object-cover"
-          />
-        </a>
-      </div>
-    </section>
   );
 }
 

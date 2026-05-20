@@ -1,15 +1,70 @@
-import Link from 'next/link';
+'use client';
 
-export default function BlogSidebar({ backToTopHref }: { backToTopHref?: string }) {
+import Link from 'next/link';
+import { useState } from 'react';
+import { format } from 'date-fns';
+import { mediaUrl, type StrapiArticle } from '@/lib/strapi';
+
+export type SidebarCategoryTile = {
+  slug: string;
+  name: string;
+  count: number;
+  image: string | null;
+};
+
+export default function BlogSidebar({
+  popularPosts = [],
+  recentPosts = [],
+  categoryTiles = [],
+  backToTopHref,
+}: {
+  popularPosts?: StrapiArticle[];
+  recentPosts?: StrapiArticle[];
+  categoryTiles?: SidebarCategoryTile[];
+  backToTopHref?: string;
+}) {
+  const [tab, setTab] = useState<'popular' | 'recent'>('popular');
+  const activePosts = (tab === 'popular' ? popularPosts : recentPosts).slice(0, 5);
+
   return (
     <aside className="space-y-10 lg:sticky lg:top-24 lg:self-start" data-testid="blog-sidebar">
-      <div className="inline-flex rounded-full border border-forest-900/10 bg-white p-1 shadow-sm">
-        <span className="rounded-full bg-forest-900 px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest text-white">
-          Popular
-        </span>
-        <span className="rounded-full px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest text-forest-900/60">
-          Recent
-        </span>
+      <div>
+        <div className="inline-flex rounded-full border border-forest-900/10 bg-white p-1 shadow-sm">
+          <button
+            type="button"
+            onClick={() => setTab('popular')}
+            aria-pressed={tab === 'popular'}
+            className={
+              'rounded-full px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest transition ' +
+              (tab === 'popular' ? 'bg-forest-900 text-white' : 'text-forest-900/60 hover:text-forest-900')
+            }
+          >
+            Popular
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('recent')}
+            aria-pressed={tab === 'recent'}
+            className={
+              'rounded-full px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest transition ' +
+              (tab === 'recent' ? 'bg-forest-900 text-white' : 'text-forest-900/60 hover:text-forest-900')
+            }
+          >
+            Recent
+          </button>
+        </div>
+        {activePosts.length > 0 && (
+          <ul
+            className="mt-5 divide-y divide-forest-900/10"
+            data-testid={`blog-sidebar-${tab}-list`}
+          >
+            {activePosts.map((post) => (
+              <li key={post.id} className="py-3 first:pt-0 last:pb-0">
+                <SidebarPostRow article={post} />
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <div>
@@ -67,6 +122,44 @@ export default function BlogSidebar({ backToTopHref }: { backToTopHref?: string 
         </ul>
       </div>
 
+      {categoryTiles.length > 0 && (
+        <div data-testid="blog-sidebar-categories">
+          <h3 className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-forest-900">
+            Categories
+            <span aria-hidden className="h-px w-10 bg-forest-900/20" />
+          </h3>
+          <ul className="mt-4 space-y-3">
+            {categoryTiles.map((t) => (
+              <li key={t.slug}>
+                <Link
+                  href={`/category/${t.slug}`}
+                  className="group relative block h-16 overflow-hidden rounded bg-forest-900"
+                >
+                  {t.image && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={t.image}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover opacity-60 transition duration-500 group-hover:scale-105 group-hover:opacity-70"
+                      loading="lazy"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/35 to-black/55" />
+                  <div className="absolute inset-0 flex items-center justify-between px-4">
+                    <span className="font-urbanist text-sm font-bold uppercase tracking-wider text-white">
+                      {t.name}
+                    </span>
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/25 text-xs font-bold text-white backdrop-blur">
+                      {t.count}
+                    </span>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <div>
         <h3 className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-forest-900">
           Deal of the Month
@@ -101,5 +194,41 @@ export default function BlogSidebar({ backToTopHref }: { backToTopHref?: string 
         </Link>
       )}
     </aside>
+  );
+}
+
+function SidebarPostRow({ article }: { article: StrapiArticle }) {
+  const img = mediaUrl(article.coverImage ?? null);
+  const dateStr = article.publishedAt ? format(new Date(article.publishedAt), 'd MMM yyyy') : '';
+
+  return (
+    <Link
+      href={`/articles/${article.slug}`}
+      className="group grid grid-cols-[64px_minmax(0,1fr)] items-center gap-3"
+    >
+      <div className="overflow-hidden rounded bg-forest-900/5">
+        {img ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={img}
+            alt={article.coverImage?.alternativeText || article.title}
+            className="aspect-square h-full w-full object-cover transition duration-500 group-hover:scale-105"
+            loading="lazy"
+          />
+        ) : (
+          <div className="aspect-square bg-gradient-to-br from-primary-hover to-primary-pressed" />
+        )}
+      </div>
+      <div className="min-w-0">
+        <h4 className="line-clamp-2 font-urbanist text-sm font-bold leading-snug text-forest-950 transition group-hover:text-primary-emphasis">
+          {article.title}
+        </h4>
+        {dateStr && (
+          <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-forest-900/55">
+            {dateStr}
+          </p>
+        )}
+      </div>
+    </Link>
   );
 }
