@@ -43,32 +43,32 @@ const BOOKING_FAQ: { q: string; a: string }[] = [
   },
 ];
 
-type TravelProCard = { title: string; description: string; image: string; bg: string };
+type ProTip = { n: number; title: string; description: string };
 
-const TRAVEL_PROS: TravelProCard[] = [
+const PRO_TIPS: ProTip[] = [
   {
-    title: 'Plan with AI',
-    description: 'Get travel questions answered',
-    image: 'https://nxt.deals/images/plan-with-ai.svg',
-    bg: 'from-forest-100 to-forest-200',
+    n: 1,
+    title: 'Be flexible on dates',
+    description:
+      'The cheapest fare is usually a Tuesday or Wednesday, midway between weekends. Use the calendar view in the search above to see prices laid out day by day.',
   },
   {
-    title: 'Best Time to Travel',
-    description: 'Know when to save',
-    image: 'https://nxt.deals/images/best-time.svg',
-    bg: 'from-sand-100 to-sand-200',
+    n: 2,
+    title: 'Search the whole month',
+    description:
+      'Switch to the "cheapest month" tab to surface the lowest fare anywhere in the next 60 days. One click usually saves more than any other trick.',
   },
   {
-    title: 'Explore',
-    description: 'See destinations on your budget',
-    image: 'https://nxt.deals/images/explore.svg',
-    bg: 'from-primary-hover to-primary-pressed',
+    n: 3,
+    title: 'Consider one stop',
+    description:
+      'A single-stop itinerary often beats a non-stop by 30–50%. Look at the full list first, then narrow to direct flights only after you’ve seen what’s on offer.',
   },
   {
-    title: 'Trips',
-    description: 'Keep all your plans in one place',
-    image: 'https://nxt.deals/images/trips.svg',
-    bg: 'from-sand-200 to-sand-300',
+    n: 4,
+    title: 'Book direct when you can',
+    description:
+      'Once you spot the cheapest fare, click through to the airline’s own site if available. Fewer change/refund hassles than an OTA — and we earn the same affiliate commission either way.',
   },
 ];
 
@@ -154,33 +154,34 @@ export default function FlightsPage() {
 
         <PopularDestinationsBlock />
 
-        {/* ---------- For travel pros ---------- */}
+        {/* ---------- How to find a cheap flight ---------- */}
         <section className="mt-20" data-testid="travel-pros">
           <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">
-            For travel pros
+            How to find a cheap flight
           </h2>
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {TRAVEL_PROS.map((card) => (
-              <article
-                key={card.title}
-                className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-forest-900/10 transition-shadow hover:shadow-md"
+          <p className="mt-2 max-w-3xl text-sm text-forest-900/70">
+            Four habits that turn the search box above into a price-cutting tool, not just a
+            booking form.
+          </p>
+          <ol className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {PRO_TIPS.map((tip) => (
+              <li
+                key={tip.n}
+                className="flex flex-col rounded-2xl bg-white p-6 shadow-sm ring-1 ring-forest-900/10 transition-shadow hover:shadow-md"
               >
-                <div>
-                  <h3 className="text-lg font-bold text-forest-900">{card.title}</h3>
-                  <p className="mt-1 text-sm text-primary-emphasis">{card.description}</p>
-                </div>
-                <div className={`flex h-40 items-center justify-center rounded-xl bg-gradient-to-br ${card.bg}`}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={card.image}
-                    alt=""
-                    loading="lazy"
-                    className="h-full w-auto object-contain p-3"
-                  />
-                </div>
-              </article>
+                <span
+                  aria-hidden
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-emphasis/10 text-base font-bold text-primary-emphasis"
+                >
+                  {tip.n}
+                </span>
+                <h3 className="mt-5 text-base font-bold text-forest-900">{tip.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-forest-900/70">
+                  {tip.description}
+                </p>
+              </li>
             ))}
-          </div>
+          </ol>
         </section>
 
         {/* ---------- Search cheap flights by destination ---------- */}
@@ -188,8 +189,7 @@ export default function FlightsPage() {
           <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">
             Search cheap flights by destination
           </h2>
-          <p className="mt-1 text-sm font-semibold text-forest-900/80">Find Cheap Flights</p>
-          <p className="mt-4 max-w-4xl text-sm text-forest-900/70">
+          <p className="mt-2 max-w-4xl text-sm text-forest-900/70">
             Compare deals from hundreds of airline sites in one place. Whether you&apos;re booking a
             last-minute getaway or planning ahead, browse popular destinations below to surface the
             best fares for your next trip.
