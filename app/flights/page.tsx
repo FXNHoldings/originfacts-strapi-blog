@@ -1,7 +1,6 @@
 import Script from 'next/script';
 import PopularDestinationsBlock from '@/components/PopularDestinationsBlock';
-import { tpwlSearchUrl } from '@/lib/tpwl-link';
-import { FALLBACK_ORIGIN } from '@/lib/flights-data';
+import SearchByDestinationBlock from '@/components/SearchByDestinationBlock';
 
 export const metadata = {
   title: 'Flights',
@@ -70,42 +69,6 @@ const PRO_TIPS: ProTip[] = [
     tagline: 'Skip the OTA, deal straight with the airline.',
     image: '/illustrations/book-direct.svg',
   },
-];
-
-const DESTINATION_CITIES: { name: string; iata: string }[] = [
-  { name: 'Melbourne', iata: 'MEL' },
-  { name: 'London', iata: 'LON' },
-  { name: 'Seoul, South Korea', iata: 'SEL' },
-  { name: 'Los Angeles', iata: 'LAX' },
-  { name: 'Auckland', iata: 'AKL' },
-  { name: 'Cairns', iata: 'CNS' },
-  { name: 'Paris', iata: 'PAR' },
-  { name: 'New York', iata: 'NYC' },
-  { name: 'Sydney', iata: 'SYD' },
-  { name: 'Adelaide', iata: 'ADL' },
-  { name: 'Brisbane', iata: 'BNE' },
-  { name: 'Singapore', iata: 'SIN' },
-  { name: 'Berlin', iata: 'BER' },
-  { name: 'Bangkok', iata: 'BKK' },
-  { name: 'Vancouver', iata: 'YVR' },
-  { name: 'Tokyo', iata: 'TYO' },
-  { name: 'Kuala Lumpur', iata: 'KUL' },
-  { name: 'Dubai', iata: 'DXB' },
-  { name: 'Hyderabad', iata: 'HYD' },
-  { name: 'Mumbai', iata: 'BOM' },
-  { name: 'Denpasar', iata: 'DPS' },
-  { name: 'New Delhi', iata: 'DEL' },
-  { name: 'Kathmandu', iata: 'KTM' },
-  { name: 'Manila', iata: 'MNL' },
-  { name: 'Ho Chi Minh City', iata: 'SGN' },
-];
-
-const ORIGIN_CITIES: { name: string; iata: string }[] = [
-  { name: 'London', iata: 'LON' },
-  { name: 'New York', iata: 'NYC' },
-  { name: 'Sydney', iata: 'SYD' },
-  { name: 'Singapore', iata: 'SIN' },
-  { name: 'Dubai', iata: 'DXB' },
 ];
 
 export default function FlightsPage() {
@@ -195,74 +158,7 @@ export default function FlightsPage() {
           </ol>
         </section>
 
-        {/* ---------- Search cheap flights by destination ---------- */}
-        <section className="mt-32" data-testid="cheap-flights-by-destination">
-          <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">
-            Search cheap flights by destination
-          </h2>
-          <p className="mt-2 max-w-4xl text-[1rem] text-ink/75">
-            Compare deals from hundreds of airline sites in one place. Whether you&apos;re booking a
-            last-minute getaway or planning ahead, browse popular destinations below to surface the
-            best fares for your next trip.
-          </p>
-          <div className="mt-6 grid grid-cols-1 gap-x-12 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
-            {DESTINATION_CITIES.map((dest) => {
-              const origins = ORIGIN_CITIES.filter((o) => o.iata !== dest.iata).slice(0, 4);
-              return (
-                <details
-                  key={dest.iata}
-                  className="group border-b border-forest-900/10"
-                >
-                  <summary className="flex cursor-pointer list-none items-center justify-between py-4">
-                    <a
-                      href={tpwlSearchUrl(FALLBACK_ORIGIN.iata, dest.iata)}
-                      target="_blank"
-                      rel="noopener noreferrer sponsored"
-                      className="flex-1 text-sm font-semibold text-[#1411ec] hover:text-primary-emphasis"
-                    >
-                      {dest.name} flights
-                    </a>
-                    <span
-                      className="rounded-full p-1.5 text-forest-900/40 transition group-hover:bg-forest-900/5 group-hover:text-primary-emphasis"
-                      aria-label={`Show popular routes to ${dest.name}`}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="size-4 transition-transform group-open:rotate-180"
-                        aria-hidden
-                      >
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </span>
-                  </summary>
-                  <ul className="space-y-1 pb-4">
-                    {origins.map((o) => (
-                      <li key={o.iata}>
-                        <a
-                          href={tpwlSearchUrl(o.iata, dest.iata)}
-                          target="_blank"
-                          rel="noopener noreferrer sponsored"
-                          className="block py-1 text-sm text-[#1411ec] hover:text-primary-emphasis"
-                        >
-                          From {o.name} → {dest.name}{' '}
-                          <span className="font-mono text-xs text-forest-900/40">
-                            {o.iata}–{dest.iata}
-                          </span>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </details>
-              );
-            })}
-          </div>
-        </section>
+        <SearchByDestinationBlock />
 
         {/* ---------- Booking flights with Originfacts (FAQ) ---------- */}
         <section className="mt-20" data-testid="booking-faq">

@@ -1,95 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import {
-  FALLBACK_ORIGIN,
   POPULAR_DESTINATIONS,
   WIDE_DESTINATIONS,
   type Destination,
 } from '@/lib/flights-data';
 import { TPWL_HOST, tpwlSearchUrl } from '@/lib/tpwl-link';
-
-const CACHE_KEY = 'originfacts.visitor-origin.v1';
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-
-type Origin = { name: string; iata: string };
-
-type CachedOrigin = {
-  origin: Origin;
-  decidedAt: number;
-};
-
-function readCache(): Origin | null {
-  if (typeof window === 'undefined') return null;
-  try {
-    const raw = window.sessionStorage.getItem(CACHE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as CachedOrigin;
-    if (Date.now() - parsed.decidedAt > CACHE_TTL_MS) return null;
-    if (!parsed.origin?.iata) return null;
-    return parsed.origin;
-  } catch {
-    return null;
-  }
-}
-
-function writeCache(origin: Origin) {
-  if (typeof window === 'undefined') return;
-  try {
-    window.sessionStorage.setItem(
-      CACHE_KEY,
-      JSON.stringify({ origin, decidedAt: Date.now() } satisfies CachedOrigin),
-    );
-  } catch {
-    /* private mode / storage off — silent */
-  }
-}
-
-async function resolveVisitorOrigin(): Promise<Origin | null> {
-  const cached = readCache();
-  if (cached) return cached;
-
-  const geoRes = await fetch('https://ipapi.co/json/', { cache: 'no-store' }).catch(() => null);
-  if (!geoRes?.ok) return null;
-  const geo = (await geoRes.json().catch(() => null)) as
-    | { latitude?: number; longitude?: number; city?: string; error?: boolean }
-    | null;
-  if (!geo || geo.error || typeof geo.latitude !== 'number' || typeof geo.longitude !== 'number') {
-    return null;
-  }
-
-  const airRes = await fetch(`/api/nearest-airport?lat=${geo.latitude}&lon=${geo.longitude}`).catch(() => null);
-  if (!airRes?.ok) return null;
-  const airport = (await airRes.json().catch(() => null)) as
-    | { iata?: string; city?: string | null; name?: string }
-    | null;
-  if (!airport?.iata) return null;
-
-  const origin: Origin = {
-    iata: airport.iata,
-    name: airport.city || airport.name || geo.city || airport.iata,
-  };
-  writeCache(origin);
-  return origin;
-}
+import { useVisitorOrigin } from '@/lib/visitor-origin';
 
 export default function PopularDestinationsBlock() {
-  const [origin, setOrigin] = useState<Origin>(() => readCache() ?? FALLBACK_ORIGIN);
-  const [resolved, setResolved] = useState<boolean>(() => readCache() !== null);
-
-  useEffect(() => {
-    if (resolved) return;
-    let cancelled = false;
-    resolveVisitorOrigin().then((o) => {
-      if (cancelled || !o) return;
-      setOrigin(o);
-      setResolved(true);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [resolved]);
-
+  const origin = useVisitorOrigin();
   const destinations: Destination[] = POPULAR_DESTINATIONS.filter((d) => d.iata !== origin.iata).slice(0, 6);
 
   return (

@@ -20,3 +20,44 @@ export const POPULAR_DESTINATIONS: Destination[] = [
 ];
 
 export const WIDE_DESTINATIONS = new Set(['SIN', 'NYC']);
+
+// Cities offered under "Search cheap flights by destination" (rendered as
+// the disclosure rows on /flights). Kept separate from POPULAR_DESTINATIONS
+// because this list is text-only and aims for SEO breadth, not visual cards.
+export const DESTINATION_CITIES: { name: string; iata: string }[] = [
+  { name: 'Melbourne', iata: 'MEL' },
+  { name: 'London', iata: 'LON' },
+  { name: 'Seoul, South Korea', iata: 'SEL' },
+  { name: 'Los Angeles', iata: 'LAX' },
+  { name: 'Auckland', iata: 'AKL' },
+  { name: 'Cairns', iata: 'CNS' },
+  { name: 'Paris', iata: 'PAR' },
+  { name: 'New York', iata: 'NYC' },
+  { name: 'Sydney', iata: 'SYD' },
+  { name: 'Adelaide', iata: 'ADL' },
+  { name: 'Brisbane', iata: 'BNE' },
+  { name: 'Singapore', iata: 'SIN' },
+  { name: 'Berlin', iata: 'BER' },
+  { name: 'Bangkok', iata: 'BKK' },
+  { name: 'Vancouver', iata: 'YVR' },
+  { name: 'Tokyo', iata: 'TYO' },
+  { name: 'Kuala Lumpur', iata: 'KUL' },
+  { name: 'Dubai', iata: 'DXB' },
+  { name: 'Hyderabad', iata: 'HYD' },
+  { name: 'Mumbai', iata: 'BOM' },
+  { name: 'Denpasar', iata: 'DPS' },
+  { name: 'New Delhi', iata: 'DEL' },
+  { name: 'Kathmandu', iata: 'KTM' },
+  { name: 'Manila', iata: 'MNL' },
+  { name: 'Ho Chi Minh City', iata: 'SGN' },
+];
+
+// Alternate origin cities offered inside each disclosure ("From X → Y"
+// rows). Used when comparing fares from major hubs.
+export const ORIGIN_CITIES: { name: string; iata: string }[] = [
+  { name: 'London', iata: 'LON' },
+  { name: 'New York', iata: 'NYC' },
+  { name: 'Sydney', iata: 'SYD' },
+  { name: 'Singapore', iata: 'SIN' },
+  { name: 'Dubai', iata: 'DXB' },
+];
