@@ -20,12 +20,27 @@
     font-weight: 400;
     font-feature-settings: 'cv11';
   }
-  /* All headings → Urbanist 700, near-black */
+  /* All headings → Urbanist 700, near-black.
+     !important on color so every heading overrides per-element
+     Tailwind utilities (text-forest-900 etc) without having to edit
+     each one. Components that need a different heading colour (the
+     footer's yellow on navy, for example) override via a more
+     specific rule below. */
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-urbanist), system-ui, sans-serif;
     font-weight: 700;
     letter-spacing: 0;
-    color: #030303;
+    color: #030303 !important;
+  }
+
+  /* Footer headings sit on a dark navy bg — keep them brand yellow */
+  [data-testid="site-footer"] h1,
+  [data-testid="site-footer"] h2,
+  [data-testid="site-footer"] h3,
+  [data-testid="site-footer"] h4,
+  [data-testid="site-footer"] h5,
+  [data-testid="site-footer"] h6 {
+    color: #ffe200 !important;
   }
   ::selection {
     background: theme('colors.primary.emphasis');
