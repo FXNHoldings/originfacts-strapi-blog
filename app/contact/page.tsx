@@ -1,22 +1,11 @@
 import type { Metadata } from 'next';
+import ContactForm from '@/components/ContactForm';
 
 export const metadata: Metadata = {
   title: 'Contact Originfacts',
   description:
     'Get in touch about Originfacts — support, privacy, cookies, accessibility, affiliate enquiries, or user content complaints.',
 };
-
-const SUBJECTS = [
-  'General support',
-  'Website issue',
-  'Affiliate enquiry',
-  'Privacy request',
-  'Cookie request',
-  'Accessibility feedback',
-  'User content complaint',
-  'Legal notice',
-  'Other',
-];
 
 export default function ContactPage() {
   return (
@@ -27,7 +16,7 @@ export default function ContactPage() {
           Get in Touch
         </h1>
         <p className="mt-3 text-lg font-light text-forest-900/75">
-          We're here to help with questions about Originfacts, our website content, affiliate
+          We&apos;re here to help with questions about Originfacts, our website content, affiliate
           links, user content, privacy, accessibility, and general support.
         </p>
       </header>
@@ -72,121 +61,9 @@ export default function ContactPage() {
           </div>
         </aside>
 
-        {/* Right — form */}
-        <form
-          className="rounded-lg border border-forest-900/10 bg-paper p-6 shadow-sm sm:p-8"
-          data-testid="contact-form"
-          aria-describedby="contact-form-note"
-        >
-          <h2 className="editorial-h text-xl font-bold text-forest-900 sm:text-2xl">
-            Send us a message
-          </h2>
-          <p id="contact-form-note" className="mt-1 text-sm font-light text-forest-900/70">
-            Please don't send sensitive information (passport numbers, payment details, etc.)
-            through this form.
-          </p>
-
-          <div className="mt-6 grid gap-5 sm:grid-cols-2">
-            <Field label="Name" htmlFor="contact-name">
-              <input
-                id="contact-name"
-                name="name"
-                type="text"
-                autoComplete="name"
-                required
-                className={inputClass}
-              />
-            </Field>
-
-            <Field label="Email" htmlFor="contact-email">
-              <input
-                id="contact-email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className={inputClass}
-              />
-            </Field>
-
-            <Field label="Subject" htmlFor="contact-subject" className="sm:col-span-2">
-              <select id="contact-subject" name="subject" required className={`${inputClass} pr-8`}>
-                <option value="" disabled hidden>
-                  Select a topic…
-                </option>
-                {SUBJECTS.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-            </Field>
-
-            <Field label="Page URL (optional)" htmlFor="contact-url" className="sm:col-span-2">
-              <input
-                id="contact-url"
-                name="pageUrl"
-                type="url"
-                placeholder="https://www.originfacts.com/…"
-                className={inputClass}
-              />
-            </Field>
-
-            <Field label="Message" htmlFor="contact-message" className="sm:col-span-2">
-              <textarea
-                id="contact-message"
-                name="message"
-                rows={6}
-                required
-                className={`${inputClass} resize-y`}
-              />
-            </Field>
-          </div>
-
-          <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs text-forest-900/60">
-              By submitting, you agree to our{' '}
-              <a href="/legal/privacy" className="underline hover:text-forest-900">
-                Privacy Policy
-              </a>
-              .
-            </p>
-            <button
-              type="submit"
-              disabled
-              className="inline-flex items-center justify-center rounded-lg bg-forest-900 px-6 py-3 font-urbanist text-sm font-bold uppercase tracking-wider text-sand-100 transition hover:bg-forest-700 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              Send message
-            </button>
-          </div>
-        </form>
+        {/* Right — form (Client Component) */}
+        <ContactForm />
       </div>
     </article>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-
-const inputClass =
-  'w-full rounded-lg border border-forest-900/15 bg-white px-4 py-3 text-base text-forest-900 placeholder:text-forest-900/40 focus:border-forest-700 focus:outline-none focus:ring-2 focus:ring-forest-800/20';
-
-function Field({
-  label,
-  htmlFor,
-  className,
-  children,
-}: {
-  label: string;
-  htmlFor: string;
-  className?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <label htmlFor={htmlFor} className={`block ${className ?? ''}`}>
-      <span className="mb-1.5 block text-xs font-medium uppercase tracking-widest text-forest-800/70">
-        {label}
-      </span>
-      {children}
-    </label>
   );
 }
