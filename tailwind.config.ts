@@ -45,7 +45,7 @@ export default {
         outfit: ['var(--font-inter)', 'system-ui', 'sans-serif'],
       },
       letterSpacing: { tightest: '0' },
-      maxWidth: { prose: '68ch' },
+      maxWidth: { '7xl': '1420px', prose: '68ch' },
       fontSize: {
         '6xl': ['2.5rem', { lineHeight: '1' }],
         '7xl': ['3rem', { lineHeight: '1' }],
