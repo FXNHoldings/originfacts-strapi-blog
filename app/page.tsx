@@ -15,11 +15,10 @@ export default async function HomePage() {
   const [perSection, countries] = await Promise.all([
     Promise.all(
       SECTIONS.map((s) => {
-        const pageSize = s.slug === 'car-rentals' ? 24 : 5;
         const articles =
           s.slug === 'destinations'
-            ? listDestinationArticles({ pageSize })
-            : listArticles({ category: s.slug, pageSize });
+            ? listDestinationArticles({ pageSize: 5 })
+            : listArticles({ category: s.slug, pageSize: 5 });
 
         return articles.then((r) => r.data).catch(() => []);
       }),
@@ -40,7 +39,7 @@ export default async function HomePage() {
     latest.push(a);
   }
   const hero = latest[0];
-  const side = latest.slice(1, 5);
+  const side = latest.slice(1, 11);
 
   const organizationJsonLd = {
     '@context': 'https://schema.org',
@@ -84,7 +83,7 @@ export default async function HomePage() {
 
       <FeaturedCountries countries={countries} />
 
-      {SECTIONS.map((s) => {
+      {SECTIONS.filter((s) => s.slug !== 'destinations').map((s) => {
         const posts = bySection[s.slug] ?? [];
         if (posts.length === 0) return <EmptySection key={s.slug} section={s} />;
         return <EditorialSection key={s.slug} section={s} posts={posts} />;
@@ -96,17 +95,53 @@ export default async function HomePage() {
 /* ---------- HERO ---------- */
 
 function Hero({ hero, side }: { hero?: StrapiArticle; side: StrapiArticle[] }) {
+  if (!hero) return null;
+
+  const [leftTop, leftBottom, centerWide, rightTop, rightBottom, summaryOne, summaryTwo, ...miniList] = side;
+
   return (
-    <section className="mx-auto max-w-7xl px-6 py-12" data-testid="home-hero">
-      <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
-        {hero ? <HeroLargeCard article={hero} /> : <div />}
-        <div className="grid gap-6 sm:grid-cols-2">
-          {side.slice(0, 4).map((p) => (
-            <HeroSideCard key={p.id} article={p} />
-          ))}
+    <section className="mx-auto max-w-7xl px-6 py-10" data-testid="home-hero">
+      <div className="grid gap-5 lg:grid-cols-[minmax(210px,0.78fr)_minmax(360px,1.55fr)_minmax(240px,0.82fr)]">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-1">
+          {leftTop && <HeroCompactStory article={leftTop} />}
+          {leftBottom && <HeroCompactStory article={leftBottom} />}
+          <a
+            href="/contact"
+            className="hidden overflow-hidden rounded-[0.3rem] bg-forest-900/5 lg:block"
+            aria-label="Advertise with Originfacts"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://frenify.com/work/envato/frenify/wp/mow/news/wp-content/uploads/2025/02/300ads-600.webp"
+              alt="Advertisement"
+              className="aspect-[300/600] w-full object-cover"
+            />
+          </a>
+        </div>
+
+        <div className="grid gap-5">
+          <HeroOverlayStory article={hero} priority size="large" />
+          {centerWide && <HeroOverlayStory article={centerWide} size="wide" />}
+          {(summaryOne || summaryTwo) && (
+            <div className="grid gap-5 border-t border-forest-900/15 pt-5 sm:grid-cols-2">
+              {summaryOne && <HeroTextStory article={summaryOne} />}
+              {summaryTwo && <HeroTextStory article={summaryTwo} />}
+            </div>
+          )}
+        </div>
+
+        <div className="grid gap-0 sm:grid-cols-2 lg:grid-cols-1">
+          {rightTop && <HeroOverlayStory article={rightTop} size="small" />}
+          {rightBottom && <HeroOverlayStory article={rightBottom} size="small" />}
+          {miniList.length > 0 && (
+            <div className="grid gap-0 sm:col-span-2 lg:col-span-1">
+              {miniList.slice(0, 4).map((article) => (
+                <HeroMiniStory key={article.id} article={article} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
-
     </section>
   );
 }
@@ -149,61 +184,129 @@ function HeroMeta({ article, hideReadingTime = false }: { article: StrapiArticle
   );
 }
 
-function HeroLargeCard({ article }: { article: StrapiArticle }) {
+function HeroCompactStory({ article }: { article: StrapiArticle }) {
+  const img = mediaUrl(article.coverImage ?? null);
+  return (
+    <article className="group" data-testid={`hero-compact-${article.slug}`}>
+      <Link href={`/articles/${article.slug}`} className="block overflow-hidden rounded-[0.3rem] bg-forest-900/5">
+        {img ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={img}
+            alt={article.coverImage?.alternativeText || article.title}
+            className="aspect-[1.5/1] w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+          />
+        ) : (
+          <div className="aspect-[1.5/1] w-full bg-gradient-to-br from-primary-hover to-primary-pressed" />
+        )}
+      </Link>
+      <div className="mt-3">
+        <HeroStoryMeta article={article} />
+        <Link href={`/articles/${article.slug}`}>
+          <h2 className="mt-1 font-urbanist text-base font-extrabold leading-tight text-forest-950 transition group-hover:text-primary-highlight">
+            {article.title}
+          </h2>
+        </Link>
+      </div>
+    </article>
+  );
+}
+
+function HeroOverlayStory({
+  article,
+  priority = false,
+  size,
+}: {
+  article: StrapiArticle;
+  priority?: boolean;
+  size: 'large' | 'wide' | 'small';
+}) {
+  const img = mediaUrl(article.coverImage ?? null);
+  const aspect = size === 'large' ? 'aspect-[1/1.04]' : size === 'wide' ? 'aspect-[1.82/1]' : 'aspect-[1.23/1]';
+  const titleSize = size === 'large' ? 'text-2xl sm:text-3xl' : 'text-base sm:text-lg';
+
+  return (
+    <article className="group" data-testid={`hero-overlay-${article.slug}`}>
+      <Link href={`/articles/${article.slug}`} className={`relative block overflow-hidden rounded-[0.3rem] bg-forest-900 ${aspect}`}>
+        {img ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={img}
+            alt={article.coverImage?.alternativeText || article.title}
+            className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+            fetchPriority={priority ? 'high' : undefined}
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-hover to-primary-pressed" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-black/5" />
+        <div className="absolute inset-x-4 bottom-4 text-white sm:inset-x-5 sm:bottom-5">
+          <HeroStoryMeta article={article} light />
+          <h1 className={`mt-2 font-urbanist font-extrabold leading-[1.05] text-white ${titleSize}`}>
+            {article.title}
+          </h1>
+        </div>
+      </Link>
+    </article>
+  );
+}
+
+function HeroTextStory({ article }: { article: StrapiArticle }) {
+  return (
+    <article className="group" data-testid={`hero-text-${article.slug}`}>
+      <HeroStoryMeta article={article} />
+      <Link href={`/articles/${article.slug}`}>
+        <h2 className="mt-1 font-urbanist text-base font-extrabold leading-tight text-forest-950 transition group-hover:text-primary-highlight">
+          {article.title}
+        </h2>
+      </Link>
+      {article.excerpt && (
+        <p className="mt-2 line-clamp-3 text-sm leading-5 text-ink/65">
+          {article.excerpt}
+        </p>
+      )}
+    </article>
+  );
+}
+
+function HeroMiniStory({ article }: { article: StrapiArticle }) {
   const img = mediaUrl(article.coverImage ?? null);
   return (
     <Link
       href={`/articles/${article.slug}`}
-      className="group flex h-full flex-col"
-      data-testid="hero-large"
+      className="group grid grid-cols-[58px_minmax(0,1fr)] gap-3"
+      data-testid={`hero-mini-${article.slug}`}
     >
-      {img ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={img}
-          alt={article.title}
-          className="min-h-0 w-full flex-1 rounded-2xl object-cover transition duration-500 group-hover:scale-[1.01]"
-        />
-      ) : (
-        <div className="min-h-0 w-full flex-1 rounded-2xl bg-forest-900/10" />
-      )}
-      <div className="mt-5">
-        <CategoryLabel article={article} />
-        <h1 className="font-urbanist mt-3 text-3xl font-bold leading-tight text-forest-900 transition group-hover:text-forest-700 sm:text-3xl">
+      <div className="overflow-hidden rounded-[0.3rem] bg-forest-900/5">
+        {img ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={img}
+            alt={article.coverImage?.alternativeText || article.title}
+            className="aspect-square h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="aspect-square bg-gradient-to-br from-primary-hover to-primary-pressed" />
+        )}
+      </div>
+      <div className="min-w-0">
+        <HeroStoryMeta article={article} />
+        <h2 className="mt-1 line-clamp-2 font-urbanist text-sm font-extrabold leading-tight text-forest-950 transition group-hover:text-primary-highlight">
           {article.title}
-        </h1>
-        <HeroMeta article={article} />
+        </h2>
       </div>
     </Link>
   );
 }
 
-function HeroSideCard({ article }: { article: StrapiArticle }) {
-  const img = mediaUrl(article.coverImage ?? null);
+function HeroStoryMeta({ article, light = false }: { article: StrapiArticle; light?: boolean }) {
+  const category = article.category?.name ?? 'Travel';
   return (
-    <Link
-      href={`/articles/${article.slug}`}
-      className="group flex flex-col"
-      data-testid="hero-side"
-    >
-      {img ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={img}
-          alt={article.title}
-          className="aspect-[4/3] w-full rounded-2xl object-cover transition duration-500 group-hover:scale-[1.01]"
-        />
-      ) : (
-        <div className="aspect-[4/3] w-full rounded-2xl bg-forest-900/10" />
-      )}
-      <div className="mt-4">
-        <CategoryLabel article={article} />
-        <h3 className="font-urbanist mt-2 line-clamp-2 text-base font-medium leading-snug text-forest-900 transition group-hover:text-forest-700">
-          {article.title}
-        </h3>
-        <HeroMeta article={article} hideReadingTime />
-      </div>
-    </Link>
+    <div className={`font-urbanist text-[10px] font-extrabold uppercase tracking-wide ${light ? 'text-white/80' : 'text-forest-900/60'}`}>
+      {category}
+      <span className={light ? 'mx-1.5 text-white/55' : 'mx-1.5 text-forest-900/35'}>~</span>
+      <span>{article.readingTimeMinutes ?? 5} min read</span>
+    </div>
   );
 }
 
@@ -223,9 +326,8 @@ function EmptySection({ section }: { section: Section }) {
 /* ---------- Editorial section — feature + stacked list ---------- */
 
 function EditorialSection({ section, posts }: { section: Section; posts: StrapiArticle[] }) {
-  // Car Rentals: render the whole catalogue (feature on top + responsive grid of the rest).
-  if (section.slug === 'car-rentals') {
-    return <CarRentalsSection section={section} posts={posts} />;
+  if (section.slug === 'flights') {
+    return <FlightsSection section={section} posts={posts} />;
   }
 
   const [feature, ...rest] = posts;
@@ -246,10 +348,7 @@ function EditorialSection({ section, posts }: { section: Section; posts: StrapiA
   );
 
   return (
-    <section
-      className={section.slug === 'flights' ? 'bg-forest-50 py-20' : 'py-20'}
-      data-testid={`section-${section.slug}`}
-    >
+    <section className="py-20" data-testid={`section-${section.slug}`}>
       <div className="mx-auto max-w-7xl px-6">
         <EditorialSectionHeader section={section} />
         <div className={`mt-10 grid gap-8 ${gridCols} lg:gap-10`}>
@@ -261,57 +360,139 @@ function EditorialSection({ section, posts }: { section: Section; posts: StrapiA
   );
 }
 
-function CarRentalsSection({ section, posts }: { section: Section; posts: StrapiArticle[] }) {
-  const [feature, ...rest] = posts;
+function FlightsSection({ section, posts }: { section: Section; posts: StrapiArticle[] }) {
+  const [feature, firstSide, secondSide, ...rest] = posts;
+  const list = rest.slice(0, 2);
+
   return (
     <section className="py-20" data-testid={`section-${section.slug}`}>
       <div className="mx-auto max-w-7xl px-6">
         <EditorialSectionHeader section={section} />
-        <div className="mt-10">
-          <FeatureArticle article={feature} />
-        </div>
-        {rest.length > 0 && (
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {rest.map((post) => (
-              <CarRentalCard key={post.id} article={post} />
+        <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(460px,1fr)] lg:gap-9">
+          <FlightFeatureArticle article={feature} />
+          <div className="divide-y divide-forest-900/15 border-y border-forest-900/15 lg:border-t-0">
+            {firstSide && <FlightSideArticle article={firstSide} />}
+            {secondSide && <FlightSideArticle article={secondSide} reverse />}
+            {list.map((post) => (
+              <FlightListArticle key={post.id} article={post} />
             ))}
           </div>
-        )}
+        </div>
       </div>
     </section>
   );
 }
 
-function CarRentalCard({ article }: { article: StrapiArticle }) {
+function FlightFeatureArticle({ article }: { article: StrapiArticle }) {
   const img = mediaUrl(article.coverImage ?? null);
+  const [highlight, rest] = splitTitleLead(article.title);
+
   return (
-    <article className="group" data-testid={`car-rentals-card-${article.slug}`}>
-      <Link
-        href={`/articles/${article.slug}`}
-        className="block overflow-hidden rounded-[0.3rem] bg-forest-900/5"
-      >
+    <article className="group" data-testid={`flights-feature-${article.slug}`}>
+      <Link href={`/articles/${article.slug}`} className="block overflow-hidden rounded-[0.3rem] bg-forest-900/5">
         {img ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={img}
             alt={article.coverImage?.alternativeText || article.title}
-            className="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+            className="aspect-[1.08/1] w-full object-cover transition duration-500 group-hover:scale-[1.02]"
           />
         ) : (
-          <div className="aspect-[4/3] w-full bg-gradient-to-br from-primary-hover to-primary-pressed" />
+          <div className="aspect-[1.08/1] w-full bg-gradient-to-br from-primary-hover to-primary-pressed" />
         )}
       </Link>
       <div className="mt-4">
-        <CategoryLabel article={article} />
+        <FlightMetaLine article={article} />
         <Link href={`/articles/${article.slug}`}>
-          <h3 className="font-urbanist mt-2 line-clamp-2 text-base font-bold leading-snug text-forest-900 transition group-hover:text-primary-highlight">
-            {article.title}
+          <h3 className="mt-2 font-urbanist text-2xl font-extrabold leading-[1.08] text-forest-950 transition group-hover:text-primary-highlight sm:text-3xl">
+            <span className="mr-2 inline-block -skew-x-6 bg-[#ffd21e] px-2 py-0.5 italic text-black">
+              {highlight}
+            </span>
+            {rest}
           </h3>
         </Link>
-        <ArticleMeta article={article} compact />
+        {article.excerpt && (
+          <p className="mt-4 max-w-2xl text-sm leading-6 text-ink/65 sm:text-base">
+            {article.excerpt}
+          </p>
+        )}
+        <Link
+          href={`/articles/${article.slug}`}
+          className="mt-5 inline-flex items-center gap-2 rounded-full bg-primary-highlight px-5 py-2 font-urbanist text-xs font-extrabold uppercase tracking-wide text-white transition hover:bg-primary-pressed"
+        >
+          Read more
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black text-sm leading-none text-white">
+            ↗
+          </span>
+        </Link>
       </div>
     </article>
   );
+}
+
+function FlightSideArticle({ article, reverse = false }: { article: StrapiArticle; reverse?: boolean }) {
+  const img = mediaUrl(article.coverImage ?? null);
+  const imageEl = (
+    <Link href={`/articles/${article.slug}`} className="block overflow-hidden rounded-[0.3rem] bg-forest-900/5">
+      {img ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={img}
+          alt={article.coverImage?.alternativeText || article.title}
+          className="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+        />
+      ) : (
+        <div className="aspect-[4/3] w-full bg-gradient-to-br from-primary-hover to-primary-pressed" />
+      )}
+    </Link>
+  );
+  const textEl = (
+    <div className={reverse ? 'text-left sm:text-right' : 'text-left'}>
+      <FlightMetaLine article={article} />
+      <Link href={`/articles/${article.slug}`}>
+        <h3 className="mt-2 font-urbanist text-lg font-extrabold leading-tight text-forest-950 transition group-hover:text-primary-highlight sm:text-xl">
+          {article.title}
+        </h3>
+      </Link>
+    </div>
+  );
+
+  return (
+    <article className="group grid gap-5 py-6 sm:grid-cols-2 sm:items-center" data-testid={`flights-side-${article.slug}`}>
+      {reverse ? textEl : imageEl}
+      {reverse ? imageEl : textEl}
+    </article>
+  );
+}
+
+function FlightListArticle({ article }: { article: StrapiArticle }) {
+  return (
+    <article className="group py-6" data-testid={`flights-list-${article.slug}`}>
+      <FlightMetaLine article={article} />
+      <Link href={`/articles/${article.slug}`}>
+        <h3 className="mt-2 font-urbanist text-lg font-extrabold leading-tight text-forest-950 transition group-hover:text-primary-highlight sm:text-xl">
+          {article.title}
+        </h3>
+      </Link>
+    </article>
+  );
+}
+
+function FlightMetaLine({ article }: { article: StrapiArticle }) {
+  const category = article.category?.name ?? 'Flights';
+  return (
+    <div className="font-urbanist text-[11px] font-extrabold uppercase tracking-wide text-forest-900/60">
+      {category}
+      <span className="mx-1.5 text-forest-900/35">~</span>
+      <span>{article.readingTimeMinutes ?? 5} min read</span>
+    </div>
+  );
+}
+
+function splitTitleLead(title: string) {
+  const words = title.trim().split(/\s+/);
+  if (words.length <= 2) return [title, ''];
+  return [words.slice(0, 2).join(' '), words.slice(2).join(' ')];
 }
 
 function EditorialSectionHeader({ section }: { section: Section }) {
