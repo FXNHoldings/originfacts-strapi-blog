@@ -179,7 +179,7 @@ export default function FlightsPage() {
           <h1 className="editorial-h text-[2.5rem] font-bold text-forest-900">
             Thousands of cheap flights.
           </h1>
-          <p className="mt-4 text-lg font-light text-forest-900/70">
+          <p className="mt-[5px] text-lg font-light text-forest-900/70">
             Search hundreds of airlines at once. Results appear below, no page jump.
           </p>
         </header>
