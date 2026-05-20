@@ -131,7 +131,7 @@ function Hero({ hero, side }: { hero?: StrapiArticle; side: StrapiArticle[] }) {
           )}
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+        <div className="grid gap-4 self-start sm:grid-cols-2 lg:grid-cols-1">
           {rightTop && <HeroOverlayStory article={rightTop} size="small" />}
           {rightBottom && <HeroOverlayStory article={rightBottom} size="small" />}
           {miniList.length > 0 && (
