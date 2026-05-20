@@ -23,7 +23,6 @@ ICO registration reference: ZB940664
 
 General support: support@fxnholdings.com
 Website contact: contact@originfacts.com
-Phone: +44 7413 408585
 Website: www.originfacts.com
 
 Postal address:

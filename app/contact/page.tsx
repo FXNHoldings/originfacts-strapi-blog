@@ -52,18 +52,6 @@ export default function ContactPage() {
 
           <div>
             <h2 className="editorial-h text-sm uppercase tracking-widest text-forest-800/70">
-              Phone
-            </h2>
-            <a
-              href="tel:+447413408585"
-              className="mt-2 block font-urbanist text-xl font-bold text-forest-900 hover:text-forest-700"
-            >
-              +44 7413 408585
-            </a>
-          </div>
-
-          <div>
-            <h2 className="editorial-h text-sm uppercase tracking-widest text-forest-800/70">
               Office
             </h2>
             <address className="mt-2 text-base not-italic leading-relaxed text-forest-900">
