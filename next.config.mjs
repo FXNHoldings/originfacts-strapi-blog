@@ -21,6 +21,17 @@ const nextConfig = {
       // /flights/<slug> → /flight-routes/<slug>. Bare /flights now serves the new search page,
       // so only the dynamic route-detail children get redirected.
       { source: '/flights/:slug+', destination: '/flight-routes/:slug+', permanent: true },
+      // TPWL whitelabel (wl_id=16677) is configured with Results Page URL pointing at
+      // the bare origin, so submitting the search form on /flights lands on / with
+      // ?flightSearch=… — bounce it to /flights where the #tpwl-tickets container lives.
+      // Soft redirect (permanent:false) — the proper fix is to clear the resultsURL in
+      // the TP admin so search rendering stays in-place.
+      {
+        source: '/',
+        has: [{ type: 'query', key: 'flightSearch' }],
+        destination: '/flights',
+        permanent: false,
+      },
     ];
   },
 };
