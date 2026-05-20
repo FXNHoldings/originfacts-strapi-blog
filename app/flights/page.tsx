@@ -157,35 +157,6 @@ export default function FlightsPage() {
           <div id="tpwl-tickets" />
         </div>
 
-        {/* ---------- For travel pros ---------- */}
-        <section className="mt-20" data-testid="travel-pros">
-          <h2 className="editorial-h text-2xl font-bold text-forest-900 sm:text-3xl">
-            For travel pros
-          </h2>
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {TRAVEL_PROS.map((card) => (
-              <article
-                key={card.title}
-                className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-forest-900/10 transition-shadow hover:shadow-md"
-              >
-                <div>
-                  <h3 className="text-lg font-bold text-forest-900">{card.title}</h3>
-                  <p className="mt-1 text-sm text-primary-emphasis">{card.description}</p>
-                </div>
-                <div className={`flex h-40 items-center justify-center rounded-xl bg-gradient-to-br ${card.bg}`}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={card.image}
-                    alt=""
-                    loading="lazy"
-                    className="h-full w-auto object-contain p-3"
-                  />
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
         {/* ---------- Popular destinations ---------- */}
         <section className="mt-20" data-testid="popular-destinations">
           <h2 className="editorial-h text-2xl font-bold text-forest-900 sm:text-3xl">
@@ -291,6 +262,35 @@ export default function FlightsPage() {
                 </span>
               </div>
             </a>
+          </div>
+        </section>
+
+        {/* ---------- For travel pros ---------- */}
+        <section className="mt-20" data-testid="travel-pros">
+          <h2 className="editorial-h text-2xl font-bold text-forest-900 sm:text-3xl">
+            For travel pros
+          </h2>
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {TRAVEL_PROS.map((card) => (
+              <article
+                key={card.title}
+                className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-forest-900/10 transition-shadow hover:shadow-md"
+              >
+                <div>
+                  <h3 className="text-lg font-bold text-forest-900">{card.title}</h3>
+                  <p className="mt-1 text-sm text-primary-emphasis">{card.description}</p>
+                </div>
+                <div className={`flex h-40 items-center justify-center rounded-xl bg-gradient-to-br ${card.bg}`}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={card.image}
+                    alt=""
+                    loading="lazy"
+                    className="h-full w-auto object-contain p-3"
+                  />
+                </div>
+              </article>
+            ))}
           </div>
         </section>
 
