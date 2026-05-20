@@ -65,6 +65,7 @@ const PRO_TIPS: ProTip[] = [
     title: 'Consider one stop',
     description:
       'A single-stop itinerary often beats a non-stop by 30–50%. Look at the full list first, then narrow to direct flights only after you’ve seen what’s on offer.',
+    // image: '/illustrations/consider-one-stop.svg', // pending — SVG was truncated in chat
   },
   {
     n: 4,
@@ -170,7 +171,7 @@ export default function FlightsPage() {
             {PRO_TIPS.map((tip) => (
               <li
                 key={tip.n}
-                className="flex flex-col rounded-2xl bg-white p-6 shadow-sm ring-1 ring-forest-900/10 transition-shadow hover:shadow-md"
+                className="flex flex-col rounded-lg bg-white p-6 shadow-sm ring-1 ring-forest-900/10 transition-shadow hover:shadow-md"
               >
                 <h3 className="text-base font-bold text-forest-900">{tip.title}</h3>
                 {tip.image ? (
