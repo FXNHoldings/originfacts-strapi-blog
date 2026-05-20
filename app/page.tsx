@@ -15,10 +15,11 @@ export default async function HomePage() {
   const [perSection, countries] = await Promise.all([
     Promise.all(
       SECTIONS.map((s) => {
+        const pageSize = s.slug === 'car-rentals' ? 24 : 5;
         const articles =
           s.slug === 'destinations'
-            ? listDestinationArticles({ pageSize: 5 })
-            : listArticles({ category: s.slug, pageSize: 5 });
+            ? listDestinationArticles({ pageSize })
+            : listArticles({ category: s.slug, pageSize });
 
         return articles.then((r) => r.data).catch(() => []);
       }),
@@ -222,6 +223,11 @@ function EmptySection({ section }: { section: Section }) {
 /* ---------- Editorial section — feature + stacked list ---------- */
 
 function EditorialSection({ section, posts }: { section: Section; posts: StrapiArticle[] }) {
+  // Car Rentals: render the whole catalogue (feature on top + responsive grid of the rest).
+  if (section.slug === 'car-rentals') {
+    return <CarRentalsSection section={section} posts={posts} />;
+  }
+
   const [feature, ...rest] = posts;
   const list = rest.slice(0, 4);
   // Hotels section flips the layout: compact list on the LEFT, feature image on the RIGHT.
@@ -252,6 +258,59 @@ function EditorialSection({ section, posts }: { section: Section; posts: StrapiA
         </div>
       </div>
     </section>
+  );
+}
+
+function CarRentalsSection({ section, posts }: { section: Section; posts: StrapiArticle[] }) {
+  const [feature, ...rest] = posts;
+  return (
+    <section className="py-20" data-testid={`section-${section.slug}`}>
+      <div className="mx-auto max-w-7xl px-6">
+        <EditorialSectionHeader section={section} />
+        <div className="mt-10">
+          <FeatureArticle article={feature} />
+        </div>
+        {rest.length > 0 && (
+          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {rest.map((post) => (
+              <CarRentalCard key={post.id} article={post} />
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function CarRentalCard({ article }: { article: StrapiArticle }) {
+  const img = mediaUrl(article.coverImage ?? null);
+  return (
+    <article className="group" data-testid={`car-rentals-card-${article.slug}`}>
+      <Link
+        href={`/articles/${article.slug}`}
+        className="block overflow-hidden rounded-[0.3rem] bg-forest-900/5"
+      >
+        {img ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={img}
+            alt={article.coverImage?.alternativeText || article.title}
+            className="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+          />
+        ) : (
+          <div className="aspect-[4/3] w-full bg-gradient-to-br from-primary-hover to-primary-pressed" />
+        )}
+      </Link>
+      <div className="mt-4">
+        <CategoryLabel article={article} />
+        <Link href={`/articles/${article.slug}`}>
+          <h3 className="font-urbanist mt-2 line-clamp-2 text-base font-bold leading-snug text-forest-900 transition group-hover:text-primary-highlight">
+            {article.title}
+          </h3>
+        </Link>
+        <ArticleMeta article={article} compact />
+      </div>
+    </article>
   );
 }
 
