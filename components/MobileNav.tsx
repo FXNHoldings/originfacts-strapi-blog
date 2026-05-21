@@ -22,7 +22,7 @@ const NAV_TREE: NavItem[] = [
   {
     label: 'Resources',
     children: [
-      { label: 'Flight Search', href: '/flight-search' },
+      { label: 'Flight Search', href: '/flights' },
       { label: 'Airlines', href: '/airlines' },
       {
         label: 'Airports',

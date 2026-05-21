@@ -158,7 +158,7 @@ export default function FlightDealsWidget() {
   }
 
   // Always render a card. If deals are empty (no TP data for this origin), fall
-  // back to a generic "Search flights" CTA pointing at /flight-search so the
+  // back to a generic "Search flights" CTA pointing at /flights so the
   // sidebar slot is never an empty void.
   if (!origin) return null;
   if (deals.length === 0) {

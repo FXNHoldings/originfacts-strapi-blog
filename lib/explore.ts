@@ -45,7 +45,7 @@ const FETCH_REVALIDATE_SECS = 3600;
 /**
  * Build a TravelPayouts deep-link search URL.
  *
- * We route through our own `/flight-search` page so visitors land on
+ * We route through our own `/flights` page so visitors land on
  * originfacts first (branding + analytics + future ad slots), and that page
  * server-redirects to the TravelPayouts white-label host with the affiliate
  * marker attached. The query-string form keeps the ISO dates intact for both
@@ -65,11 +65,11 @@ function buildAviasalesSearchUrl(opts: {
   if (opts.departureISO) params.set('depart', opts.departureISO);
   if (opts.returnISO) params.set('return', opts.returnISO);
   if (opts.passengers) params.set('pax', String(opts.passengers));
-  return `/flight-search?${params.toString()}`;
+  return `/flights?${params.toString()}`;
 }
 
 /**
- * Build the actual TravelPayouts deep-link URL the /flight-search page
+ * Build the actual TravelPayouts deep-link URL the /flights page
  * redirects to once it has resolved its query params. Exposed so the page
  * can call it server-side.
  *

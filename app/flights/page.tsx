@@ -76,7 +76,7 @@ const PRO_TIPS: ProTip[] = [
 // Pass-through landing for explore-card click-throughs. When called with
 // ?origin=PER&destination=KUL&depart=YYYY-MM-DD&return=YYYY-MM-DD&pax=1 we
 // build the TravelPayouts deep link (white-label host + affiliate marker +
-// DDMM date encoding) and 302 the visitor there. Hitting /flight-search
+// DDMM date encoding) and 302 the visitor there. Hitting /flights
 // with no params shows the on-site search widget below as before.
 export default async function FlightsPage({
   searchParams,
