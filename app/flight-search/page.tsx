@@ -74,15 +74,9 @@ const PRO_TIPS: ProTip[] = [
 export default function FlightsPage() {
   return (
     <>
-      <Script id="tpwl-loader" strategy="afterInteractive">
-        {`(function () {
-  var script = document.createElement("script");
-  script.async = 1;
-  script.type = "module";
-  script.src = "https://tpscr.com/wl_web/main.js?wl_id=16677";
-  document.head.appendChild(script);
-})();`}
-      </Script>
+      {/* TPWL loader now lives in app/layout.tsx so the SDK is available
+          site-wide. The two `<div id="tpwl-search">` / `<div id="tpwl-tickets">`
+          containers below are what tells main.js where to render. */}
 
       <Script id="flight-search-state" strategy="afterInteractive">
         {`(function () {

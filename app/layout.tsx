@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Urbanist } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 import Header from '@/components/Header';
@@ -16,6 +16,13 @@ const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
   weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
+});
+
+const urbanist = Urbanist({
+  subsets: ['latin'],
+  variable: '--font-urbanist',
+  weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
 });
 
@@ -42,7 +49,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const sidebar = await listSidebarArticles(7).catch(() => ({ recent: [], popular: [] }));
 
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`${inter.variable} ${urbanist.variable}`}>
       <body className="min-h-screen flex flex-col font-sans font-normal grain" data-testid="app-shell">
         <Script id="consent-default" strategy="beforeInteractive">{`
           window.dataLayer = window.dataLayer || [];
@@ -70,6 +77,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             var script = document.createElement("script");
             script.async = 1;
             script.src = 'https://tp-em.com/NDAxMzEx.js?t=401311';
+            document.head.appendChild(script);
+          })();
+        `}</Script>
+        {/* Travelpayouts white-label metasearch loader. Lives in <head> per
+            TP docs so the SDK is available on any page that drops in a
+            <div id="tpwl-search"> / <div id="tpwl-tickets"> container.
+            No-ops on pages without those containers. */}
+        <Script id="tpwl-loader" strategy="afterInteractive">{`
+          (function () {
+            var script = document.createElement("script");
+            script.async = 1;
+            script.type = "module";
+            script.src = "https://tpscr.com/wl_web/main.js?wl_id=16677";
             document.head.appendChild(script);
           })();
         `}</Script>

@@ -5,7 +5,7 @@
 @layer base {
   html {
     background: #ffffff;
-    color: #666666;
+    color: #7f8795;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
@@ -27,11 +27,11 @@
      that need a different heading colour (the footer's yellow on
      navy, for example) override via a more specific rule below. */
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-inter), system-ui, sans-serif !important;
+    font-family: var(--font-urbanist), system-ui, sans-serif !important;
     font-weight: 700 !important;
     letter-spacing: -0.01em !important;
     line-height: 1.2;
-    color: #030303 !important;
+    color: #2d3c58 !important;
   }
   /* Pixelbin-style fluid heading scale.
      Pattern: clamp(min, calc(base-rem + vw), max).
@@ -78,6 +78,33 @@
      Uses :has() to detect the article-page data-testid anywhere in the
      body and target the global FixedPopularNow widget. */
   body:has([data-testid="article-page"]) [data-testid="fixed-popular-now"] {
+    display: none !important;
+  }
+
+  /* Pages where the floating side widgets should be hidden — flight
+     search, airlines (index + detail), airports (index + detail + hubs).
+     Gives directory / search layouts the full canvas without the
+     left popular-posts widget or right icon bar competing for space. */
+  body:has([data-testid="fly-page"]) [data-testid="fixed-popular-now"],
+  body:has([data-testid="fly-page"]) [data-testid="fixed-right-bar"],
+  body:has([data-testid="flights-page"]) [data-testid="fixed-popular-now"],
+  body:has([data-testid="flights-page"]) [data-testid="fixed-right-bar"],
+  body:has([data-testid="airlines-page"]) [data-testid="fixed-popular-now"],
+  body:has([data-testid="airlines-page"]) [data-testid="fixed-right-bar"],
+  body:has([data-testid^="airline-page-"]) [data-testid="fixed-popular-now"],
+  body:has([data-testid^="airline-page-"]) [data-testid="fixed-right-bar"],
+  body:has([data-testid="airports-page"]) [data-testid="fixed-popular-now"],
+  body:has([data-testid="airports-page"]) [data-testid="fixed-right-bar"],
+  body:has([data-testid^="airport-page-"]) [data-testid="fixed-popular-now"],
+  body:has([data-testid^="airport-page-"]) [data-testid="fixed-right-bar"],
+  body:has([data-testid="airport-hubs-page"]) [data-testid="fixed-popular-now"],
+  body:has([data-testid="airport-hubs-page"]) [data-testid="fixed-right-bar"],
+  body:has([data-testid="countries-page"]) [data-testid="fixed-popular-now"],
+  body:has([data-testid="countries-page"]) [data-testid="fixed-right-bar"],
+  body:has([data-testid^="country-page-"]) [data-testid="fixed-popular-now"],
+  body:has([data-testid^="country-page-"]) [data-testid="fixed-right-bar"],
+  body:has([data-testid^="route-page-"]) [data-testid="fixed-popular-now"],
+  body:has([data-testid^="route-page-"]) [data-testid="fixed-right-bar"] {
     display: none !important;
   }
 
@@ -371,11 +398,13 @@ html.flight-search-active [data-testid="booking-faq"] {
   margin-right: auto;
 }
 .prose-article p,
+.prose-article ol,
+.prose-article ul,
 .prose-article li {
   /* 1rem (16px) body throughout, weight 400 (matches html body weight). */
   font-size: 1rem;
   font-weight: 400;
-  color: #666666;
+  color: #7f8795;
   line-height: 1.7;
   letter-spacing: 0;
 }

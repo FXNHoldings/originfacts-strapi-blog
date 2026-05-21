@@ -81,6 +81,26 @@ export default function PriceCalendar({
         font-family: var(--font-urbanist), system-ui, sans-serif !important;
         letter-spacing: -0.01em;
       }
+      .root .calendar-layout--border,
+      :host .root .calendar-layout--border {
+        border: 0 !important;
+      }
+      .cascoon--l .root .calendar-content,
+      .cascoon--m .root .calendar-content {
+        padding: 0 20px 0 !important;
+      }
+      .cascoon--l .root .calendar-layout--gapped .calendar-content,
+      .cascoon--m .root .calendar-layout--gapped .calendar-content {
+        padding-top: 20px !important;
+      }
+      .root .calendar-wrapper .calendar-header {
+        /* --primary-light isn't a site-wide var yet; fallback to a light
+           tint of the brand blue so the header still picks up a visible
+           background. Override --primary-light on the page or :host to
+           customise. */
+        background-color: var(--primary-light, #e6effd) !important;
+        padding: 12px 20px !important;
+      }
     `;
 
     const injected = new WeakSet<ShadowRoot>();

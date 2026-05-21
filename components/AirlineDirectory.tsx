@@ -1,13 +1,24 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { mediaUrl, type StrapiAirline, type AirlineRegion, type AirlineType } from '@/lib/strapi';
 
 const REGION_ORDER: AirlineRegion[] = ['Africa', 'Asia', 'Europe', 'North America', 'Oceania', 'South America'];
 const TYPE_OPTIONS: AirlineType[] = ['Scheduled', 'Low-cost', 'Regional', 'Charter', 'Cargo'];
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-const PER_REGION_LIMIT = 15;
+const PER_REGION_LIMIT = 9;
+const POPULAR_LIMIT = 20;
+const POPULAR_SLIDE_MS = 2200;
+
+// Curated list of well-known international carriers, ordered by global
+// recognition. Matched against airline.iataCode case-insensitively — entries
+// not in the dataset are silently skipped.
+const POPULAR_IATA = [
+  'QF', 'JQ', 'VA', 'TR', 'AA', 'EK', 'UA', 'SQ', 'BA', 'AF',
+  'LH', 'KL', 'CX', 'QR', 'EY', 'TK', 'NH', 'JL', 'AC', 'DL',
+  'NZ', 'EI', 'IB', 'AY', 'OS', 'LX',
+];
 
 function firstLetterBucket(name: string): string {
   const first = (name ?? '').trim().charAt(0).toUpperCase();
@@ -19,6 +30,14 @@ export default function AirlineDirectory({ airlines }: { airlines: StrapiAirline
   const [activeType, setActiveType] = useState<AirlineType | null>(null);
   const [activeRegion, setActiveRegion] = useState<AirlineRegion | null>(null);
   const [activeLetter, setActiveLetter] = useState<string | null>(null);
+  const [expandedRegions, setExpandedRegions] = useState<Set<AirlineRegion>>(new Set());
+
+  const toggleRegion = (r: AirlineRegion) =>
+    setExpandedRegions((prev) => {
+      const next = new Set(prev);
+      if (next.has(r)) next.delete(r); else next.add(r);
+      return next;
+    });
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -142,6 +161,9 @@ export default function AirlineDirectory({ airlines }: { airlines: StrapiAirline
         )}
       </div>
 
+      {/* Popular airlines (auto-sliding strip) */}
+      <PopularAirlinesStrip airlines={airlines} />
+
       {/* Results */}
       <div className="mt-10 grid gap-12 lg:grid-cols-[180px,1fr]">
         {/* Sticky region nav (desktop) */}
@@ -169,8 +191,9 @@ export default function AirlineDirectory({ airlines }: { airlines: StrapiAirline
           ) : (
             orderedRegions.map((r) => {
               const regionList = byRegion.get(r)!;
-              const displayed = regionList.slice(0, PER_REGION_LIMIT);
-              const overflow = regionList.length - displayed.length;
+              const isExpanded = expandedRegions.has(r);
+              const displayed = isExpanded ? regionList : regionList.slice(0, PER_REGION_LIMIT);
+              const overflow = regionList.length - PER_REGION_LIMIT;
               return (
                 <section
                   key={r}
@@ -179,19 +202,32 @@ export default function AirlineDirectory({ airlines }: { airlines: StrapiAirline
                   data-testid={`region-${r.replace(/\s+/g, '-').toLowerCase()}`}
                 >
                   <header className="flex items-baseline justify-between border-b border-forest-900/10 pb-3">
-                    <h2 className="editorial-h text-2xl font-bold text-forest-900 lg:text-3xl">{r}</h2>
+                    <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">{r}</h2>
                     <span className="text-sm font-light text-forest-900/50">
                       {regionList.length} airline{regionList.length === 1 ? '' : 's'}
-                      {overflow > 0 && <span className="ml-2 text-forest-900/40">· showing {PER_REGION_LIMIT}</span>}
+                      {overflow > 0 && !isExpanded && (
+                        <span className="ml-2 text-forest-900/40">· showing {PER_REGION_LIMIT}</span>
+                      )}
                     </span>
                   </header>
                   <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     {displayed.map((a) => <AirlineCard key={a.id} airline={a} />)}
                   </div>
                   {overflow > 0 && (
-                    <p className="mt-4 text-xs text-forest-900/50">
-                      + {overflow.toLocaleString()} more in {r} — narrow with search, letter, or type filter.
-                    </p>
+                    <div className="mt-6 flex justify-center">
+                      <button
+                        type="button"
+                        onClick={() => toggleRegion(r)}
+                        aria-expanded={isExpanded}
+                        className="inline-flex items-center gap-2 rounded-full border border-forest-900/20 px-5 py-2 font-urbanist text-sm font-bold text-forest-900 transition hover:border-forest-900 hover:bg-forest-900 hover:text-sand-100"
+                        data-testid={`region-toggle-${r.replace(/\s+/g, '-').toLowerCase()}`}
+                      >
+                        {isExpanded
+                          ? `Show less`
+                          : `View all ${regionList.length} airlines in ${r}`}
+                        <span aria-hidden>{isExpanded ? '↑' : '→'}</span>
+                      </button>
+                    </div>
                   )}
                 </section>
               );
@@ -265,7 +301,7 @@ function AirlineCard({ airline }: { airline: StrapiAirline }) {
   return (
     <Link
       href={`/airlines/${airline.slug}`}
-      className="group flex items-center gap-4 rounded-[0.3rem] border border-forest-900/10 bg-paper p-4 transition hover:-translate-y-0.5 hover:border-forest-900/30 hover:shadow-sm"
+      className="group flex items-center gap-4 rounded-[0.3rem] border border-forest-900/10 bg-[#f7f8fa] p-4 transition hover:-translate-y-0.5 hover:border-forest-900/30 hover:shadow-sm"
       data-testid={`airline-card-${airline.slug}`}
     >
       <div className="flex h-14 w-14 flex-none items-center justify-center overflow-hidden rounded-[0.3rem] bg-forest-900/5">
@@ -293,6 +329,94 @@ function AirlineCard({ airline }: { airline: StrapiAirline }) {
           {[airline.country, airline.city].filter(Boolean).join(' · ')}
           {airline.type && <span className="ml-2 text-forest-900/40">· {airline.type}</span>}
         </div>
+      </div>
+    </Link>
+  );
+}
+
+function PopularAirlinesStrip({ airlines }: { airlines: StrapiAirline[] }) {
+  // Build IATA → airline lookup, then walk POPULAR_IATA in order so the
+  // strip mirrors the curated ranking. Drop carriers we don't have data for.
+  const popular = useMemo(() => {
+    const byIata = new Map<string, StrapiAirline>();
+    for (const a of airlines) {
+      if (a.iataCode) byIata.set(a.iataCode.toUpperCase(), a);
+    }
+    const out: StrapiAirline[] = [];
+    for (const code of POPULAR_IATA) {
+      const a = byIata.get(code);
+      if (a) out.push(a);
+      if (out.length >= POPULAR_LIMIT) break;
+    }
+    return out;
+  }, [airlines]);
+
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [paused, setPaused] = useState(false);
+
+  const step = useCallback(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const firstItem = track.firstElementChild as HTMLElement | null;
+    if (!firstItem) return;
+    const styles = getComputedStyle(track);
+    const gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
+    const stride = firstItem.offsetWidth + gap;
+    const maxScroll = track.scrollWidth - track.clientWidth;
+    let next = track.scrollLeft + stride;
+    if (next >= maxScroll - 2) next = 0;
+    track.scrollTo({ left: next, behavior: 'smooth' });
+  }, []);
+
+  useEffect(() => {
+    if (paused || popular.length <= 1) return;
+    const id = window.setInterval(step, POPULAR_SLIDE_MS);
+    return () => window.clearInterval(id);
+  }, [paused, popular.length, step]);
+
+  if (popular.length === 0) return null;
+
+  return (
+    <section className="mt-12" data-testid="popular-airlines">
+      <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">Popular airlines</h2>
+      <div
+        ref={trackRef}
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onFocus={() => setPaused(true)}
+        onBlur={() => setPaused(false)}
+        className="mt-5 flex snap-x snap-mandatory gap-[10px] overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {popular.map((a) => (
+          <PopularAirlineCard key={a.id} airline={a} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function PopularAirlineCard({ airline }: { airline: StrapiAirline }) {
+  const logo = mediaUrl(airline.logo ?? null);
+  return (
+    <Link
+      href={`/airlines/${airline.slug}`}
+      className="snap-start group flex h-[78px] w-[200px] shrink-0 items-center gap-3 rounded-[4px] border border-forest-900/10 bg-[#f7f8fa] px-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition hover:border-forest-900/25 hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]"
+      data-testid={`popular-airline-${airline.slug}`}
+    >
+      <div className="flex h-12 w-12 flex-none items-center justify-center overflow-hidden rounded-md bg-white">
+        {logo ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={logo} alt={airline.name} className="h-full w-full object-contain" />
+        ) : (
+          <span className="font-urbanist text-xs font-bold text-forest-900/60">
+            {(airline.iataCode || airline.name).slice(0, 3).toUpperCase()}
+          </span>
+        )}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="line-clamp-2 font-urbanist text-sm font-bold leading-tight text-forest-950 group-hover:text-primary-emphasis">
+          {airline.name}
+        </p>
       </div>
     </Link>
   );

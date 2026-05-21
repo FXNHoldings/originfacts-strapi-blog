@@ -1,5 +1,6 @@
 import { listAirports, listCountries } from '@/lib/strapi';
 import CountriesDirectory, { type CountryRow } from '@/components/CountriesDirectory';
+import ExpandableDescription from '@/components/ExpandableDescription';
 
 export const revalidate = 60;
 
@@ -63,12 +64,11 @@ export default async function CountriesPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-16" data-testid="countries-page">
-      <header className="max-w-3xl">
-        <p className="chip">Directory</p>
-        <h1 className="editorial-h mt-5 text-3xl font-bold text-forest-900">Countries, mapped</h1>
-        <p className="mt-4 text-lg font-light text-forest-900/70">
-          Every country with commercial air service indexed from TravelPayouts. Search by name or ISO code — click through for the country&apos;s airports, airlines, and top routes.
-        </p>
+      <header>
+        <h1 className="editorial-h text-3xl font-bold text-forest-900">Countries, mapped</h1>
+        <ExpandableDescription
+          text="A directory of every country with scheduled commercial air service — built from our Travelpayouts dataset and kept current as new carriers launch, hubs shift, and second-tier airports open. Each country page gathers the airports inside its borders, the airlines registered there, the top inbound and outbound routes, and our own travel coverage (hotels, flights, car rentals, on-the-ground tips) so you can move fluidly from a destination idea to the practical bits of getting there. Filter by name or ISO-3166 code, browse by continent, or click straight through to a country profile — useful whether you're decoding a stopover, comparing visa-on-arrival rules across regions, or planning a multi-country itinerary from a single base. The index is read from one source of truth, so a country's airline list stays in sync with the rest of the site as our coverage grows."
+        />
       </header>
 
       <CountriesDirectory countries={countries} />

@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { getRoute, mediaUrl, type StrapiAirline } from '@/lib/strapi';
 import { flightSearchUrl } from '@/lib/affiliate';
 import PriceCalendar from '@/components/PriceCalendar';
+import ScheduleWidget from '@/components/ScheduleWidget';
+import ExpandableDescription from '@/components/ExpandableDescription';
 import type { Metadata } from 'next';
 
 export const revalidate = 60;
@@ -37,30 +39,25 @@ export default async function RoutePage({ params }: Props) {
 
   return (
     <article data-testid={`route-page-${slug}`}>
-      {/* Breadcrumb */}
-      <div className="mx-auto max-w-6xl px-6 pt-10">
-        <nav className="text-xs uppercase tracking-widest text-forest-900/60">
-          <span>Flights</span>
-          <span className="mx-2 text-forest-900/30">/</span>
-          <Link href={`/airports/${origin.iata.toLowerCase()}`} className="hover:text-forest-900">
-            {origin.iata}
-          </Link>
-          <span className="mx-2 text-forest-900/30">→</span>
-          <Link href={`/airports/${destination.iata.toLowerCase()}`} className="hover:text-forest-900">
-            {destination.iata}
-          </Link>
-        </nav>
-      </div>
-
       {/* Hero — origin → destination */}
-      <header className="mx-auto mt-8 max-w-6xl px-6">
+      <header className="mx-auto mt-10 max-w-7xl px-6">
         <p className="font-urbanist text-xs uppercase tracking-wider text-forest-800/70">
           Route · {origin.iata} → {destination.iata}
         </p>
-        <h1 className="editorial-h mt-4 text-3xl font-bold leading-tight text-forest-900 sm:text-4xl">
+        <h1 className="editorial-h mt-4 text-[1.875rem] font-bold leading-tight text-forest-900">
           Flights from {origin.city || origin.name} to {destination.city || destination.name}
         </h1>
-        <div className="mt-6 grid gap-4 sm:grid-cols-[1fr,auto,1fr] sm:items-center">
+
+        {/* About this route — full container width, full content (no toggle) */}
+        {route.about && (
+          <div className="prose-article !max-w-none mt-6" data-testid="route-about">
+            {route.about.split(/\n{2,}/).map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-8 grid gap-4 sm:grid-cols-[1fr,auto,1fr] sm:items-center">
           <AirportCard airport={origin} align="left" />
           <div className="flex flex-col items-center justify-center gap-2 text-forest-900/60">
             <svg width="40" height="24" viewBox="0 0 40 24" fill="none" className="text-forest-600 sm:w-16" aria-hidden>
@@ -93,7 +90,7 @@ export default async function RoutePage({ params }: Props) {
       </header>
 
       {/* Quick facts strip */}
-      <section className="mx-auto mt-12 max-w-6xl px-6">
+      <section className="mx-auto mt-12 max-w-7xl px-6">
         <div className="grid gap-6 rounded-[0.3rem] border border-forest-900/10 bg-forest-900/[0.02] p-6 sm:grid-cols-4">
           <Stat label="Distance" value={route.distanceKm ? `${route.distanceKm.toLocaleString()} km` : '—'} />
           <Stat label="Flight time" value={route.durationMinutes ? formatDuration(route.durationMinutes) : '—'} />
@@ -103,46 +100,41 @@ export default async function RoutePage({ params }: Props) {
       </section>
 
       {/* Live price calendar — TravelPayouts widget */}
-      <section className="mx-auto mt-14 max-w-6xl px-6" data-testid="route-price-calendar">
-        <header className="mb-5 flex items-baseline justify-between">
-          <h2 className="editorial-h text-2xl font-bold text-forest-900 lg:text-3xl">
+      <section className="mx-auto mt-14 max-w-7xl px-6" data-testid="route-price-calendar">
+        <header className="mb-3 flex items-baseline justify-between">
+          <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">
             Cheapest dates to fly
           </h2>
           <span className="text-xs font-light text-forest-900/50">
             Live prices · powered by Aviasales
           </span>
         </header>
+        <ExpandableDescription
+          wordLimit={20}
+          className="mb-5 text-base"
+          text={`The calendar below pulls live fares from our search partner for ${origin.city || origin.name} (${origin.iata}) → ${destination.city || destination.name} (${destination.iata}). Use the year view to spot the cheapest week to fly, the day-of-week patterns most travellers miss, and any shoulder-season dips worth shifting your trip around. Prices refresh every few hours, so what you see is what your booking page should look like a moment later — click any date to jump straight to the fare on Aviasales.`}
+        />
         <div className="rounded-[0.3rem] border border-forest-900/10 bg-paper p-2">
           <PriceCalendar origin={origin.iata} destination={destination.iata} />
         </div>
       </section>
 
-      {/* About */}
-      {route.about && (
-        <section className="mx-auto mt-14 max-w-3xl px-6">
-          <p className="section-eyebrow">
-            <span className="inline-block h-px w-8 bg-forest-800/60" />
-            About this route
-          </p>
-          <div className="prose-article mt-4">
-            {route.about.split(/\n{2,}/).map((p, i) => (
-              <p key={i}>{p}</p>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* Carriers */}
       {carriers.length > 0 && (
-        <section className="mx-auto mt-16 max-w-6xl px-6">
+        <section className="mx-auto mt-16 max-w-7xl px-6">
           <header className="flex items-end justify-between border-b border-forest-900/10 pb-3">
-            <h2 className="editorial-h text-2xl font-bold text-forest-900 lg:text-3xl">
+            <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">
               Airlines on this route
             </h2>
             <span className="text-sm font-light text-forest-900/50">
               {carriers.length} carrier{carriers.length === 1 ? '' : 's'}
             </span>
           </header>
+          <ExpandableDescription
+            wordLimit={25}
+            className="mt-4 text-base"
+            text={`The ${carriers.length} carrier${carriers.length === 1 ? '' : 's'} we currently track on the ${origin.city || origin.name}–${destination.city || destination.name} route, from full-service flag carriers to low-cost competitors. Tap any airline for its full profile, baggage rules, fleet context, and a live fare search pre-filtered to that carrier — useful if you're loyal to a frequent-flyer programme, want to compare onboard product on the same dates, or are weighing a cheaper one-stop against a pricier nonstop.`}
+          />
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {carriers.map((c) => (
               <CarrierCard key={c.id} carrier={c} route={slug} origin={origin.iata} destination={destination.iata} />
@@ -151,9 +143,34 @@ export default async function RoutePage({ params }: Props) {
         </section>
       )}
 
+      {/* Live schedule — TravelPayouts widget */}
+      <section className="mx-auto mt-14 max-w-7xl px-6" data-testid="route-schedule">
+        <header className="mb-3 flex items-baseline justify-between">
+          <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">
+            Flights from {origin.city || origin.name} to {destination.city || destination.name}
+          </h2>
+          <span className="text-xs font-light text-forest-900/50">
+            Live schedule · powered by Aviasales
+          </span>
+        </header>
+        <ExpandableDescription
+          wordLimit={25}
+          className="mb-5 text-base"
+          text={`Below is the published weekly schedule for nonstop and one-stop services from ${origin.city || origin.name} to ${destination.city || destination.name} — the actual flight numbers, departure and arrival times your booking page will pull from. Use it to plan around departure preferences (early morning vs late evening), see which carriers fly on which weekdays, or pick a connection that lets you sleep in your own bed before a long-haul leg. Click any row to load it directly in the search.`}
+        />
+        <div className="rounded-[0.3rem] border border-forest-900/10 bg-white p-2">
+          <ScheduleWidget origin={origin.iata} destination={destination.iata} />
+        </div>
+      </section>
+
       {/* Airport cross-links */}
-      <section className="mx-auto mt-16 max-w-6xl px-6 pb-20">
-        <h2 className="editorial-h text-2xl font-bold text-forest-900 lg:text-3xl">Airport guides</h2>
+      <section className="mx-auto mt-16 max-w-7xl px-6 pb-20">
+        <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">Airport guides</h2>
+        <ExpandableDescription
+          wordLimit={25}
+          className="mt-4 text-base"
+          text={`Quick links into the airport profiles at both ends of the route. Each guide covers terminal layout, the airlines that base hubs at ${origin.iata} and ${destination.iata}, the other routes those airports serve, and the ground-transit options most travellers wish they'd read about before landing — the practical context you only really need to know once you've booked, but want to skim before you do.`}
+        />
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <AirportLink airport={origin} />
           <AirportLink airport={destination} />

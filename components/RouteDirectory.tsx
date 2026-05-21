@@ -1,14 +1,25 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { StrapiRoute, AirlineRegion } from '@/lib/strapi';
 
 const REGION_ORDER: AirlineRegion[] = ['Africa', 'Asia', 'Europe', 'North America', 'Oceania', 'South America'];
+const POPULAR_LIMIT = 20;
+const POPULAR_SLIDE_MS = 2200;
+const PER_REGION_LIMIT = 12;
 
 export default function RouteDirectory({ routes }: { routes: StrapiRoute[] }) {
   const [query, setQuery] = useState('');
   const [activeRegion, setActiveRegion] = useState<AirlineRegion | null>(null);
+  const [expandedRegions, setExpandedRegions] = useState<Set<AirlineRegion>>(new Set());
+
+  const toggleRegion = (r: AirlineRegion) =>
+    setExpandedRegions((prev) => {
+      const next = new Set(prev);
+      if (next.has(r)) next.delete(r); else next.add(r);
+      return next;
+    });
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -94,6 +105,9 @@ export default function RouteDirectory({ routes }: { routes: StrapiRoute[] }) {
         ))}
       </div>
 
+      {/* Popular flight routes (auto-sliding strip) */}
+      <PopularRoutesStrip routes={routes} />
+
       {/* Results */}
       <div className="mt-10 grid gap-12 lg:grid-cols-[180px,1fr]">
         <nav className="hidden lg:block">
@@ -118,28 +132,48 @@ export default function RouteDirectory({ routes }: { routes: StrapiRoute[] }) {
               No routes match that search. Try clearing a filter.
             </p>
           ) : (
-            orderedRegions.map((r) => (
-              <section
-                key={r}
-                id={`region-${r.replace(/\s+/g, '-').toLowerCase()}`}
-                className="mb-16 scroll-mt-24"
-              >
-                <header className="flex items-baseline justify-between border-b border-forest-900/10 pb-3">
-                  <h2 className="editorial-h text-2xl font-bold text-forest-900 lg:text-3xl">{r}</h2>
-                  <span className="text-sm font-light text-forest-900/50">
-                    {byRegion.get(r)!.length} route{byRegion.get(r)!.length === 1 ? '' : 's'}
-                  </span>
-                </header>
-                <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                  {byRegion.get(r)!.slice(0, 120).map((rt) => <RouteCard key={rt.id} route={rt} />)}
-                </div>
-                {byRegion.get(r)!.length > 120 && (
-                  <p className="mt-4 text-xs text-forest-900/50">
-                    + {byRegion.get(r)!.length - 120} more in {r} — use search to narrow.
-                  </p>
-                )}
-              </section>
-            ))
+            orderedRegions.map((r) => {
+              const regionList = byRegion.get(r)!;
+              const isExpanded = expandedRegions.has(r);
+              const displayed = isExpanded ? regionList : regionList.slice(0, PER_REGION_LIMIT);
+              const overflow = regionList.length - PER_REGION_LIMIT;
+              return (
+                <section
+                  key={r}
+                  id={`region-${r.replace(/\s+/g, '-').toLowerCase()}`}
+                  className="mb-16 scroll-mt-24"
+                >
+                  <header className="flex items-baseline justify-between border-b border-forest-900/10 pb-3">
+                    <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">{r}</h2>
+                    <span className="text-sm font-light text-forest-900/50">
+                      {regionList.length} route{regionList.length === 1 ? '' : 's'}
+                      {overflow > 0 && !isExpanded && (
+                        <span className="ml-2 text-forest-900/40">· showing {PER_REGION_LIMIT}</span>
+                      )}
+                    </span>
+                  </header>
+                  <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {displayed.map((rt) => <RouteCard key={rt.id} route={rt} />)}
+                  </div>
+                  {overflow > 0 && (
+                    <div className="mt-6 flex justify-center">
+                      <button
+                        type="button"
+                        onClick={() => toggleRegion(r)}
+                        aria-expanded={isExpanded}
+                        className="inline-flex items-center gap-2 rounded-full border border-forest-900/20 px-5 py-2 font-urbanist text-sm font-bold text-forest-900 transition hover:border-forest-900 hover:bg-forest-900 hover:text-sand-100"
+                        data-testid={`region-toggle-${r.replace(/\s+/g, '-').toLowerCase()}`}
+                      >
+                        {isExpanded
+                          ? `Show less`
+                          : `View all ${regionList.length} routes in ${r}`}
+                        <span aria-hidden>{isExpanded ? '↑' : '→'}</span>
+                      </button>
+                    </div>
+                  )}
+                </section>
+              );
+            })
           )}
         </div>
       </div>
@@ -179,7 +213,7 @@ function RouteCard({ route }: { route: StrapiRoute }) {
   return (
     <Link
       href={`/flight-routes/${route.slug}`}
-      className="group flex flex-col gap-2 rounded-[0.3rem] border border-forest-900/10 bg-paper px-4 py-3 transition hover:-translate-y-0.5 hover:border-forest-900/30"
+      className="group flex flex-col gap-2 rounded-[0.3rem] border border-forest-900/10 bg-[#f7f8fa] px-4 py-3 transition hover:-translate-y-0.5 hover:border-forest-900/30"
       data-testid={`route-card-${route.slug}`}
     >
       <div className="flex items-center gap-2">
@@ -206,6 +240,83 @@ function RouteCard({ route }: { route: StrapiRoute }) {
           )}
         </div>
       </div>
+    </Link>
+  );
+}
+
+function PopularRoutesStrip({ routes }: { routes: StrapiRoute[] }) {
+  // Sort by Strapi's `popularity` field (higher = more popular). Fall back
+  // to the input order for routes without a popularity value. Drop routes
+  // missing either endpoint.
+  const popular = useMemo(() => {
+    return routes
+      .filter((r) => r.origin?.iata && r.destination?.iata)
+      .slice()
+      .sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0))
+      .slice(0, POPULAR_LIMIT);
+  }, [routes]);
+
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [paused, setPaused] = useState(false);
+
+  const step = useCallback(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const firstItem = track.firstElementChild as HTMLElement | null;
+    if (!firstItem) return;
+    const styles = getComputedStyle(track);
+    const gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
+    const stride = firstItem.offsetWidth + gap;
+    const maxScroll = track.scrollWidth - track.clientWidth;
+    let next = track.scrollLeft + stride;
+    if (next >= maxScroll - 2) next = 0;
+    track.scrollTo({ left: next, behavior: 'smooth' });
+  }, []);
+
+  useEffect(() => {
+    if (paused || popular.length <= 1) return;
+    const id = window.setInterval(step, POPULAR_SLIDE_MS);
+    return () => window.clearInterval(id);
+  }, [paused, popular.length, step]);
+
+  if (popular.length === 0) return null;
+
+  return (
+    <section className="mt-12" data-testid="popular-routes">
+      <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">Popular flight routes</h2>
+      <div
+        ref={trackRef}
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onFocus={() => setPaused(true)}
+        onBlur={() => setPaused(false)}
+        className="mt-5 flex snap-x snap-mandatory gap-[10px] overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {popular.map((r) => (
+          <PopularRouteCard key={r.id} route={r} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function PopularRouteCard({ route }: { route: StrapiRoute }) {
+  const o = route.origin!;
+  const d = route.destination!;
+  return (
+    <Link
+      href={`/flight-routes/${route.slug}`}
+      className="snap-start group flex h-[78px] w-[240px] shrink-0 flex-col justify-center gap-1.5 rounded-[4px] border border-forest-900/10 bg-[#f7f8fa] px-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition hover:border-forest-900/25 hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]"
+      data-testid={`popular-route-${route.slug}`}
+    >
+      <div className="flex items-center gap-2 font-mono text-[11px] font-bold tracking-wider">
+        <span className="flex-none rounded-[0.3rem] bg-forest-900 px-2 py-0.5 text-sand-100">{o.iata}</span>
+        <span className="text-forest-900/40">→</span>
+        <span className="flex-none rounded-[0.3rem] bg-forest-700 px-2 py-0.5 text-sand-100">{d.iata}</span>
+      </div>
+      <p className="truncate font-urbanist text-sm font-bold leading-tight text-forest-950 group-hover:text-primary-emphasis">
+        {o.city || o.name} → {d.city || d.name}
+      </p>
     </Link>
   );
 }

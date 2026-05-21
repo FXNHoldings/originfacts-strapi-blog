@@ -207,7 +207,7 @@ function AirportCard({ airport }: { airport: StrapiAirport }) {
   return (
     <Link
       href={`/airports/${airport.iata.toLowerCase()}`}
-      className="group flex items-center justify-between gap-3 rounded-[0.3rem] border border-forest-900/10 bg-paper px-4 py-3 transition hover:-translate-y-0.5 hover:border-forest-900/30"
+      className="group flex items-center justify-between gap-3 rounded-[0.3rem] border border-forest-900/10 bg-[#f7f8fa] px-4 py-3 transition hover:-translate-y-0.5 hover:border-forest-900/30"
       data-testid={`airport-card-${airport.iata}`}
     >
       <div className="min-w-0">
@@ -233,7 +233,7 @@ function HubChip({ airport }: { airport: StrapiAirport }) {
   return (
     <Link
       href={`/airports/${airport.iata.toLowerCase()}`}
-      className="group flex h-full overflow-hidden rounded-lg border border-forest-900/10 bg-paper transition hover:-translate-y-0.5 hover:border-forest-900/30 hover:shadow-sm"
+      className="group flex h-full overflow-hidden rounded-lg border border-forest-900/10 bg-[#f7f8fa] transition hover:-translate-y-0.5 hover:border-forest-900/30 hover:shadow-sm"
       data-testid={`hub-chip-${airport.iata}`}
     >
       {img ? (

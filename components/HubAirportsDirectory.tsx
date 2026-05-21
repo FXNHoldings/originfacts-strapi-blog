@@ -111,7 +111,7 @@ function HubCard({ airport }: { airport: StrapiAirport }) {
   return (
     <Link
       href={`/airports/${airport.iata}`}
-      className="group flex h-full overflow-hidden rounded-lg border border-forest-900/10 bg-paper transition hover:-translate-y-0.5 hover:border-forest-900/30 hover:shadow-sm"
+      className="group flex h-full overflow-hidden rounded-lg border border-forest-900/10 bg-[#f7f8fa] transition hover:-translate-y-0.5 hover:border-forest-900/30 hover:shadow-sm"
       data-testid={`hub-card-${airport.iata}`}
     >
       {img ? (
