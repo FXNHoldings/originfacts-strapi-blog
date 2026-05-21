@@ -1,4 +1,11 @@
-export const TPWL_HOST = 'https://flights.originfacts.com';
+/**
+ * Public landing page for the TPWL widget. Every Popular-Destinations and
+ * Search-by-Destination click now routes through our own /flights page so
+ * visitors stay on originfacts.com — that page then 307-redirects to the
+ * white-label host (flights.originfacts.com) with the TravelPayouts marker
+ * attached. Keeps brand + analytics + ad slots on the main domain.
+ */
+export const TPWL_HOST = '/flights';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const ymd = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
@@ -9,14 +16,15 @@ export function tpwlSearchUrl(origin: string, destination: string): string {
   depart.setDate(depart.getDate() + 30);
   const ret = new Date(depart);
   ret.setDate(depart.getDate() + 7);
+  // Same query-param shape the /flights page already understands (origin /
+  // destination / depart / return / pax) so its server-side redirect can
+  // build the TravelPayouts deep link with our affiliate marker.
   const params = new URLSearchParams({
-    origin_iata: origin,
-    destination_iata: destination,
-    depart_date: ymd(depart),
-    return_date: ymd(ret),
-    adults: '1',
-    trip_class: 'Y',
-    with_request: 'true',
+    origin,
+    destination,
+    depart: ymd(depart),
+    return: ymd(ret),
+    pax: '1',
   });
-  return `${TPWL_HOST}/?${params.toString()}`;
+  return `/flights?${params.toString()}`;
 }

@@ -30,7 +30,7 @@ export default function PriceCalendar({
       currency: 'usd',
       trs: '401311',
       shmarker: '314807',
-      searchUrl: 'flights.originfacts.com/flights',
+      searchUrl: 'www.originfacts.com/flights',
       locale: 'en',
       powered_by: 'false',
       one_way: 'false',
