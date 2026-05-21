@@ -16,6 +16,7 @@ import {
 import ArticleCard from '@/components/ArticleCard';
 import CountryAbout from '@/components/CountryAbout';
 import CountryDetailSections from '@/components/CountryDetailSections';
+import FlightSearchCTA from '@/components/FlightSearchCTA';
 import type { Metadata } from 'next';
 
 export const revalidate = 60;
@@ -115,6 +116,23 @@ export default async function DestinationPage({ params }: Props) {
           </div>
         )}
       </div>
+
+      {/* Sponsored search CTA — only when we have a representative city IATA */}
+      {(() => {
+        const destIata = routes.find((r) => r.destination?.iata)?.destination?.iata;
+        if (!destIata) return null;
+        return (
+          <div className="mx-auto max-w-7xl px-6">
+            <FlightSearchCTA
+              title={`Find cheap flights to ${destination.name}`}
+              subtitle="Live fares from hundreds of airlines and OTAs, ranked by total price."
+              cta={`Search flights to ${destIata}`}
+              subId={`dest_${destination.slug}`}
+              destination={destIata}
+            />
+          </div>
+        );
+      })()}
 
       {routes.length > 0 && (
         <section className="mx-auto max-w-7xl px-6" data-testid="destination-routes">

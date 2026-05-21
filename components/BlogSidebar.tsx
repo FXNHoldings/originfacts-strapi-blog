@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { format } from 'date-fns';
 import { mediaUrl, type StrapiArticle } from '@/lib/strapi';
 import WeatherWidget from './WeatherWidget';
+import FlightDealsWidget from './FlightDealsWidget';
 
 export type SidebarCategoryTile = {
   slug: string;
@@ -30,6 +31,7 @@ export default function BlogSidebar({
   return (
     <aside className="space-y-10 lg:sticky lg:top-24 lg:self-start" data-testid="blog-sidebar">
       <WeatherWidget />
+      <FlightDealsWidget />
 
       {categoryTiles.length > 0 && (
         <div data-testid="blog-sidebar-categories">
@@ -48,7 +50,7 @@ export default function BlogSidebar({
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={t.image}
-                      alt=""
+                      alt={t.name}
                       className="absolute inset-0 h-full w-full object-cover opacity-60 transition duration-500 group-hover:scale-105 group-hover:opacity-70"
                       loading="lazy"
                     />
@@ -163,30 +165,6 @@ export default function BlogSidebar({
         )}
       </div>
 
-      <div>
-        <h3 className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-forest-900">
-          Deal of the Month
-          <span aria-hidden className="h-px w-10 bg-forest-900/20" />
-        </h3>
-        <Link
-          href="/flight-search"
-          className="mt-4 block overflow-hidden rounded border border-forest-900/10 bg-white shadow-sm transition hover:border-primary-emphasis hover:shadow-md"
-        >
-          <FlightSearchCompareIllustration />
-          <div className="p-4">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-primary-emphasis">
-              Cheap Flights
-            </p>
-            <p className="mt-2 text-base font-bold text-forest-900">
-              Compare every airline. In one search.
-            </p>
-            <p className="mt-2 text-xs text-ink/70">
-              Live fares from hundreds of carriers and OTAs, ranked by total price.
-            </p>
-          </div>
-        </Link>
-      </div>
-
       {backToTopHref && (
         <Link
           href={backToTopHref}
@@ -197,92 +175,6 @@ export default function BlogSidebar({
         </Link>
       )}
     </aside>
-  );
-}
-
-/**
- * Inline SVG used in the "Deal of the Month" card. Sky-gradient
- * background with a stylized airplane and three horizontal price-
- * comparison bars (cheapest highlighted with a green check).
- */
-function FlightSearchCompareIllustration() {
-  return (
-    <svg
-      viewBox="0 0 320 240"
-      role="img"
-      aria-label="Compare flight prices"
-      className="block aspect-[4/3] w-full"
-      preserveAspectRatio="xMidYMid slice"
-    >
-      <defs>
-        <linearGradient id="fcs-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#fff6d1" />
-          <stop offset="55%" stopColor="#ffe200" />
-          <stop offset="100%" stopColor="#cfe9fe" />
-        </linearGradient>
-        <linearGradient id="fcs-plane" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#0a1a3a" />
-          <stop offset="100%" stopColor="#1d4ed8" />
-        </linearGradient>
-      </defs>
-
-      {/* Background */}
-      <rect width="320" height="240" fill="url(#fcs-bg)" />
-
-      {/* Dashed flight path */}
-      <path
-        d="M 30 70 Q 160 0 290 80"
-        fill="none"
-        stroke="#0a1a3a"
-        strokeOpacity="0.35"
-        strokeWidth="2"
-        strokeDasharray="2 6"
-        strokeLinecap="round"
-      />
-
-      {/* Airplane silhouette (rotated up-right along the path) */}
-      <g transform="translate(238,46) rotate(20)">
-        <path
-          d="M0 16 C 6 12 14 10 22 11 L52 6 C 58 5 64 8 64 12 C 64 16 58 18 52 18 L40 21 L34 30 L40 32 L40 36 L30 35 L24 41 L18 39 L20 32 L8 28 L4 31 L0 31 L4 23 L0 21 Z"
-          fill="url(#fcs-plane)"
-        />
-      </g>
-
-      {/* Origin / destination dots */}
-      <circle cx="30" cy="70" r="5" fill="#ffffff" stroke="#0a1a3a" strokeWidth="2" />
-
-      {/* Price comparison bars */}
-      <g
-        transform="translate(28,120)"
-        fontFamily="system-ui, -apple-system, sans-serif"
-        fontWeight="700"
-      >
-        {/* Cheapest — short, highlighted with green check */}
-        <rect width="170" height="26" rx="13" fill="#ffffff" />
-        <rect x="0" y="0" width="170" height="26" rx="13" fill="#10b981" opacity="0.12" />
-        <circle cx="16" cy="13" r="7" fill="#10b981" />
-        <path
-          d="M12.5 13 L15 15.5 L19.5 11"
-          stroke="#ffffff"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
-        />
-        <text x="30" y="17" fontSize="13" fill="#0a1a3a">$199</text>
-        <text x="92" y="17" fontSize="10" fill="#10b981">Cheapest</text>
-
-        {/* Mid */}
-        <rect y="34" width="210" height="22" rx="11" fill="#ffffff" opacity="0.95" />
-        <circle cx="14" cy="45" r="5" fill="#1d4ed8" />
-        <text x="28" y="49" fontSize="12" fill="#0a1a3a">$245</text>
-
-        {/* Most expensive — longest bar */}
-        <rect y="62" width="260" height="22" rx="11" fill="#ffffff" opacity="0.85" />
-        <circle cx="14" cy="73" r="5" fill="#9ca3af" />
-        <text x="28" y="77" fontSize="12" fill="#0a1a3a">$320</text>
-      </g>
-    </svg>
   );
 }
 

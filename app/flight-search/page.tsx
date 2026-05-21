@@ -140,7 +140,7 @@ export default function FlightsPage() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={tip.image}
-                      alt=""
+                      alt={tip.title}
                       loading="lazy"
                       className="h-40 w-auto object-contain"
                     />

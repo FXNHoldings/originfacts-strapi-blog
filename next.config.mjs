@@ -5,6 +5,7 @@ const strapiHost = new URL(
 
 const nextConfig = {
   reactStrictMode: true,
+  poweredByHeader: false,
   allowedDevOrigins: ['preview.fxnstudio.com'],
   images: {
     remotePatterns: [

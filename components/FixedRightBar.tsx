@@ -304,7 +304,7 @@ function SidebarPanelPostRow({
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={img}
-            alt=""
+            alt={article.coverImage?.alternativeText || article.title}
             className="aspect-square h-full w-full object-cover transition duration-500 group-hover:scale-105"
             loading="lazy"
           />

@@ -86,7 +86,7 @@ function PopularThumb({ article, rank }: { article: StrapiArticle; rank: number 
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={img}
-          alt=""
+          alt={article.coverImage?.alternativeText || article.title}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.05]"
           loading="lazy"
         />

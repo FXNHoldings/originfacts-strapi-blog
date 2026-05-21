@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getAirline, listRoutesByCarrier, mediaUrl, type StrapiAirline } from '@/lib/strapi';
+import FlightSearchCTA from '@/components/FlightSearchCTA';
 import type { Metadata } from 'next';
 
 export const revalidate = 60;
@@ -122,6 +123,19 @@ export default async function AirlinePage({ params }: Props) {
           </div>
         </div>
       </section>
+
+      {/* Sponsored search CTA */}
+      {airline.iataCode && (
+        <div className="mx-auto max-w-6xl px-6">
+          <FlightSearchCTA
+            title={`Find flights with ${airline.name}`}
+            subtitle="Compare live fares across hundreds of airlines and OTAs in one search."
+            cta={`Search ${airline.iataCode} flights`}
+            subId={`airline_${airline.slug}`}
+            airline={airline.iataCode}
+          />
+        </div>
+      )}
 
       {/* Popular routes operated by this airline */}
       {routes.length > 0 && (

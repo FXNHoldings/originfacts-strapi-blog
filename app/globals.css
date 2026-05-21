@@ -18,7 +18,7 @@
   body {
     font-family: var(--font-inter), system-ui, sans-serif;
     font-weight: 400;
-    letter-spacing: 0.2px;
+    letter-spacing: 0;
   }
   /* All headings → Outfit 600, near-black.
      !important on font-family/weight/color so every heading overrides
@@ -377,4 +377,5 @@ html.flight-search-active [data-testid="booking-faq"] {
   font-weight: 400;
   color: #666666;
   line-height: 1.7;
+  letter-spacing: 0;
 }

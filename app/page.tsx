@@ -293,9 +293,15 @@ function HeroOverlayStory({
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-black/5" />
         <div className="absolute inset-x-4 bottom-4 text-white sm:inset-x-5 sm:bottom-5">
           <HeroStoryMeta article={article} light />
-          <h1 className={`mt-2 font-urbanist font-extrabold leading-[1.05] text-white ${titleSize}`}>
-            {article.title}
-          </h1>
+          {size === 'large' ? (
+            <h1 className={`mt-2 font-urbanist font-extrabold leading-[1.05] text-white ${titleSize}`}>
+              {article.title}
+            </h1>
+          ) : (
+            <h2 className={`mt-2 font-urbanist font-extrabold leading-[1.05] text-white ${titleSize}`}>
+              {article.title}
+            </h2>
+          )}
         </div>
       </Link>
     </article>

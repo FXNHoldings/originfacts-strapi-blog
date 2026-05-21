@@ -92,7 +92,7 @@ function Row({ article }: { article: StrapiArticle }) {
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={img}
-              alt=""
+              alt={article.coverImage?.alternativeText || article.title}
               loading="lazy"
               className="size-full object-cover transition-transform duration-500 hover:scale-105"
             />
