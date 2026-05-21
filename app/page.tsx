@@ -105,10 +105,6 @@ export default async function HomePage() {
 
       <TagsBar />
 
-      <div className="mx-auto max-w-7xl px-6">
-        <hr className="border-0 border-t" style={{ borderColor: '#ddd' }} />
-      </div>
-
       <Hero hero={hero} side={side} />
 
       <SubscribeBlock />
@@ -153,18 +149,23 @@ function Hero({ hero, side }: { hero?: StrapiArticle; side: StrapiArticle[] }) {
         >
           {leftTop && <HeroCompactStory article={leftTop} />}
           {leftBottom && <HeroCompactStory article={leftBottom} />}
-          <a
-            href="/contact"
-            className="hidden overflow-hidden rounded-[0.3rem] bg-forest-900/5 lg:block"
-            aria-label="Advertise with Originfacts"
+          <div
+            className="hidden overflow-hidden rounded-[0.3rem] bg-white p-2 lg:block"
+            data-testid="home-hero-left-ad"
           >
+            <p className="pt-1 text-center text-[10px] font-bold uppercase tracking-[0.3em] text-forest-900/45">
+              Advertisement
+            </p>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="https://frenify.com/work/envato/frenify/wp/mow/news/wp-content/uploads/2025/02/300ads-600.webp"
-              alt="Advertisement"
-              className="aspect-[300/540] w-full object-cover"
+              src="/placeholder-ad-300x540.svg"
+              alt="Advertisement placeholder"
+              width={300}
+              height={540}
+              className="mx-auto mt-2"
+              data-testid="home-hero-left-ad-banner"
             />
-          </a>
+          </div>
         </div>
 
         <div className="grid gap-4" data-testid="home-hero-col-2">

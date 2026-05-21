@@ -16,7 +16,9 @@ import {
 import ArticleCard from '@/components/ArticleCard';
 import CountryAbout from '@/components/CountryAbout';
 import CountryDetailSections from '@/components/CountryDetailSections';
+import CountryFactsPanel from '@/components/CountryFactsPanel';
 import FlightSearchCTA from '@/components/FlightSearchCTA';
+import { getCountryFacts } from '@/lib/country-facts';
 import type { Metadata } from 'next';
 
 export const revalidate = 60;
@@ -183,11 +185,19 @@ function CountryDestinationPage({
   const aboutSections = destination.description ? parseAboutSections(destination.description) : [];
   const leadParagraphs = aboutSections.find((s) => !s.heading)?.paragraphs ?? [];
   const namedSections = aboutSections.filter((s) => s.heading);
+  // Sections that render next to the stats grid in the About block.
+  // Everything else falls into the "extras" grid above Flights.
+  const ABOUT_HERO_HEADINGS = new Set(['Overview', 'Visa Requirements']);
+  const aboutHeroSections = namedSections.filter((s) => s.heading && ABOUT_HERO_HEADINGS.has(s.heading));
+  const extraSections = namedSections.filter((s) => s.heading && !ABOUT_HERO_HEADINGS.has(s.heading));
+  // Prefer Strapi-stored facts (populated by enrich-country-content.js),
+  // fall back to the static lookup in lib/country-facts.ts.
+  const facts = destination.facts ?? getCountryFacts(destination.countryCode);
 
   return (
-    <article data-testid={`destination-page-${destination.slug}`}>
-      {/* 1. Hero — original layout (bottom-anchored, left-aligned) with light image + dark text, stats on the right */}
-      <section className="relative h-[55vh] min-h-[380px] overflow-hidden bg-paper">
+    <article data-testid={`destination-page-${destination.slug}`} data-hide-fixed-sidebars="true">
+      {/* 1. Hero — bottom-anchored, left-aligned title + lead; country facts on the right */}
+      <section className="relative min-h-[420px] overflow-hidden bg-paper py-16">
         {hero && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -199,8 +209,8 @@ function CountryDestinationPage({
         {/* Paper wash — heavier at the bottom so dark text stays crisp */}
         <div className="absolute inset-0 bg-gradient-to-t from-paper/85 via-paper/20 to-transparent" />
 
-        <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-6 pb-14">
-          <div className="grid items-end gap-8 sm:grid-cols-[1fr_auto]">
+        <div className="relative mx-auto max-w-7xl px-6">
+          <div className="grid items-end gap-10 lg:grid-cols-[1fr_320px]">
             {/* Left — text column */}
             <div>
               <div className="text-xs uppercase tracking-widest text-forest-900/60">
@@ -217,26 +227,27 @@ function CountryDestinationPage({
               )}
             </div>
 
-            {/* Right — stats column */}
-            <div className="grid grid-cols-2 gap-x-10 gap-y-5 sm:min-w-[260px]">
+            {/* Right — country facts */}
+            <CountryFactsPanel countryCode={destination.countryCode} facts={facts} />
+          </div>
+        </div>
+      </section>
+
+      {/* About — Overview + Visa Requirements stay alongside the stats column */}
+      {aboutHeroSections.length > 0 && (
+        <section className="mx-auto mt-14 max-w-7xl px-6" data-testid="country-about">
+          <div className="grid gap-y-10 lg:grid-cols-[30%_60%] lg:gap-x-[10%]">
+            {/* Left — coverage stats */}
+            <div className="grid grid-cols-2 gap-x-8 gap-y-6 self-start">
               <HeroStat label="Airports" value={airports.length} />
               <HeroStat label="Cities" value={cityCount} />
               <HeroStat label="Airlines" value={airlines.length} />
               <HeroStat label="Stories" value={articles.length} />
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* About — only when description has named sections (## Overview / ## Highlights / ## Practical) */}
-      {namedSections.length > 0 && (
-        <section className="mx-auto mt-14 max-w-7xl px-6" data-testid="country-about">
-          <p className="section-eyebrow">
-            <span className="inline-block h-px w-8 bg-forest-800/60" />
-            About {destination.name}
-          </p>
-          <div className="mt-4">
-            <CountryAbout sections={namedSections} />
+            {/* Right — overview content, fills column */}
+            <div className="w-full">
+              <CountryAbout sections={aboutHeroSections} />
+            </div>
           </div>
         </section>
       )}
@@ -247,6 +258,35 @@ function CountryDestinationPage({
         airports={airports}
         airlines={airlines}
       />
+
+      {/* Extra editorial sections (Attractions / Weather full-width, then
+          Interesting Facts + Official Resources side-by-side, no card chrome) */}
+      {extraSections.length > 0 && (
+        <section className="mx-auto mt-16 max-w-7xl space-y-12 px-6" data-testid="country-extras">
+          {extraSections
+            .filter((s) => s.heading !== 'Interesting Facts About the UK' && s.heading !== 'Official Resources' && !s.heading?.startsWith('Interesting Facts About '))
+            .map((s, i) => (
+              <CountryAbout key={s.heading ?? `extra-${i}`} sections={[s]} />
+            ))}
+          {(() => {
+            const interestingFacts = extraSections.find(
+              (s) => s.heading?.startsWith('Interesting Facts About '),
+            );
+            const officialResources = extraSections.find((s) => s.heading === 'Official Resources');
+            if (!interestingFacts && !officialResources) return null;
+            return (
+              <div className="grid gap-[3.5rem] lg:grid-cols-2" data-testid="country-extras-pair">
+                {interestingFacts && (
+                  <CountryAbout sections={[interestingFacts]} singleColumnBullets />
+                )}
+                {officialResources && (
+                  <CountryAbout sections={[officialResources]} singleColumnBullets />
+                )}
+              </div>
+            );
+          })()}
+        </section>
+      )}
 
       {/* 4. Flights — 4 cards */}
       {routes.length > 0 && (
@@ -382,9 +422,18 @@ function ContinentDestinationPage({
   countries: StrapiCountry[];
   articles: Awaited<ReturnType<typeof listArticles>>['data'];
 }) {
+  // Parse the markdown description into a short lead + named sections, the
+  // same way the country page does. Overview / Travel Notes / Interesting
+  // Facts each become their own block below the hero.
+  const aboutSections = destination.description ? parseAboutSections(destination.description) : [];
+  const leadParagraphs = aboutSections.find((s) => !s.heading)?.paragraphs ?? [];
+  const namedSections = aboutSections.filter((s) => s.heading);
+  const overviewSection = namedSections.find((s) => s.heading === 'Overview');
+  const extraSections = namedSections.filter((s) => s.heading !== 'Overview');
+
   return (
     <article data-testid={`destination-page-${destination.slug}`}>
-      {/* 1. Hero */}
+      {/* 1. Hero — image + short lead paragraph only */}
       <section className="relative h-[55vh] min-h-[380px] overflow-hidden bg-paper">
         {hero && (
           // eslint-disable-next-line @next/next/no-img-element
@@ -397,54 +446,76 @@ function ContinentDestinationPage({
         <div className="absolute inset-0 bg-gradient-to-t from-paper/85 via-paper/20 to-transparent" />
 
         <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-6 pb-14">
-          <div className="grid items-end gap-8 sm:grid-cols-[1fr_auto]">
-            <div>
-              <div className="text-xs uppercase tracking-widest text-forest-900/60">Continent</div>
-              <h1 className="editorial-h mt-3 text-3xl font-bold text-forest-900 sm:text-4xl">
-                {destination.name}
-              </h1>
-              {destination.description && (
-                <p className="mt-4 max-w-2xl text-lg leading-relaxed text-forest-900/75">
-                  {destination.description}
-                </p>
-              )}
-            </div>
-            <div className="grid grid-cols-2 gap-x-10 gap-y-5 sm:min-w-[240px]">
-              <HeroStat label="Countries" value={countries.length} />
-              <HeroStat label="Stories" value={articles.length} />
-            </div>
-          </div>
+          <div className="text-xs uppercase tracking-widest text-forest-900/60">Continent</div>
+          <h1 className="editorial-h mt-3 text-3xl font-bold text-forest-900 sm:text-4xl">
+            {destination.name}
+          </h1>
+          {leadParagraphs.length > 0 ? (
+            <p className="mt-4 max-w-2xl text-lg leading-relaxed text-forest-900/75">
+              {leadParagraphs.join(' ')}
+            </p>
+          ) : destination.description ? (
+            <p className="mt-4 max-w-2xl text-lg leading-relaxed text-forest-900/75">
+              {destination.description}
+            </p>
+          ) : null}
         </div>
       </section>
 
-      {/* 2. Countries grid */}
-      {countries.length > 0 ? (
-        <section className="mx-auto mt-16 max-w-7xl px-6" data-testid="continent-countries">
-          <header className="flex items-end justify-between border-b border-forest-900/10 pb-3">
-            <h2 className="editorial-h text-2xl font-bold text-forest-900 lg:text-2xl">
-              Countries in {destination.name}
-            </h2>
-            <span className="text-sm font-light text-forest-900/50">
-              {countries.length} {countries.length === 1 ? 'country' : 'countries'}
-            </span>
-          </header>
-          <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {countries.map((c) => (
-              <li key={c.id}>
-                <CountryChip country={c} />
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : (
-        <section className="mx-auto mt-16 max-w-7xl px-6">
-          <div className="rounded-md border border-forest-900/10 bg-forest-50 px-6 py-5 text-sm text-forest-900/75">
-            No countries published in {destination.name} yet.
+      {/* 2. Countries (left) + facts sidebar (right) */}
+      <section className="mx-auto mt-12 max-w-7xl px-6" data-testid="continent-countries-and-facts">
+        <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
+          {/* Left — countries (the "states" in the region) */}
+          <div className="min-w-0">
+            <header className="flex items-end justify-between border-b border-forest-900/10 pb-3">
+              <h2 className="editorial-h text-2xl font-bold text-forest-900">
+                Countries in {destination.name}
+              </h2>
+              <span className="text-sm font-light text-forest-900/50">
+                {countries.length} {countries.length === 1 ? 'country' : 'countries'}
+              </span>
+            </header>
+            {countries.length > 0 ? (
+              <ul className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                {countries.map((c) => (
+                  <li key={c.id}>
+                    <CountryChip country={c} />
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-6 text-sm text-forest-900/65">
+                No countries published in {destination.name} yet.
+              </p>
+            )}
           </div>
+
+          {/* Right — facts panel */}
+          <ContinentFactsPanel
+            destination={destination}
+            countriesCount={countries.length}
+            articlesCount={articles.length}
+          />
+        </div>
+      </section>
+
+      {/* 3. Overview — 2 paragraphs of prose */}
+      {overviewSection && (
+        <section className="mx-auto mt-16 max-w-7xl px-6" data-testid="continent-overview">
+          <CountryAbout sections={[overviewSection]} />
         </section>
       )}
 
-      {/* 3. Stories */}
+      {/* 4. Travel Notes / Interesting Facts / Official Resources etc. */}
+      {extraSections.length > 0 && (
+        <section className="mx-auto mt-12 max-w-7xl space-y-10 px-6" data-testid="continent-extras">
+          {extraSections.map((s, i) => (
+            <CountryAbout key={s.heading ?? `extra-${i}`} sections={[s]} singleColumnBullets />
+          ))}
+        </section>
+      )}
+
+      {/* 5. Stories */}
       {articles.length > 0 && (
         <section className="mx-auto mt-16 max-w-7xl px-6 pb-20" data-testid="continent-stories">
           <header className="flex items-end justify-between border-b border-forest-900/10 pb-3">
@@ -489,5 +560,78 @@ function CountryChip({ country }: { country: StrapiCountry }) {
         )}
       </div>
     </Link>
+  );
+}
+
+/**
+ * Continent-flavoured facts panel. Reads the optional `facts` JSON on the
+ * destination (populated by ai-writer-cli/enrich-region.js) and renders
+ * whichever fields are present — missing rows hide silently so partial data
+ * stays clean.
+ */
+type ContinentFacts = {
+  countriesCount?: number;
+  population?: number;
+  areaKm2?: number;
+  languagesTop?: string[];
+  currenciesTop?: string[];
+  largestCountry?: string;
+  largestByArea?: string;
+  highestPoint?: string;
+  longestRiver?: string;
+  timezoneSpan?: string;
+  subregions?: string[];
+};
+
+function ContinentFactsPanel({
+  destination,
+  countriesCount,
+  articlesCount,
+}: {
+  destination: StrapiDestination;
+  countriesCount: number;
+  articlesCount: number;
+}) {
+  const facts: ContinentFacts = (destination.facts as ContinentFacts | undefined) ?? {};
+  const fmtNum = (n: number) => n.toLocaleString();
+  const fmtPop = (n: number) =>
+    n >= 1_000_000_000 ? `${(n / 1_000_000_000).toFixed(2)}B` :
+    n >= 1_000_000 ? `${(n / 1_000_000).toFixed(0)}M` :
+    n.toLocaleString();
+
+  const rows: { label: string; value: string }[] = [];
+  rows.push({ label: 'Countries', value: fmtNum(facts.countriesCount ?? countriesCount) });
+  if (facts.population != null) rows.push({ label: 'Population', value: fmtPop(facts.population) });
+  if (facts.areaKm2 != null) rows.push({ label: 'Area', value: `${fmtNum(facts.areaKm2)} km²` });
+  if (facts.largestCountry) rows.push({ label: 'Largest (pop.)', value: facts.largestCountry });
+  if (facts.largestByArea) rows.push({ label: 'Largest (area)', value: facts.largestByArea });
+  if (facts.languagesTop?.length) rows.push({ label: 'Top languages', value: facts.languagesTop.join(', ') });
+  if (facts.currenciesTop?.length) rows.push({ label: 'Currencies', value: facts.currenciesTop.join(', ') });
+  if (facts.highestPoint) rows.push({ label: 'Highest point', value: facts.highestPoint });
+  if (facts.longestRiver) rows.push({ label: 'Longest river', value: facts.longestRiver });
+  if (facts.timezoneSpan) rows.push({ label: 'Time zones', value: facts.timezoneSpan });
+  if (facts.subregions?.length) rows.push({ label: 'Sub-regions', value: facts.subregions.join(', ') });
+  rows.push({ label: 'Stories', value: fmtNum(articlesCount) });
+
+  return (
+    <aside
+      data-testid="continent-facts-panel"
+      className="self-start rounded-lg border border-forest-900/10 bg-paper/80 p-6"
+    >
+      <p className="text-xs uppercase tracking-widest text-forest-900/60">
+        {destination.name} at a glance
+      </p>
+      <dl className="mt-4 divide-y divide-forest-900/10 text-sm">
+        {rows.map((r) => (
+          <div
+            key={r.label}
+            className="flex items-baseline justify-between gap-4 py-2 first:pt-0 last:pb-0"
+          >
+            <dt className="text-xs uppercase tracking-widest text-forest-900/60">{r.label}</dt>
+            <dd className="text-right font-urbanist font-bold text-forest-900">{r.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </aside>
   );
 }

@@ -68,11 +68,26 @@ export default function RouteDirectory({ routes }: { routes: StrapiRoute[] }) {
 
   return (
     <div className="mt-10">
-      {/* Stat strip */}
-      <div className="grid gap-6 rounded-[0.3rem] border border-forest-900/10 bg-forest-900/[0.02] p-6 sm:grid-cols-3">
-        <Stat label="Routes" value={routes.length.toLocaleString()} />
-        <Stat label="Origins" value={originCount.toLocaleString()} />
-        <Stat label="Destinations" value={destinationCount.toLocaleString()} />
+      {/* Summary cards — matches /countries layout: content left, icon right */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        <SummaryCard
+          label="Routes"
+          value={routes.length.toLocaleString()}
+          blurb="Every city-pair in the index — the bones of how the world actually flies, scheduled and operating."
+          icon={<RouteIcon />}
+        />
+        <SummaryCard
+          label="Origins"
+          value={originCount.toLocaleString()}
+          blurb="Unique departure airports across the network — major hubs and second-tier city fields alike."
+          icon={<DepartureIcon />}
+        />
+        <SummaryCard
+          label="Destinations"
+          value={destinationCount.toLocaleString()}
+          blurb="Unique arrival airports the routes feed into — global gateways, holiday islands, regional capitals."
+          icon={<ArrivalIcon />}
+        />
       </div>
 
       {/* Search */}
@@ -181,12 +196,64 @@ export default function RouteDirectory({ routes }: { routes: StrapiRoute[] }) {
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function SummaryCard({
+  label,
+  value,
+  blurb,
+  icon,
+}: {
+  label: string;
+  value: string;
+  blurb: string;
+  icon: React.ReactNode;
+}) {
   return (
-    <div>
-      <div className="font-urbanist text-3xl font-bold text-forest-900">{value}</div>
-      <div className="mt-1 text-xs uppercase tracking-widest text-forest-900/60">{label}</div>
+    <div
+      className="flex items-start justify-between gap-4 rounded-[0.3rem] border border-forest-900/10 bg-forest-900/[0.02] p-5"
+      data-testid={`routes-summary-${label.toLowerCase()}`}
+    >
+      <div className="min-w-0 flex-1">
+        <div className="text-xs uppercase tracking-widest text-forest-900/60">{label}</div>
+        <div className="mt-2 font-urbanist text-3xl font-bold leading-none text-forest-900">{value}</div>
+        <p className="mt-3 text-sm leading-snug text-forest-900/65">{blurb}</p>
+      </div>
+      <div
+        aria-hidden
+        className="flex h-12 w-12 flex-none items-center justify-center text-forest-900/55"
+      >
+        {icon}
+      </div>
     </div>
+  );
+}
+
+function RouteIcon() {
+  return (
+    <svg viewBox="0 0 48 48" className="h-10 w-10" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="10" cy="38" r="3" />
+      <circle cx="38" cy="10" r="3" />
+      <path d="M12 36 C 18 28, 22 22, 28 18 C 32 15, 35 13, 36 12" />
+      <path d="M14 34 L 18 30" />
+      <path d="M22 26 L 26 22" />
+    </svg>
+  );
+}
+
+function DepartureIcon() {
+  return (
+    <svg viewBox="0 0 48 48" className="h-10 w-10" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 32 L 24 12 L 28 14 L 22 26 L 38 28 L 42 30 L 24 34 L 18 44 L 14 42 L 18 30 L 4 32 Z" />
+      <line x1="6" y1="46" x2="42" y2="46" />
+    </svg>
+  );
+}
+
+function ArrivalIcon() {
+  return (
+    <svg viewBox="0 0 48 48" className="h-10 w-10" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M44 14 L 24 36 L 20 34 L 24 22 L 10 18 L 6 16 L 22 14 L 28 4 L 32 6 L 28 16 L 44 14 Z" />
+      <line x1="6" y1="46" x2="42" y2="46" />
+    </svg>
   );
 }
 

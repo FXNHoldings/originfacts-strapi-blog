@@ -2,8 +2,13 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { format } from 'date-fns';
 import { mediaUrl, type StrapiArticle } from '@/lib/strapi';
+
+// Matches FixedPopularNow: hide on destination detail pages so the country
+// hero + facts panel get full width.
+const HIDE_PATTERNS = [/^\/destinations\/[^/]+$/];
 
 type BarItem = {
   label: string;
@@ -56,7 +61,9 @@ export default function FixedRightBar({
 }: {
   popularPosts?: StrapiArticle[];
 }) {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const hidden = pathname ? HIDE_PATTERNS.some((re) => re.test(pathname)) : false;
 
   // Close on Esc + lock body scroll while open
   useEffect(() => {
@@ -74,6 +81,8 @@ export default function FixedRightBar({
   }, [open]);
 
   const close = useCallback(() => setOpen(false), []);
+
+  if (hidden) return null;
 
   return (
     <>

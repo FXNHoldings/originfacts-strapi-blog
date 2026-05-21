@@ -5,7 +5,25 @@ import { useMemo, useState } from 'react';
 import type { AirlineRegion } from '@/lib/strapi';
 
 const REGION_ORDER: AirlineRegion[] = ['Africa', 'Asia', 'Europe', 'North America', 'Oceania', 'South America'];
-const PER_REGION_LIMIT = 24;
+const PER_REGION_LIMIT = 12;
+
+// Short intros shown above each region's country grid. Kept factual and
+// concrete — geography, aviation context, what makes the region distinct —
+// without travel-brochure language.
+const REGION_INTROS: Record<AirlineRegion, string> = {
+  Africa:
+    'Fifty-four countries from the Sahara to the Cape, with some of the world\'s fastest-growing aviation networks linking ancient civilisations, savannah wildlife corridors, and a young, fast-urbanising population.',
+  Asia:
+    'From Tokyo to Istanbul, Asia spans 48 countries and roughly 60% of humanity — megacity hubs, monsoon coasts, Himalayan passes, and Pacific archipelagos all stitched together by the world\'s densest long-haul corridors.',
+  Europe:
+    'Forty-plus countries packed into a small landmass where the Schengen zone lets travellers cross between cultures in a single afternoon — Atlantic surf to Aegean islands, Lapland fjords to Lisbon.',
+  'North America':
+    'Three vast nations plus Central America and the Caribbean — Arctic tundra, desert canyons, tropical beaches, and the busy air corridors that connect them, including some of the world\'s highest-traffic city pairs.',
+  Oceania:
+    'Australia, New Zealand and thousands of Pacific islands. Long-haul flights are the norm; the region\'s gateways open onto the Great Barrier Reef, Māori marae, and remote atolls few travellers ever reach.',
+  'South America':
+    'Twelve countries spanning Caribbean tropics, Andean altiplano, Amazonian rainforest and Patagonian ice. Most intercontinental journeys route through São Paulo, Bogotá, or Lima before fanning out across the continent.',
+};
 
 export type CountryRow = {
   code: string;
@@ -24,6 +42,14 @@ function flagEmoji(code: string): string {
 export default function CountriesDirectory({ countries }: { countries: CountryRow[] }) {
   const [query, setQuery] = useState('');
   const [activeRegion, setActiveRegion] = useState<AirlineRegion | null>(null);
+  const [expandedRegions, setExpandedRegions] = useState<Set<AirlineRegion>>(new Set());
+
+  const toggleRegionExpanded = (r: AirlineRegion) =>
+    setExpandedRegions((prev) => {
+      const next = new Set(prev);
+      if (next.has(r)) next.delete(r); else next.add(r);
+      return next;
+    });
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -57,11 +83,26 @@ export default function CountriesDirectory({ countries }: { countries: CountryRo
 
   return (
     <div className="mt-10">
-      {/* Stat strip */}
-      <div className="grid gap-6 rounded-[0.3rem] border border-forest-900/10 bg-forest-900/[0.02] p-6 sm:grid-cols-3">
-        <Stat label="Countries" value={countries.length.toLocaleString()} />
-        <Stat label="Airports" value={totalAirports.toLocaleString()} />
-        <Stat label="Regions" value={regionCount.toString()} />
+      {/* Summary cards — content left, icon right */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        <SummaryCard
+          label="Countries"
+          value={countries.length.toLocaleString()}
+          blurb="Every nation with scheduled commercial service, indexed and searchable."
+          icon={<GlobeIcon />}
+        />
+        <SummaryCard
+          label="Airports"
+          value={totalAirports.toLocaleString()}
+          blurb="From global hubs to single-runway regional fields, all linked to their country."
+          icon={<RunwayIcon />}
+        />
+        <SummaryCard
+          label="Regions"
+          value={regionCount.toString()}
+          blurb="Six continental groupings, each spanning dozens of countries and time zones."
+          icon={<CompassIcon />}
+        />
       </div>
 
       {/* Search */}
@@ -120,8 +161,10 @@ export default function CountriesDirectory({ countries }: { countries: CountryRo
           ) : (
             orderedRegions.map((r) => {
               const regionList = byRegion.get(r)!;
-              const displayed = regionList.slice(0, PER_REGION_LIMIT);
+              const isExpanded = expandedRegions.has(r);
+              const displayed = isExpanded ? regionList : regionList.slice(0, PER_REGION_LIMIT);
               const overflow = regionList.length - displayed.length;
+              const hasMore = regionList.length > PER_REGION_LIMIT;
               return (
                 <section
                   key={r}
@@ -129,19 +172,35 @@ export default function CountriesDirectory({ countries }: { countries: CountryRo
                   className="mb-16 scroll-mt-24"
                 >
                   <header className="flex items-baseline justify-between border-b border-forest-900/10 pb-3">
-                    <h2 className="editorial-h text-2xl font-bold text-forest-900 lg:text-3xl">{r}</h2>
+                    <h2 className="editorial-h !text-[1.5rem] !font-bold text-forest-900">{r}</h2>
                     <span className="text-sm font-light text-forest-900/50">
                       {regionList.length} countr{regionList.length === 1 ? 'y' : 'ies'}
-                      {overflow > 0 && <span className="ml-2 text-forest-900/40">· showing {PER_REGION_LIMIT}</span>}
+                      {overflow > 0 && !isExpanded && (
+                        <span className="ml-2 text-forest-900/40">· showing {PER_REGION_LIMIT}</span>
+                      )}
                     </span>
                   </header>
-                  <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  {REGION_INTROS[r] && (
+                    <p className="mt-4 w-full text-sm text-forest-900/70" data-testid={`region-intro-${r.replace(/\s+/g, '-').toLowerCase()}`}>
+                      {REGION_INTROS[r]}
+                    </p>
+                  )}
+                  <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     {displayed.map((c) => <CountryCard key={c.code} country={c} />)}
                   </div>
-                  {overflow > 0 && (
-                    <p className="mt-4 text-xs text-forest-900/50">
-                      + {overflow.toLocaleString()} more in {r} — narrow with search.
-                    </p>
+                  {hasMore && (
+                    <div className="mt-6">
+                      <button
+                        type="button"
+                        onClick={() => toggleRegionExpanded(r)}
+                        className="text-sm font-medium text-forest-700 hover:underline"
+                        data-testid={`countries-region-toggle-${r.replace(/\s+/g, '-').toLowerCase()}`}
+                      >
+                        {isExpanded
+                          ? `Show fewer ${r} countries ↑`
+                          : `View all ${r} (${regionList.length}) →`}
+                      </button>
+                    </div>
                   )}
                 </section>
               );
@@ -153,12 +212,65 @@ export default function CountriesDirectory({ countries }: { countries: CountryRo
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function SummaryCard({
+  label,
+  value,
+  blurb,
+  icon,
+}: {
+  label: string;
+  value: string;
+  blurb: string;
+  icon: React.ReactNode;
+}) {
   return (
-    <div>
-      <div className="font-urbanist text-3xl font-bold text-forest-900">{value}</div>
-      <div className="mt-1 text-xs uppercase tracking-widest text-forest-900/60">{label}</div>
+    <div
+      className="flex items-start justify-between gap-4 rounded-[0.3rem] border border-forest-900/10 bg-forest-900/[0.02] p-5"
+      data-testid={`countries-summary-${label.toLowerCase()}`}
+    >
+      <div className="min-w-0 flex-1">
+        <div className="text-xs uppercase tracking-widest text-forest-900/60">{label}</div>
+        <div className="mt-2 font-urbanist text-3xl font-bold leading-none text-forest-900">{value}</div>
+        <p className="mt-3 text-sm leading-snug text-forest-900/65">{blurb}</p>
+      </div>
+      <div
+        aria-hidden
+        className="flex h-12 w-12 flex-none items-center justify-center text-forest-900/55"
+      >
+        {icon}
+      </div>
     </div>
+  );
+}
+
+function GlobeIcon() {
+  return (
+    <svg viewBox="0 0 48 48" className="h-10 w-10" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="24" cy="24" r="18" />
+      <ellipse cx="24" cy="24" rx="9" ry="18" />
+      <line x1="6" y1="24" x2="42" y2="24" />
+      <path d="M8 14 C 16 18, 32 18, 40 14" />
+      <path d="M8 34 C 16 30, 32 30, 40 34" />
+    </svg>
+  );
+}
+
+function RunwayIcon() {
+  return (
+    <svg viewBox="0 0 48 48" className="h-10 w-10" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 26 L 24 6 L 28 8 L 22 22 L 38 24 L 42 26 L 24 30 L 18 42 L 14 40 L 18 26 L 6 26 Z" />
+      <line x1="14" y1="44" x2="34" y2="44" />
+    </svg>
+  );
+}
+
+function CompassIcon() {
+  return (
+    <svg viewBox="0 0 48 48" className="h-10 w-10" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="24" cy="24" r="18" />
+      <polygon points="24,12 28,24 24,36 20,24" fill="currentColor" stroke="none" opacity="0.85" />
+      <circle cx="24" cy="24" r="1.5" fill="currentColor" />
+    </svg>
   );
 }
 
@@ -191,7 +303,7 @@ function CountryCard({ country }: { country: CountryRow }) {
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <div className="truncate font-urbanist text-sm font-bold text-forest-900 group-hover:text-forest-700">
+          <div className="truncate font-urbanist text-base font-bold text-forest-900 group-hover:text-forest-700">
             {country.name}
           </div>
           <span className="flex-none rounded-[0.3rem] bg-forest-900 px-2 py-0.5 font-mono text-[10px] font-bold tracking-wider text-sand-100">

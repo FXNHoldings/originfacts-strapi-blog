@@ -58,6 +58,22 @@ export type StrapiDestination = {
   type?: 'country' | 'region' | 'city';
   countryCode?: string;
   description?: string;
+  /** Optional per-country facts that override the static lookup in
+   *  `lib/country-facts.ts`. Populated by enrich-country-content.js. */
+  facts?: {
+    officialName?: string;
+    government?: string;
+    monarch?: string;
+    population?: number;
+    areaKm2?: number;
+    currencyCode?: string;
+    currencyName?: string;
+    languages?: string[];
+    capital?: string;
+    callingCode?: string;
+    drivesOn?: 'left' | 'right';
+    timezones?: string;
+  };
   heroImage?: StrapiImage;
 };
 

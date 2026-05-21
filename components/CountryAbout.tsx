@@ -1,77 +1,123 @@
-'use client';
-
-import { useState } from 'react';
+import type { ReactNode } from 'react';
 
 type Section = { heading: string | null; paragraphs: string[] };
 
-export default function CountryAbout({ sections }: { sections: Section[] }) {
-  const [expanded, setExpanded] = useState(false);
+/** Turn a bullet of the form `domain.tld — description` into a clickable link.
+ *  Also handles plain markdown links `[text](https://url)`. Falls back to the
+ *  raw text when neither pattern matches. */
+function renderBulletContent(text: string): ReactNode {
+  const md = text.match(/^\[([^\]]+)\]\((https?:\/\/[^)]+)\)(.*)$/);
+  if (md) {
+    const [, label, url, rest] = md;
+    return (
+      <>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary-emphasis underline hover:text-primary-highlight"
+        >
+          {label}
+        </a>
+        {rest}
+      </>
+    );
+  }
+  const domain = text.match(/^((?:https?:\/\/)?[a-z0-9-]+(?:\.[a-z0-9-]+)+)(\s+[—-]\s+.+)$/i);
+  if (domain) {
+    const [, host, rest] = domain;
+    const href = host.startsWith('http') ? host : `https://${host}`;
+    return (
+      <>
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary-emphasis underline hover:text-primary-highlight"
+        >
+          {host}
+        </a>
+        {rest}
+      </>
+    );
+  }
+  return text;
+}
 
+export default function CountryAbout({
+  sections,
+  singleColumnBullets = false,
+}: {
+  sections: Section[];
+  /** Disable the automatic 2-col layout for long bullet lists. Useful when the
+   *  parent already places the section in a narrow column. */
+  singleColumnBullets?: boolean;
+}) {
   if (sections.length === 0) return null;
 
-  const [first, ...rest] = sections;
-  const hasMore = rest.length > 0;
-  const lastIdx = first.paragraphs.length - 1;
-
   return (
-    <div className="prose-article max-w-none" data-testid="country-about-content">
-      {first.heading && (
-        <h3 className="font-urbanist text-xl font-bold text-forest-900">{first.heading}</h3>
-      )}
-
-      {first.paragraphs.map((p, i) => (
-        <p key={i} className={first.heading && i === 0 ? 'mt-3' : ''}>
-          {p}
-          {!expanded && hasMore && i === lastIdx && (
-            <>
-              {' '}
-              <button
-                type="button"
-                onClick={() => setExpanded(true)}
-                className="font-medium text-primary-emphasis hover:text-primary-highlight hover:underline"
-                data-testid="country-about-read-more"
-                aria-expanded="false"
-              >
-                Read More
-              </button>
-            </>
-          )}
-        </p>
+    <div
+      className="prose-article w-full"
+      style={{ maxWidth: '100%' }}
+      data-testid="country-about-content"
+    >
+      {sections.map((s, i) => (
+        <SectionBlock
+          key={i}
+          section={s}
+          first={i === 0}
+          singleColumnBullets={singleColumnBullets}
+        />
       ))}
-
-      {expanded && hasMore && (
-        <>
-          {rest.map((s, i) => (
-            <SectionBlock key={i} section={s} />
-          ))}
-          <p className="mt-6">
-            <button
-              type="button"
-              onClick={() => setExpanded(false)}
-              className="font-medium text-primary-emphasis hover:text-primary-highlight hover:underline"
-              data-testid="country-about-show-less"
-              aria-expanded="true"
-            >
-              Show less
-            </button>
-          </p>
-        </>
-      )}
     </div>
   );
 }
 
-function SectionBlock({ section }: { section: Section }) {
+function SectionBlock({
+  section,
+  first,
+  singleColumnBullets,
+}: {
+  section: Section;
+  first: boolean;
+  singleColumnBullets: boolean;
+}) {
   return (
-    <div className="mt-8">
+    <div className={first ? '' : 'mt-8'}>
       {section.heading && (
-        <h3 className="font-urbanist text-xl font-bold text-forest-900">{section.heading}</h3>
+        <h3
+          className={`${first ? '!mt-0 ' : ''}font-urbanist text-xl font-bold text-forest-900`}
+        >
+          {section.heading}
+        </h3>
       )}
-      {section.paragraphs.map((p, i) => (
-        <p key={i} className={section.heading ? 'mt-3' : ''}>
-          {p}
-        </p>
-      ))}
+      {section.paragraphs.map((p, i) => {
+        const lines = p.split('\n').map((l) => l.trim()).filter(Boolean);
+        const isBulletList = lines.length > 1 && lines.every((l) => /^[-*]\s+/.test(l));
+        if (isBulletList) {
+          const twoCol = !singleColumnBullets && lines.length >= 4;
+          const baseClass = section.heading && i === 0 ? 'mt-3' : '';
+          const colClass = twoCol ? 'sm:columns-2 sm:gap-x-8' : '';
+          return (
+            <ul
+              key={i}
+              className={`!list-none !pl-0 !ps-0 !ml-0 ${baseClass} ${colClass}`.trim()}
+              style={twoCol ? { columnFill: 'balance' } : undefined}
+            >
+              {lines.map((l, j) => (
+                <li key={j} className={twoCol ? 'break-inside-avoid' : undefined}>
+                  {renderBulletContent(l.replace(/^[-*]\s+/, ''))}
+                </li>
+              ))}
+            </ul>
+          );
+        }
+        return (
+          <p key={i} className={section.heading && i === 0 ? 'mt-3' : ''}>
+            {p}
+          </p>
+        );
+      })}
     </div>
   );
 }

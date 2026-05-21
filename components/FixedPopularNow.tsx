@@ -2,15 +2,23 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { mediaUrl, type StrapiArticle } from '@/lib/strapi';
 
 const COLLAPSED_COUNT = 4;
 
+// Pages where the fixed left/right rails should be hidden. Currently destination
+// detail pages (e.g. /destinations/united-kingdom) hide them to give the hero
+// + facts panel + airports/airlines filters more horizontal room.
+const HIDE_PATTERNS = [/^\/destinations\/[^/]+$/];
+
 export default function FixedPopularNow({ articles }: { articles: StrapiArticle[] }) {
+  const pathname = usePathname();
   const [expanded, setExpanded] = useState(false);
   const items = expanded ? articles : articles.slice(0, COLLAPSED_COUNT);
 
   if (articles.length === 0) return null;
+  if (pathname && HIDE_PATTERNS.some((re) => re.test(pathname))) return null;
 
   return (
     <aside

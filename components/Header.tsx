@@ -33,7 +33,7 @@ export default function Header() {
       data-testid="site-header"
       data-stuck={stuck ? 'true' : 'false'}
     >
-      <div className="flex w-full items-center gap-6 px-6 py-[0.8rem] lg:px-[50px]">
+      <div className="mx-auto flex w-full max-w-7xl items-center gap-6 px-6 py-[0.8rem]">
         <Link href="/" className="block shrink-0" data-testid="logo-link" aria-label="Originfacts home">
           <Image
             src="/brand/logo/logo.svg"
@@ -49,7 +49,7 @@ export default function Header() {
 
         <div className="ml-auto hidden items-center justify-end gap-2 lg:flex">
           <nav className="hidden md:block" data-testid="primary-nav">
-            <ul className="flex items-center justify-end gap-1 font-urbanist text-[1rem] font-semibold tracking-normal">
+            <ul className="flex items-center justify-end gap-1 font-sans text-[1rem] font-semibold tracking-normal">
               <li data-testid="nav-item-destinations">
                 <Link
                   href="/destinations"

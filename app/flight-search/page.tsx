@@ -1,6 +1,8 @@
+import { redirect } from 'next/navigation';
 import Script from 'next/script';
 import PopularDestinationsBlock from '@/components/PopularDestinationsBlock';
 import SearchByDestinationBlock from '@/components/SearchByDestinationBlock';
+import { buildTravelpayoutsDeepLink } from '@/lib/explore';
 
 export const metadata = {
   title: 'Flight Search',
@@ -71,7 +73,35 @@ const PRO_TIPS: ProTip[] = [
   },
 ];
 
-export default function FlightsPage() {
+// Pass-through landing for explore-card click-throughs. When called with
+// ?origin=PER&destination=KUL&depart=YYYY-MM-DD&return=YYYY-MM-DD&pax=1 we
+// build the TravelPayouts deep link (white-label host + affiliate marker +
+// DDMM date encoding) and 302 the visitor there. Hitting /flight-search
+// with no params shows the on-site search widget below as before.
+export default async function FlightsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const sp = await searchParams;
+  const pick = (k: string) => (Array.isArray(sp[k]) ? sp[k]?.[0] : sp[k]);
+  const origin = pick('origin');
+  const destination = pick('destination');
+  if (origin && destination) {
+    const depart = pick('depart');
+    const ret = pick('return');
+    const paxRaw = pick('pax');
+    const pax = paxRaw ? Number(paxRaw) : 1;
+    const url = buildTravelpayoutsDeepLink({
+      origin: origin.toUpperCase(),
+      destination: destination.toUpperCase(),
+      departureISO: depart,
+      returnISO: ret,
+      passengers: Number.isFinite(pax) && pax > 0 ? pax : 1,
+    });
+    redirect(url);
+  }
+
   return (
     <>
       {/* TPWL loader now lives in app/layout.tsx so the SDK is available

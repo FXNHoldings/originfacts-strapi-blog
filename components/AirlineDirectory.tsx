@@ -6,6 +6,24 @@ import { mediaUrl, type StrapiAirline, type AirlineRegion, type AirlineType } fr
 
 const REGION_ORDER: AirlineRegion[] = ['Africa', 'Asia', 'Europe', 'North America', 'Oceania', 'South America'];
 const TYPE_OPTIONS: AirlineType[] = ['Scheduled', 'Low-cost', 'Regional', 'Charter', 'Cargo'];
+
+// Short, factual intros shown above each region's airline list. Three sentences
+// each — geography, market shape, notable carriers — kept editorial rather than
+// promotional.
+const REGION_INTROS: Record<AirlineRegion, string> = {
+  Africa:
+    'African aviation is dominated by long-established flag carriers — Ethiopian, Kenya Airways, EgyptAir, South African Airways — alongside a rising cohort of low-cost operators like FlySafair and Air Peace. Intra-continental connectivity has historically been routed via Addis Ababa, Johannesburg or Casablanca, though direct mid-haul links are slowly multiplying. Open Skies agreements under SAATM aim to liberalise the network further over the coming years.',
+  Asia:
+    'Asia hosts both the world\'s densest short-haul corridors and several of its most awarded long-haul carriers — Singapore Airlines, Cathay Pacific, ANA, JAL, EVA Air, Qatar Airways via the Gulf. Low-cost giants AirAsia, IndiGo, VietJet and Lion Air reshaped intra-regional travel over the last two decades. Hub competition between Singapore, Hong Kong, Doha, Dubai and Istanbul keeps long-haul fares unusually competitive.',
+  Europe:
+    'Europe combines legacy flag carriers (Lufthansa, Air France, British Airways, Iberia, KLM) with the world\'s most aggressive low-cost market — Ryanair and easyJet alone move a combined 300+ million passengers a year. The Schengen zone and EU open-skies rules let any EU-licensed airline fly any intra-EU route, producing dense competition on city pairs. Long-haul routes cluster around Frankfurt, Paris-CDG, Amsterdam-Schiphol, Madrid and London-Heathrow.',
+  'North America':
+    'North America\'s domestic market is consolidated into the Big Three (American, Delta, United) plus low-cost operators Southwest, JetBlue, Spirit and Frontier; Air Canada and WestJet anchor Canada, with Aeroméxico, Volaris and Viva leading Mexico. Hub-and-spoke routing is the dominant model, and the region has some of the world\'s busiest city pairs (LAX-JFK, ORD-LGA). Caribbean and Central American carriers operate alongside US-based brands rather than competing head-to-head.',
+  Oceania:
+    'Oceania\'s long distances make aviation essential rather than optional — Qantas, Virgin Australia and Jetstar handle Australian domestic, with Air New Zealand dominating across the Tasman. Regional carriers like Fiji Airways, Air Tahiti Nui and Aircalin connect the Pacific island nations to Australia, New Zealand and Asia. Ultra-long-haul Project Sunrise routes from Sydney to London and New York are reshaping what a non-stop flight can mean.',
+  'South America':
+    'South American aviation is led by LATAM (formed from LAN Chile and TAM merger), Avianca, Copa, Gol and Azul, with Aerolíneas Argentinas operating the largest domestic Argentine network. Bogotá, Panama City, Lima, São Paulo and Santiago are the main intercontinental gateways. Low-cost carriers JetSMART, Sky Airline and Flybondi expanded rapidly through the late 2010s, though dollarisation pressures and currency volatility shape pricing across the continent.',
+};
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 const PER_REGION_LIMIT = 9;
 const POPULAR_LIMIT = 20;
@@ -84,11 +102,26 @@ export default function AirlineDirectory({ airlines }: { airlines: StrapiAirline
 
   return (
     <div className="mt-10">
-      {/* Stat strip */}
-      <div className="grid gap-6 rounded-[0.3rem] border border-forest-900/10 bg-forest-900/[0.02] p-6 sm:grid-cols-3">
-        <Stat label="Airlines" value={airlines.length.toString()} />
-        <Stat label="Countries" value={countryCount.toString()} />
-        <Stat label="Regions" value={regionCount.toString()} />
+      {/* Summary cards — content left, icon right (matches /countries layout) */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        <SummaryCard
+          label="Airlines"
+          value={airlines.length.toLocaleString()}
+          blurb="Every commercial carrier with scheduled, low-cost, regional, charter, or cargo service."
+          icon={<PlaneIcon />}
+        />
+        <SummaryCard
+          label="Countries"
+          value={countryCount.toLocaleString()}
+          blurb="Countries of registration represented across the index — flag carriers to single-route startups."
+          icon={<GlobeIcon />}
+        />
+        <SummaryCard
+          label="Regions"
+          value={regionCount.toLocaleString()}
+          blurb="Six continental groupings, each with its own dominant carriers and route geography."
+          icon={<CompassIcon />}
+        />
       </div>
 
       {/* Search + filters */}
@@ -161,9 +194,6 @@ export default function AirlineDirectory({ airlines }: { airlines: StrapiAirline
         )}
       </div>
 
-      {/* Popular airlines (auto-sliding strip) */}
-      <PopularAirlinesStrip airlines={airlines} />
-
       {/* Results */}
       <div className="mt-10 grid gap-12 lg:grid-cols-[180px,1fr]">
         {/* Sticky region nav (desktop) */}
@@ -210,22 +240,26 @@ export default function AirlineDirectory({ airlines }: { airlines: StrapiAirline
                       )}
                     </span>
                   </header>
+                  {REGION_INTROS[r] && (
+                    <p className="mt-4 w-full text-sm text-forest-900/70" data-testid={`airline-region-intro-${r.replace(/\s+/g, '-').toLowerCase()}`}>
+                      {REGION_INTROS[r]}
+                    </p>
+                  )}
                   <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     {displayed.map((a) => <AirlineCard key={a.id} airline={a} />)}
                   </div>
                   {overflow > 0 && (
-                    <div className="mt-6 flex justify-center">
+                    <div className="mt-6">
                       <button
                         type="button"
                         onClick={() => toggleRegion(r)}
                         aria-expanded={isExpanded}
-                        className="inline-flex items-center gap-2 rounded-full border border-forest-900/20 px-5 py-2 font-urbanist text-sm font-bold text-forest-900 transition hover:border-forest-900 hover:bg-forest-900 hover:text-sand-100"
+                        className="text-sm font-medium text-forest-700 underline hover:no-underline"
                         data-testid={`region-toggle-${r.replace(/\s+/g, '-').toLowerCase()}`}
                       >
                         {isExpanded
-                          ? `Show less`
-                          : `View all ${regionList.length} airlines in ${r}`}
-                        <span aria-hidden>{isExpanded ? '↑' : '→'}</span>
+                          ? `Show less ↑`
+                          : `View all ${regionList.length} airlines in ${r} →`}
                       </button>
                     </div>
                   )}
@@ -239,12 +273,65 @@ export default function AirlineDirectory({ airlines }: { airlines: StrapiAirline
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function SummaryCard({
+  label,
+  value,
+  blurb,
+  icon,
+}: {
+  label: string;
+  value: string;
+  blurb: string;
+  icon: React.ReactNode;
+}) {
   return (
-    <div>
-      <div className="font-urbanist text-3xl font-bold text-forest-900">{value}</div>
-      <div className="mt-1 text-xs uppercase tracking-widest text-forest-900/60">{label}</div>
+    <div
+      className="flex items-start justify-between gap-4 rounded-[0.3rem] border border-forest-900/10 bg-forest-900/[0.02] p-5"
+      data-testid={`airlines-summary-${label.toLowerCase()}`}
+    >
+      <div className="min-w-0 flex-1">
+        <div className="text-xs uppercase tracking-widest text-forest-900/60">{label}</div>
+        <div className="mt-2 font-urbanist text-3xl font-bold leading-none text-forest-900">{value}</div>
+        <p className="mt-3 text-sm leading-snug text-forest-900/65">{blurb}</p>
+      </div>
+      <div
+        aria-hidden
+        className="flex h-12 w-12 flex-none items-center justify-center text-forest-900/55"
+      >
+        {icon}
+      </div>
     </div>
+  );
+}
+
+function PlaneIcon() {
+  return (
+    <svg viewBox="0 0 48 48" className="h-10 w-10" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 26 L 24 6 L 28 8 L 22 22 L 38 24 L 42 26 L 24 30 L 18 42 L 14 40 L 18 26 L 6 26 Z" />
+      <line x1="14" y1="44" x2="34" y2="44" />
+    </svg>
+  );
+}
+
+function GlobeIcon() {
+  return (
+    <svg viewBox="0 0 48 48" className="h-10 w-10" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="24" cy="24" r="18" />
+      <ellipse cx="24" cy="24" rx="9" ry="18" />
+      <line x1="6" y1="24" x2="42" y2="24" />
+      <path d="M8 14 C 16 18, 32 18, 40 14" />
+      <path d="M8 34 C 16 30, 32 30, 40 34" />
+    </svg>
+  );
+}
+
+function CompassIcon() {
+  return (
+    <svg viewBox="0 0 48 48" className="h-10 w-10" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="24" cy="24" r="18" />
+      <polygon points="24,12 28,24 24,36 20,24" fill="currentColor" stroke="none" opacity="0.85" />
+      <circle cx="24" cy="24" r="1.5" fill="currentColor" />
+    </svg>
   );
 }
 
@@ -301,10 +388,10 @@ function AirlineCard({ airline }: { airline: StrapiAirline }) {
   return (
     <Link
       href={`/airlines/${airline.slug}`}
-      className="group flex items-center gap-4 rounded-[0.3rem] border border-forest-900/10 bg-[#f7f8fa] p-4 transition hover:-translate-y-0.5 hover:border-forest-900/30 hover:shadow-sm"
+      className="group flex items-center gap-8 rounded-[0.3rem] border border-forest-900/10 bg-[#f7f8fa] p-4 transition hover:-translate-y-0.5 hover:border-forest-900/30 hover:shadow-sm"
       data-testid={`airline-card-${airline.slug}`}
     >
-      <div className="flex h-14 w-14 flex-none items-center justify-center overflow-hidden rounded-[0.3rem] bg-forest-900/5">
+      <div className="flex h-[5.25rem] w-[5.25rem] flex-none items-center justify-center overflow-hidden rounded-[0.3rem]">
         {logo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={logo} alt={airline.name} className="h-full w-full object-contain" />
@@ -334,7 +421,7 @@ function AirlineCard({ airline }: { airline: StrapiAirline }) {
   );
 }
 
-function PopularAirlinesStrip({ airlines }: { airlines: StrapiAirline[] }) {
+export function PopularAirlinesStrip({ airlines }: { airlines: StrapiAirline[] }) {
   // Build IATA → airline lookup, then walk POPULAR_IATA in order so the
   // strip mirrors the curated ranking. Drop carriers we don't have data for.
   const popular = useMemo(() => {
@@ -378,7 +465,6 @@ function PopularAirlinesStrip({ airlines }: { airlines: StrapiAirline[] }) {
 
   return (
     <section className="mt-12" data-testid="popular-airlines">
-      <h2 className="editorial-h text-[1.5rem] font-bold text-forest-900">Popular airlines</h2>
       <div
         ref={trackRef}
         onMouseEnter={() => setPaused(true)}
@@ -400,10 +486,10 @@ function PopularAirlineCard({ airline }: { airline: StrapiAirline }) {
   return (
     <Link
       href={`/airlines/${airline.slug}`}
-      className="snap-start group flex h-[78px] w-[200px] shrink-0 items-center gap-3 rounded-[4px] border border-forest-900/10 bg-[#f7f8fa] px-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition hover:border-forest-900/25 hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]"
+      className="snap-start group flex h-[96px] w-[220px] shrink-0 items-center gap-3 rounded-[4px] border-0 bg-white px-4 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)] transition hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-2px_rgba(0,0,0,0.05)]"
       data-testid={`popular-airline-${airline.slug}`}
     >
-      <div className="flex h-12 w-12 flex-none items-center justify-center overflow-hidden rounded-md bg-white">
+      <div className="flex h-[4.2rem] w-[4.2rem] flex-none items-center justify-center overflow-hidden rounded-md bg-white">
         {logo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={logo} alt={airline.name} className="h-full w-full object-contain" />

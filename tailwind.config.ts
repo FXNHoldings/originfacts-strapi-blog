@@ -39,10 +39,14 @@ export default {
         paper: '#f0f2f4',
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        urbanist: ['var(--font-urbanist)', 'system-ui', 'sans-serif'],
-        outfit: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        // All font-* utilities resolve to Plus Jakarta Sans so a single token
+        // change here would swap the entire site's typeface. The named keys
+        // (urbanist / outfit / display) are kept for backwards compatibility
+        // with existing usages.
+        sans: ['var(--font-jakarta)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-jakarta)', 'system-ui', 'sans-serif'],
+        urbanist: ['var(--font-jakarta)', 'system-ui', 'sans-serif'],
+        outfit: ['var(--font-jakarta)', 'system-ui', 'sans-serif'],
       },
       letterSpacing: { tightest: '0' },
       maxWidth: { '7xl': '1420px', prose: '68ch' },

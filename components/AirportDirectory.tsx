@@ -60,11 +60,26 @@ export default function AirportDirectory({ airports }: { airports: StrapiAirport
 
   return (
     <div className="mt-10">
-      {/* Stat strip */}
-      <div className="grid gap-6 rounded-[0.3rem] border border-forest-900/10 bg-forest-900/[0.02] p-6 sm:grid-cols-3">
-        <Stat label="Airports" value={airports.length.toLocaleString()} />
-        <Stat label="Countries" value={countryCount.toLocaleString()} />
-        <Stat label="Regions" value={regionCount.toString()} />
+      {/* Summary cards — matches /countries layout: content left, icon right */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        <SummaryCard
+          label="Airports"
+          value={airports.length.toLocaleString()}
+          blurb="Every commercial field we index — major hubs, secondary city airports, and regional strips."
+          icon={<RunwayIcon />}
+        />
+        <SummaryCard
+          label="Countries"
+          value={countryCount.toLocaleString()}
+          blurb="Nations represented across the index, each linked to its airline and route lists."
+          icon={<GlobeIcon />}
+        />
+        <SummaryCard
+          label="Regions"
+          value={regionCount.toString()}
+          blurb="Six continental groupings spanning Africa to South America and the Pacific in between."
+          icon={<CompassIcon />}
+        />
       </div>
 
       {/* Top international hubs callout */}
@@ -177,12 +192,65 @@ export default function AirportDirectory({ airports }: { airports: StrapiAirport
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function SummaryCard({
+  label,
+  value,
+  blurb,
+  icon,
+}: {
+  label: string;
+  value: string;
+  blurb: string;
+  icon: React.ReactNode;
+}) {
   return (
-    <div>
-      <div className="font-urbanist text-3xl font-bold text-forest-900">{value}</div>
-      <div className="mt-1 text-xs uppercase tracking-widest text-forest-900/60">{label}</div>
+    <div
+      className="flex items-start justify-between gap-4 rounded-[0.3rem] border border-forest-900/10 bg-forest-900/[0.02] p-5"
+      data-testid={`airports-summary-${label.toLowerCase()}`}
+    >
+      <div className="min-w-0 flex-1">
+        <div className="text-xs uppercase tracking-widest text-forest-900/60">{label}</div>
+        <div className="mt-2 font-urbanist text-3xl font-bold leading-none text-forest-900">{value}</div>
+        <p className="mt-3 text-sm leading-snug text-forest-900/65">{blurb}</p>
+      </div>
+      <div
+        aria-hidden
+        className="flex h-12 w-12 flex-none items-center justify-center text-forest-900/55"
+      >
+        {icon}
+      </div>
     </div>
+  );
+}
+
+function RunwayIcon() {
+  return (
+    <svg viewBox="0 0 48 48" className="h-10 w-10" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 26 L 24 6 L 28 8 L 22 22 L 38 24 L 42 26 L 24 30 L 18 42 L 14 40 L 18 26 L 6 26 Z" />
+      <line x1="14" y1="44" x2="34" y2="44" />
+    </svg>
+  );
+}
+
+function GlobeIcon() {
+  return (
+    <svg viewBox="0 0 48 48" className="h-10 w-10" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="24" cy="24" r="18" />
+      <ellipse cx="24" cy="24" rx="9" ry="18" />
+      <line x1="6" y1="24" x2="42" y2="24" />
+      <path d="M8 14 C 16 18, 32 18, 40 14" />
+      <path d="M8 34 C 16 30, 32 30, 40 34" />
+    </svg>
+  );
+}
+
+function CompassIcon() {
+  return (
+    <svg viewBox="0 0 48 48" className="h-10 w-10" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="24" cy="24" r="18" />
+      <polygon points="24,12 28,24 24,36 20,24" fill="currentColor" stroke="none" opacity="0.85" />
+      <circle cx="24" cy="24" r="1.5" fill="currentColor" />
+    </svg>
   );
 }
 

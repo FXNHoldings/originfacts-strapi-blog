@@ -65,7 +65,7 @@ export default async function CountriesPage() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-16" data-testid="countries-page">
       <header>
-        <h1 className="editorial-h text-3xl font-bold text-forest-900">Countries, mapped</h1>
+        <h1 className="editorial-h text-3xl font-bold text-forest-900">Countries — Travel Directory</h1>
         <ExpandableDescription
           text="A directory of every country with scheduled commercial air service — built from our Travelpayouts dataset and kept current as new carriers launch, hubs shift, and second-tier airports open. Each country page gathers the airports inside its borders, the airlines registered there, the top inbound and outbound routes, and our own travel coverage (hotels, flights, car rentals, on-the-ground tips) so you can move fluidly from a destination idea to the practical bits of getting there. Filter by name or ISO-3166 code, browse by continent, or click straight through to a country profile — useful whether you're decoding a stopover, comparing visa-on-arrival rules across regions, or planning a multi-country itinerary from a single base. The index is read from one source of truth, so a country's airline list stays in sync with the rest of the site as our coverage grows."
         />

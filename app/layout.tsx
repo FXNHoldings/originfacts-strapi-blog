@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Urbanist } from 'next/font/google';
+import { Figtree, Inter, Plus_Jakarta_Sans, Urbanist } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 import Header from '@/components/Header';
@@ -26,6 +26,23 @@ const urbanist = Urbanist({
   display: 'swap',
 });
 
+// Site-wide default font. Every Tailwind font-* utility resolves to this via
+// the tailwind.config.ts fontFamily map.
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-jakarta',
+  weight: ['300', '400', '500', '600', '700', '800'],
+  display: 'swap',
+});
+
+// Heading-only typeface. Wired into globals.css h1–h6 rule.
+const figtree = Figtree({
+  subsets: ['latin'],
+  variable: '--font-figtree',
+  weight: ['400', '500', '600', '700', '800', '900'],
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.originfacts.com'),
   title: {
@@ -49,7 +66,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const sidebar = await listSidebarArticles(7).catch(() => ({ recent: [], popular: [] }));
 
   return (
-    <html lang="en" className={`${inter.variable} ${urbanist.variable}`}>
+    <html lang="en" className={`${inter.variable} ${urbanist.variable} ${jakarta.variable} ${figtree.variable}`}>
       <body className="min-h-screen flex flex-col font-sans font-normal grain" data-testid="app-shell">
         <Script id="consent-default" strategy="beforeInteractive">{`
           window.dataLayer = window.dataLayer || [];
@@ -94,9 +111,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           })();
         `}</Script>
         <Header />
-        <div className="px-[50px] py-4">
-          <hr className="border-0 border-t" style={{ borderColor: '#ddd' }} />
-        </div>
         <main className="flex-1">{children}</main>
         <FixedPopularNow articles={sidebar.popular} />
         <FixedRightBar popularPosts={sidebar.popular} />
