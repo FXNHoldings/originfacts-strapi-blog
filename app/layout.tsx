@@ -80,11 +80,28 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             wait_for_update: 500
           });
         `}</Script>
+        {/* Google Analytics 4 — gtag.js loader + init for G-TY066MKR0Z. The
+            consent-default block above runs first and keeps analytics_storage
+            denied until the cookie banner grants consent, so this tag is
+            GDPR-friendly out of the box. */}
+        <Script
+          id="ga4-loader"
+          async
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-TY066MKR0Z"
+        />
+        <Script id="ga4-init" strategy="afterInteractive">{`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-TY066MKR0Z');
+        `}</Script>
+        {/* AdSense loader — plain <script async>; React 19 hoists it into <head>
+            so it sits exactly as the AdSense snippet expects. */}
         {ADSENSE_ENABLED && (
-          <Script
-            id="adsbygoogle"
+          // eslint-disable-next-line @next/next/no-sync-scripts
+          <script
             async
-            strategy="afterInteractive"
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
             crossOrigin="anonymous"
           />
